@@ -113,6 +113,7 @@ docker compose run --rm vault set MYSQL_HOST
 docker compose run --rm vault set MYSQL_DATABASE
 docker compose run --rm vault set MYSQL_USER
 docker compose run --rm vault set MYSQL_PASSWORD
+docker compose run --rm vault set MYSQL_PORT
 
 # 4) Aplique os segredos nos containers.
 docker compose up -d --force-recreate
