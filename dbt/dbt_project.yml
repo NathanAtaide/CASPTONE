@@ -1,0 +1,47 @@
+# =============================================================================
+# dbt project of the CAPS lakehouse (adapter: dbt-duckdb).
+#
+# DuckDB is the engine; the data lives in the data lake:
+#   bronze  -> read as external Parquet sources   (models/bronze/_bronze__sources.yml)
+#   silver  -> models in models/silver, written to s3://<silver bucket>/<model>.parquet
+#   gold    -> models in models/gold,   written to s3://<gold bucket>/<model>.parquet
+#
+# The folder decides the layer: it sets the schema (silver/gold), the tag used
+# by the Airflow DAG (`--select tag:silver`) and, through the external_location
+# macro, the bucket where the Parquet file is written.
+# =============================================================================
+name: caps_lakehouse
+version: "1.0.0"
+config-version: 2
+
+# Connection profile defined in ./profiles.yml (same folder).
+profile: caps_lakehouse
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+# dbt "docs blocks" are only looked up in this folder, so the README.md files
+# that document each project folder are never parsed as dbt documentation.
+docs-paths: ["docs"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  caps_lakehouse:
+    # "external" = run the query in DuckDB and store the result as a Parquet
+    # file on the lake; a view pointing at that file is kept in DuckDB.
+    +materialized: external
+
+    silver:
+      +schema: silver
+      +tags: ["silver"]
+      example:
+        # Bundled demo models. Disable with DBT_ENABLE_EXAMPLES=false in .env.
+        +enabled: "{{ (env_var('DBT_ENABLE_EXAMPLES', 'true') | lower == 'true') | as_bool }}"
+
+    gold:
+      +schema: gold
+      +tags: ["gold"]
+      example:
+        +enabled: "{{ (env_var('DBT_ENABLE_EXAMPLES', 'true') | lower == 'true') | as_bool }}"

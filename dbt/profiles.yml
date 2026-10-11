@@ -1,0 +1,39 @@
+# =============================================================================
+# dbt connection profile (dbt-duckdb).
+#
+# Nothing sensitive is written here: every credential is read from environment
+# variables, which the Airflow container receives from the vault at start-up.
+#
+#   path      DuckDB database file (catalog + scratch space of the engine). It
+#             lives in the "duckdb-data" Docker volume. The actual silver/gold
+#             data is NOT stored in it - it is written to the lake as Parquet.
+#   secrets   registers the data-lake (MinIO / S3) credentials in DuckDB so that
+#             s3://<bucket>/... paths can be read and written.
+# =============================================================================
+caps_lakehouse:
+  target: lake
+  outputs:
+    lake:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '/opt/platform/duckdb/warehouse.duckdb') }}"
+      schema: main
+      threads: "{{ env_var('DBT_THREADS', '4') | as_number }}"
+
+      # Pre-installed in the image at build time, so no download happens here.
+      extensions:
+        - httpfs
+
+      settings:
+        memory_limit: "{{ env_var('DUCKDB_MEMORY_LIMIT', '2GB') }}"
+        # Row order is irrelevant for our models; disabling it lowers memory use.
+        preserve_insertion_order: "false"
+
+      secrets:
+        - type: s3
+          name: lake_s3
+          key_id: "{{ env_var('LAKE_S3_ACCESS_KEY') }}"
+          secret: "{{ env_var('LAKE_S3_SECRET_KEY') }}"
+          endpoint: "{{ env_var('LAKE_S3_ENDPOINT', 'minio:9000') }}"
+          region: "{{ env_var('LAKE_S3_REGION', 'us-east-1') }}"
+          url_style: "{{ env_var('LAKE_S3_URL_STYLE', 'path') }}"
+          use_ssl: "{{ env_var('LAKE_S3_USE_SSL', 'false') }}"

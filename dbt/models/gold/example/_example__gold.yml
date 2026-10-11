@@ -1,0 +1,29 @@
+# Documentation and data tests of the example gold model.
+version: 2
+
+models:
+  - name: gld_example_weather_daily
+    description: "Daily weather indicators per location (example dataset), ready for dashboards and ML features."
+    columns:
+      - name: location
+        description: "Label of the place the indicators refer to."
+        data_tests:
+          - not_null
+      - name: observation_date
+        description: "Calendar day (UTC) of the aggregated observations."
+        data_tests:
+          - not_null
+      - name: hours_observed
+        description: "Number of hourly observations aggregated in the day."
+      - name: avg_temperature_c
+        description: "Average temperature of the day, in degrees Celsius."
+      - name: min_temperature_c
+        description: "Lowest hourly temperature of the day."
+      - name: max_temperature_c
+        description: "Highest hourly temperature of the day."
+      - name: avg_relative_humidity_pct
+        description: "Average relative humidity of the day, in percent."
+      - name: total_precipitation_mm
+        description: "Total precipitation of the day, in millimetres."
+      - name: max_wind_speed_kmh
+        description: "Highest hourly wind speed of the day, in km/h."

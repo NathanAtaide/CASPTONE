@@ -1,0 +1,4 @@
+# Files and folders the DAG processor must not parse as DAGs (glob syntax).
+caps_assets.py
+config/
+*.md

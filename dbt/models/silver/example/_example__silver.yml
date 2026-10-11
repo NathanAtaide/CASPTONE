@@ -1,0 +1,28 @@
+# Documentation and data tests of the example silver model.
+# `dbt build` runs these tests right after building the model.
+version: 2
+
+models:
+  - name: slv_example_weather_hourly
+    description: "Hourly weather observations, de-duplicated and typed (example dataset from the Open-Meteo API)."
+    columns:
+      - name: location
+        description: "Label of the place the measurement refers to."
+        data_tests:
+          - not_null
+      - name: observed_at
+        description: "Hour of the observation, in UTC."
+        data_tests:
+          - not_null
+      - name: temperature_c
+        description: "Air temperature at 2 m, in degrees Celsius."
+      - name: relative_humidity_pct
+        description: "Relative humidity at 2 m, in percent."
+      - name: precipitation_mm
+        description: "Precipitation accumulated in the hour, in millimetres."
+      - name: wind_speed_kmh
+        description: "Wind speed at 10 m, in km/h."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

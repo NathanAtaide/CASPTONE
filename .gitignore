@@ -1,0 +1,32 @@
+# --- Secrets: the age private key must NEVER be committed -------------------
+secrets/keys/
+*.key
+secrets/*.tmp
+# (secrets/secrets.enc.yaml is encrypted and is meant to be committed)
+
+# --- Generated data ---------------------------------------------------------
+data/exports/*
+!data/exports/README.md
+*.duckdb
+*.duckdb.wal
+
+# --- dbt --------------------------------------------------------------------
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
+# --- Airflow ----------------------------------------------------------------
+airflow/logs/
+
+# --- Python / Jupyter -------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+
+# --- OS / editors -----------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

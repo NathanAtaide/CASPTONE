@@ -1,0 +1,8 @@
+# Extra packages for the MLflow tracking server.
+# (mlflow itself is installed from the MLFLOW_VERSION build argument.)
+
+# PostgreSQL driver for the backend store.
+psycopg2-binary==2.9.13
+
+# S3 client used to read/write model artifacts in the data lake.
+boto3

@@ -1,0 +1,26 @@
+# Python packages of the JupyterLab workspace.
+
+# --- Notebook server --------------------------------------------------------
+jupyterlab==4.6.4
+ipywidgets
+
+# --- Data access ------------------------------------------------------------
+# Same DuckDB version as the pipelines (docker/airflow/requirements*.txt).
+duckdb==1.5.6
+pandas==3.0.6
+# Left unpinned on purpose: MLflow constrains the pyarrow versions it supports.
+pyarrow
+pytz
+boto3
+requests
+PyYAML
+
+# --- Machine learning -------------------------------------------------------
+# Keep the MLflow client on the same version as the tracking server (.env).
+mlflow==3.17.0
+scikit-learn==1.9.1
+matplotlib==3.11.2
+# Add the libraries your models need below (then: docker compose build jupyter)
+# xgboost
+# lightgbm
+# statsmodels

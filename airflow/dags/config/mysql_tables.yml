@@ -1,0 +1,38 @@
+# =============================================================================
+# Ingestion plan: source MySQL -> bronze layer (read by bronze_mysql_ingestion).
+#
+# schedule : cron expression evaluated in PLATFORM_TIMEZONE (.env).
+#            Use null to run the DAG only by manual trigger.
+# tables   : one entry per table of the configured MySQL database.
+#
+#   name              (required) table name in MySQL
+#   mode              full         -> snapshot of the whole table on every run
+#                     incremental  -> only rows with watermark_column greater
+#                                     than the highest value already in bronze
+#   watermark_column  (incremental) monotonically increasing column, e.g. an
+#                     auto-increment id or an updated_at timestamp
+#   columns           (optional) list of columns to extract; default = all
+#   where             (optional) extra filter in MySQL syntax
+#
+# After adding a table here, declare it as a dbt source in
+# dbt/models/bronze/_bronze__sources.yml to use it in silver models.
+# =============================================================================
+schedule: "0 2 * * *"
+
+tables: []
+
+# Example (replace the empty list above):
+#
+# tables:
+#   - name: customers
+#     mode: full
+#
+#   - name: orders
+#     mode: incremental
+#     watermark_column: updated_at
+#
+#   - name: order_items
+#     mode: incremental
+#     watermark_column: id
+#     columns: [id, order_id, product_id, quantity, unit_price]
+#     where: "quantity > 0"

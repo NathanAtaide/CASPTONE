@@ -1,0 +1,41 @@
+# =============================================================================
+# Bronze layer = dbt SOURCES (dbt does not build bronze, it only reads it).
+#
+# Each source points at the Parquet files written by the ingestion DAGs:
+#   s3://<bronze bucket>/<source system>/<table>/ingestion_date=YYYY-MM-DD/*.parquet
+#
+# `external_location` is a dbt-duckdb setting: {name} is replaced by the table
+# name, and DuckDB reads every partition of that table straight from the lake
+# (hive_partitioning exposes the `ingestion_date` column; union_by_name copes
+# with columns added to the source over time).
+# =============================================================================
+version: 2
+
+sources:
+  # ---------------------------------------------------------------------------
+  # Tables extracted from the source MySQL by the bronze_mysql_ingestion DAG.
+  # Declare here every table listed in airflow/dags/config/mysql_tables.yml that
+  # you want to use in silver models.
+  # ---------------------------------------------------------------------------
+  - name: bronze_mysql
+    description: "Raw tables of the source MySQL database, stored as Parquet in the bronze bucket."
+    config:
+      external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_BRONZE', 'bronze') }}/mysql/{name}/*/*.parquet', hive_partitioning = true, union_by_name = true)"
+    tables: []
+    # Example (replace the empty list above):
+    # tables:
+    #   - name: customers
+    #     description: "Full snapshot of the customers table."
+    #   - name: orders
+    #     description: "Incremental load of the orders table (watermark: updated_at)."
+
+  # ---------------------------------------------------------------------------
+  # Example API data landed by the example_api_to_bronze DAG.
+  # ---------------------------------------------------------------------------
+  - name: bronze_open_meteo
+    description: "Hourly weather returned by the Open-Meteo public API (example dataset)."
+    config:
+      external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_BRONZE', 'bronze') }}/open_meteo/{name}/*/*.parquet', hive_partitioning = true, union_by_name = true)"
+    tables:
+      - name: hourly_weather
+        description: "One row per location and hour, as returned by the API, plus the lineage columns."

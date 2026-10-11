@@ -1,0 +1,341 @@
+# =============================================================================
+# CAPS data platform - end-to-end medallion architecture (local, cloud-ready)
+#
+#   MySQL (cloud, read-only) --DuckDB--> bronze --dbt/DuckDB--> silver --> gold
+#   APIs --> staging (Parquet) --> bronze            gold --> Parquet for Power BI
+#   Jupyter + MLflow on top of the lake for predictive models
+#
+# Start everything with:   docker compose up -d --build
+# Full documentation:      README.md (root) and the README.md inside each folder
+#
+# Non-secret settings come from ./.env. Secrets NEVER live in this file or in
+# .env: they are decrypted at start-up by the "vault" service (SOPS + age) into
+# an in-memory volume mounted read-only at /run/secrets in every container.
+# =============================================================================
+name: caps
+
+# ---------------------------------------------------------------------------
+# Shared fragments
+# ---------------------------------------------------------------------------
+
+# Non-secret data-lake settings shared by every service that talks to the lake.
+x-lake-env: &lake-env
+  LAKE_S3_ENDPOINT: minio:9000
+  LAKE_S3_REGION: us-east-1
+  LAKE_S3_USE_SSL: "false"
+  LAKE_S3_URL_STYLE: path
+  LAKE_BUCKET_STAGING: ${LAKE_BUCKET_STAGING:-staging}
+  LAKE_BUCKET_BRONZE: ${LAKE_BUCKET_BRONZE:-bronze}
+  LAKE_BUCKET_SILVER: ${LAKE_BUCKET_SILVER:-silver}
+  LAKE_BUCKET_GOLD: ${LAKE_BUCKET_GOLD:-gold}
+  LAKE_BUCKET_MLFLOW: ${LAKE_BUCKET_MLFLOW:-mlflow}
+  STAGING_RETENTION_DAYS: ${STAGING_RETENTION_DAYS:-30}
+  DUCKDB_MEMORY_LIMIT: ${DUCKDB_MEMORY_LIMIT:-2GB}
+  DUCKDB_THREADS: ${DUCKDB_THREADS:-4}
+  PLATFORM_TIMEZONE: ${PLATFORM_TIMEZONE:-UTC}
+
+# Every service waits until the vault has rendered the secrets.
+x-vault-ready: &vault-ready
+  vault:
+    condition: service_healthy
+
+# Airflow services share one image, one environment and one set of volumes.
+x-airflow-common: &airflow-common
+  image: caps/airflow:${AIRFLOW_VERSION:-3.3.2}
+  build:
+    context: ./docker
+    dockerfile: airflow/Dockerfile
+    args:
+      AIRFLOW_VERSION: ${AIRFLOW_VERSION:-3.3.2}
+      PYTHON_VERSION: ${PYTHON_VERSION:-3.12}
+  user: "${AIRFLOW_UID:-50000}:0"
+  restart: unless-stopped
+  environment: &airflow-env
+    <<: *lake-env
+    # --- Airflow core -------------------------------------------------------
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: ${PLATFORM_TIMEZONE:-UTC}
+    AIRFLOW__CORE__PARALLELISM: ${AIRFLOW_PARALLELISM:-8}
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__API__BASE_URL: http://localhost:${AIRFLOW_PORT:-8080}
+    AIRFLOW__API__WORKERS: ${AIRFLOW_API_WORKERS:-2}
+    AIRFLOW__API_AUTH__JWT_ISSUER: airflow
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    # --- Airflow secrets: read straight from the vault tmpfs via *_CMD ------
+    # (works for the daemons, for healthchecks and for `docker compose exec`)
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: /usr/local/bin/airflow-db-uri
+    AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/env/AIRFLOW_FERNET_KEY
+    AIRFLOW__API__SECRET_KEY_CMD: cat /run/secrets/env/AIRFLOW_API_SECRET_KEY
+    AIRFLOW__API_AUTH__JWT_SECRET_CMD: cat /run/secrets/env/AIRFLOW_JWT_SECRET
+    # --- Metadata database coordinates (password comes from the vault) ------
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_USER: airflow
+    AIRFLOW_DB_NAME: airflow
+    # --- Pipeline runtime ---------------------------------------------------
+    MYSQL_SOURCE_POOL_SLOTS: ${MYSQL_SOURCE_POOL_SLOTS:-2}
+    DUCKDB_PATH: /opt/platform/duckdb/warehouse.duckdb
+    DBT_PROJECT_DIR: /opt/platform/dbt
+    DBT_PROFILES_DIR: /opt/platform/dbt
+    DBT_TARGET_PATH: /opt/platform/dbt-runtime/target
+    DBT_LOG_PATH: /opt/platform/dbt-runtime/logs
+    DBT_THREADS: ${DUCKDB_THREADS:-4}
+    DBT_ENABLE_EXAMPLES: ${DBT_ENABLE_EXAMPLES:-true}
+    DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+    EXPORT_DIR: /opt/platform/exports
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./src:/opt/platform/src:ro
+    - ./dbt:/opt/platform/dbt
+    - ./data/exports:/opt/platform/exports
+    - airflow-logs:/opt/airflow/logs
+    - duckdb-data:/opt/platform/duckdb
+    - vault-secrets:/run/secrets:ro
+  depends_on: &airflow-depends-on
+    <<: *vault-ready
+    postgres:
+      condition: service_healthy
+    lake-init:
+      condition: service_completed_successfully
+    airflow-init:
+      condition: service_completed_successfully
+
+services:
+  # ---------------------------------------------------------------------------
+  # vault - decrypts ./secrets/secrets.enc.yaml (SOPS + age) into a tmpfs volume
+  # and keeps it mounted. First start auto-generates the key and the passwords.
+  # Manage secrets with:  docker compose run --rm vault <list|get|set|edit|show>
+  # ---------------------------------------------------------------------------
+  vault:
+    image: caps/vault:latest
+    build:
+      context: ./docker
+      dockerfile: vault/Dockerfile
+      args:
+        SOPS_VERSION: ${SOPS_VERSION:-3.13.3}
+    restart: unless-stopped
+    volumes:
+      - ./secrets:/vault
+      - vault-secrets:/run/secrets
+    healthcheck:
+      test: ["CMD", "test", "-f", "/run/secrets/.ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 5s
+
+  # ---------------------------------------------------------------------------
+  # postgres - metadata only: Airflow database + MLflow backend store.
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:17}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_DB: airflow
+      POSTGRES_PASSWORD_FILE: /run/secrets/env/POSTGRES_PASSWORD
+      MLFLOW_DB_USER: mlflow
+      MLFLOW_DB_NAME: mlflow
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+      - vault-secrets:/run/secrets:ro
+    healthcheck:
+      # TCP check on purpose: the temporary server used during first-time
+      # initialisation only listens on the unix socket, so this stays
+      # "unhealthy" until the real server is accepting connections.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U airflow -d airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    depends_on:
+      <<: *vault-ready
+
+  # ---------------------------------------------------------------------------
+  # minio - S3-compatible data lake (staging / bronze / silver / gold / mlflow).
+  # Data lives in the "minio-data" Docker volume and survives restarts.
+  # ---------------------------------------------------------------------------
+  minio:
+    image: ${MINIO_IMAGE:-cgr.dev/chainguard/minio:latest}
+    restart: unless-stopped
+    # Root inside the container so the server can always write to the named
+    # volume regardless of which MinIO image/UID is configured in .env.
+    user: "0:0"
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      # One credential pair for the whole lake, read from the vault tmpfs.
+      MINIO_ROOT_USER_FILE: /run/secrets/env/LAKE_S3_ACCESS_KEY
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/env/LAKE_S3_SECRET_KEY
+    volumes:
+      - minio-data:/data
+      - vault-secrets:/run/secrets:ro
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MINIO_API_PORT:-9000}:9000"
+      - "${BIND_ADDRESS:-127.0.0.1}:${MINIO_CONSOLE_PORT:-9001}:9001"
+    depends_on:
+      <<: *vault-ready
+
+  # ---------------------------------------------------------------------------
+  # lake-init - one-shot: waits for the object store, then creates the buckets
+  # and the staging retention rule. Other services wait for it, so it doubles
+  # as the readiness gate for the lake (the MinIO image ships no shell/curl).
+  # ---------------------------------------------------------------------------
+  lake-init:
+    <<: *airflow-common
+    restart: "no"
+    entrypoint: ["python", "-m", "lakehouse.bootstrap"]
+    command: []
+    depends_on:
+      <<: *vault-ready
+      minio:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # Airflow (LocalExecutor) - orchestrator of ingestion, dbt and exports.
+  # ---------------------------------------------------------------------------
+  airflow-init:
+    <<: *airflow-common
+    restart: "no"
+    command: ["bash", "/usr/local/bin/airflow-init.sh"]
+    depends_on:
+      <<: *vault-ready
+      postgres:
+        condition: service_healthy
+
+  airflow-apiserver:
+    <<: *airflow-common
+    command: ["api-server"]
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${AIRFLOW_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: ["scheduler"]
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 20s
+      retries: 5
+      start_period: 60s
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: ["dag-processor"]
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 20s
+      retries: 5
+      start_period: 60s
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: ["triggerer"]
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 20s
+      retries: 5
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # mlflow - experiment tracking + model registry.
+  # Params/metrics/registry -> Postgres volume; model files -> MinIO volume.
+  # ---------------------------------------------------------------------------
+  mlflow:
+    image: caps/mlflow:${MLFLOW_VERSION:-3.17.0}
+    build:
+      context: ./docker
+      dockerfile: mlflow/Dockerfile
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.12}
+        MLFLOW_VERSION: ${MLFLOW_VERSION:-3.17.0}
+    restart: unless-stopped
+    environment:
+      <<: *lake-env
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      MLFLOW_DB_USER: mlflow
+      MLFLOW_DB_NAME: mlflow
+      PLATFORM_MLFLOW_WORKERS: "${PLATFORM_MLFLOW_WORKERS:-2}"
+      # Host headers accepted by the tracking server (DNS-rebinding protection).
+      MLFLOW_SERVER_ALLOWED_HOSTS: "${MLFLOW_ALLOWED_HOSTS:-mlflow,mlflow:*,localhost,localhost:*,127.0.0.1,127.0.0.1:*}"
+    volumes:
+      - vault-secrets:/run/secrets:ro
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MLFLOW_PORT:-5000}:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      <<: *vault-ready
+      postgres:
+        condition: service_healthy
+      lake-init:
+        condition: service_completed_successfully
+
+  # ---------------------------------------------------------------------------
+  # jupyter - JupyterLab for exploration and ML model development.
+  # Notebooks are stored on the host (./notebooks), models go to MLflow.
+  # ---------------------------------------------------------------------------
+  jupyter:
+    image: caps/jupyter:latest
+    build:
+      context: ./docker
+      dockerfile: jupyter/Dockerfile
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.12}
+    restart: unless-stopped
+    environment:
+      <<: *lake-env
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./src:/opt/platform/src:ro
+      - ./data/exports:/home/jovyan/exports
+      - vault-secrets:/run/secrets:ro
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${JUPYTER_PORT:-8888}:8888"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8888/api', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *vault-ready
+      lake-init:
+        condition: service_completed_successfully
+      mlflow:
+        condition: service_started
+
+# ---------------------------------------------------------------------------
+# Volumes
+#   vault-secrets : RAM only (tmpfs) - decrypted secrets never touch the disk.
+#   the others    : persistent Docker volumes. They survive `docker compose down`
+#                   and are only deleted by `docker compose down -v`.
+# ---------------------------------------------------------------------------
+volumes:
+  vault-secrets:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=8m,mode=0755"
+  postgres-data:
+  minio-data:
+  airflow-logs:
+  duckdb-data:

@@ -1,0 +1,17 @@
+# Python packages installed in the Airflow environment (used by DAG tasks).
+# Keep this list short: anything heavy or conflict-prone belongs in its own
+# virtualenv (see requirements-dbt.txt).
+
+# Processing engine. Must match the version pinned in requirements-dbt.txt and
+# in docker/jupyter/requirements.txt so every component reads/writes the same
+# formats and shares the same pre-installed extensions.
+duckdb==1.5.6
+
+# Needed by DuckDB to return TIMESTAMP WITH TIME ZONE values to Python.
+pytz
+
+# Already shipped with the official Airflow image; listed so that the
+# lakehouse package keeps working if the base image ever drops them.
+boto3
+requests
+PyYAML
