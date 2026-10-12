@@ -67,7 +67,7 @@ flowchart LR
 
 | Etapa | De → para | Quem executa | Local |
 |---|---|---|---|
-| 1 | MySQL → **Bronze** | DAG `bronze_mysql_ingestion` (DuckDB lê o MySQL e grava Parquet) | `s3://bronze/mysql/<tabela>/ingestion_date=.../` |
+| 1 | MySQL → **Bronze** | DAG `bronze_mysql_ingestion` (DuckDB lê o MySQL em lotes e grava um Parquet por lote; tabelas divididas são unificadas) | `s3://bronze/mysql/<dataset>/ingestion_date=.../` |
 | 1' | API → **Staging** → **Bronze** | DAG `example_api_to_bronze` (modelo para novas APIs) | `s3://staging/...` → `s3://bronze/<fonte>/...` |
 | 2 | Bronze → **Prata** | DAG `dbt_medallion` (dbt + DuckDB) | `s3://silver/<modelo>.parquet` |
 | 3 | Prata → **Ouro** | DAG `dbt_medallion` | `s3://gold/<modelo>.parquet` |
@@ -151,6 +151,7 @@ Se algum passo falhar, `docker compose logs <serviço>` e o log da task no Airfl
 CAPS/
 ├── docker-compose.yml        # todos os serviços, volumes e dependências
 ├── .env                      # configuração NÃO sensível (versões, portas, buckets, fuso)
+├── CLAUDE.md                 # briefing da arquitetura para assistentes de IA (regras para novas DAGs e modelos)
 ├── secrets/                  # cofre: template + arquivo criptografado + chave (ignorada pelo Git)
 ├── docker/                   # Dockerfiles e scripts das imagens
 │   ├── vault/  airflow/  mlflow/  jupyter/  postgres/  common/
@@ -164,13 +165,15 @@ CAPS/
 | Quero... | Vá para |
 |---|---|
 | guardar uma senha/token ou entender o cofre | [`secrets/README.md`](secrets/README.md) |
-| ingerir uma nova tabela do MySQL | [`airflow/dags/config/README.md`](airflow/dags/config/README.md) |
+| carregar o MySQL na bronze em lotes e testar a carga | [`airflow/dags/README.md`](airflow/dags/README.md) |
+| unificar tabelas ou ajustar o tamanho dos lotes | [`airflow/dags/config/README.md`](airflow/dags/config/README.md) |
 | criar uma pipeline de API (staging) | [`airflow/dags/README.md`](airflow/dags/README.md) |
 | criar modelos silver/gold | [`dbt/README.md`](dbt/README.md) |
 | entender as funções Python | [`src/lakehouse/README.md`](src/lakehouse/README.md) |
 | treinar e versionar modelos | [`notebooks/README.md`](notebooks/README.md) |
 | importar no Power BI | [`data/exports/README.md`](data/exports/README.md) |
 | alterar imagens/dependências | [`docker/README.md`](docker/README.md) |
+| desenvolver com um assistente de IA (novas DAGs, modelos dbt) | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

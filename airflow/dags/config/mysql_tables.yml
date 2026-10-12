@@ -1,38 +1,59 @@
 # =============================================================================
 # Ingestion plan: source MySQL -> bronze layer (read by bronze_mysql_ingestion).
 #
-# schedule : cron expression evaluated in PLATFORM_TIMEZONE (.env).
+# schedule   cron expression evaluated in PLATFORM_TIMEZONE (.env).
 #            Use null to run the DAG only by manual trigger.
-# tables   : one entry per table of the configured MySQL database.
 #
-#   name              (required) table name in MySQL
-#   mode              full         -> snapshot of the whole table on every run
-#                     incremental  -> only rows with watermark_column greater
-#                                     than the highest value already in bronze
-#   watermark_column  (incremental) monotonically increasing column, e.g. an
-#                     auto-increment id or an updated_at timestamp
-#   columns           (optional) list of columns to extract; default = all
-#   where             (optional) extra filter in MySQL syntax
+# defaults   settings applied to every dataset unless it overrides them:
+#   mode                batch (default) | full | incremental
+#   chunk_size          rows per batch = rows per Parquet file (batch mode)
+#   max_chunks_per_run  batches loaded per table in each run; 0 = until complete
 #
-# After adding a table here, declare it as a dbt source in
-# dbt/models/bronze/_bronze__sources.yml to use it in silver models.
+# discover   true = every MySQL table not used by a dataset below becomes its
+#            own dataset, with the same name as the table.
+# exclude    regular expressions of tables that must not be loaded.
+#
+# datasets   only needed to unify tables or to change a setting:
+#   name              (required) name of the bronze dataset
+#   pattern           regular expression matched against the WHOLE table name;
+#                     every matching table is loaded into this dataset
+#   tables            explicit list of source tables (alternative to pattern)
+#   chunk_column      column used to walk the table in batches. Default: first
+#                     column of the primary key (or of another index)
+#   chunk_size, max_chunks_per_run, mode   override the defaults
+#   columns           columns to extract; default = all
+#   where             extra filter in MySQL syntax
+#   watermark_column  only for mode: incremental
+#
+# Trigger the DAG with dry_run = true to see the resulting plan in the log.
 # =============================================================================
 schedule: "0 2 * * *"
 
-tables: []
+defaults:
+  mode: batch
+  chunk_size: 250000
+  max_chunks_per_run: 0
 
-# Example (replace the empty list above):
+discover: true
+
+exclude: []
+
+datasets:
+  # emails, emails_1, emails_2, ... -> one bronze dataset "emails"
+  - name: emails
+    pattern: "emails(_[0-9]+)?"
+
+  # sessions_1, sessions_2, ... -> one bronze dataset "sessions"
+  - name: sessions
+    pattern: "sessions(_[0-9]+)?"
+
+# Other examples:
 #
-# tables:
-#   - name: customers
+#   - name: events              # bigger batches for a narrow table
+#     chunk_size: 1000000
+#
+#   - name: order_cab           # walk by a timestamp to also capture updated rows
+#     chunk_column: updated_at
+#
+#   - name: product             # small table: full snapshot on every run
 #     mode: full
-#
-#   - name: orders
-#     mode: incremental
-#     watermark_column: updated_at
-#
-#   - name: order_items
-#     mode: incremental
-#     watermark_column: id
-#     columns: [id, order_id, product_id, quantity, unit_price]
-#     where: "quantity > 0"

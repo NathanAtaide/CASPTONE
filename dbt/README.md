@@ -64,10 +64,12 @@ Ele aceita um único processo escritor, por isso as tasks de dbt usam o *pool* `
        cast(cliente_id as bigint)    as cliente_id,
        cast(valor_total as decimal(18, 2)) as valor_total,
        cast(created_at as timestamp) as criado_em
-   from {{ latest_by_key(source('bronze_mysql', 'pedidos'), ['id']) }} as bronze
+   from {{ latest_load(source('bronze_mysql', 'pedidos')) }} as bronze
    ```
 
-   Para tabelas em modo `full`, use `latest_snapshot(source('bronze_mysql', 'clientes'))`.
+   `latest_load` é a macro para tabelas carregadas em lotes (modo `batch`, o padrão). Para o modo
+   `incremental` use `latest_by_key(source(...), ['id'])` e para o modo `full`,
+   `latest_snapshot(source(...))`. Detalhes em [`macros/README.md`](macros/README.md).
 3. Crie `models/gold/gld_vendas_diarias.sql` usando `{{ ref('slv_pedidos') }}`.
 4. Documente e teste em um `.yml` ao lado do modelo (veja os exemplos em `models/*/example/`).
 

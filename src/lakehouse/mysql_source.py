@@ -89,6 +89,44 @@ def _pushdown(inner_sql: str) -> str:
     return f"mysql_query({sql_literal(MYSQL_ALIAS)}, {sql_literal(inner_sql)})"
 
 
+def key_text_expression(type_name: str, expression: str) -> tuple[str, str]:
+    """How to turn a key value read through DuckDB back into MySQL SQL.
+
+    Watermarks and batch boundaries are read from MySQL (or from bronze) by
+    DuckDB and then sent back to MySQL inside a WHERE clause. This returns the
+    DuckDB expression that renders ``expression`` as text in a format MySQL
+    parses unambiguously, plus the kind of literal to build from that text
+    (see :func:`mysql_literal`): ``"number"``, ``"string"`` or ``"hex"``.
+
+    Args:
+        type_name: DuckDB type of the value, e.g. ``BIGINT`` or ``TIMESTAMP``.
+        expression: DuckDB SQL expression producing the value.
+    """
+    type_name = str(type_name).upper()
+    if type_name.startswith("TIMESTAMP WITH TIME ZONE"):
+        # MySQL TIMESTAMP columns: compare in UTC (the session time zone we set).
+        return f"strftime(timezone('UTC', {expression}), '%Y-%m-%d %H:%M:%S.%f')", "string"
+    if type_name.startswith("TIMESTAMP"):
+        return f"strftime(CAST({expression} AS TIMESTAMP), '%Y-%m-%d %H:%M:%S.%f')", "string"
+    if type_name == "DATE":
+        return f"strftime({expression}, '%Y-%m-%d')", "string"
+    if type_name.startswith(_NUMERIC_PREFIXES):
+        return f"CAST({expression} AS VARCHAR)", "number"
+    if type_name == "BLOB":
+        # Binary keys (e.g. BINARY(16) UUIDs) travel as hexadecimal.
+        return f"hex({expression})", "hex"
+    return f"CAST({expression} AS VARCHAR)", "string"
+
+
+def mysql_literal(text: str, kind: str) -> str:
+    """Build a MySQL literal from the text produced by :func:`key_text_expression`."""
+    if kind == "number":
+        return str(text)
+    if kind == "hex":
+        return f"x'{text}'"
+    return _mysql_string(text)
+
+
 def list_tables(con: duckdb.DuckDBPyConnection | None = None) -> list[dict[str, Any]]:
     """List the tables/views of the configured MySQL database."""
     own_connection = con is None
@@ -167,23 +205,9 @@ def _resolve_watermark(
         return None
 
     # Let DuckDB format the value in a way MySQL parses unambiguously.
-    type_name = str(type_name).upper()
-    quoted = True
-    if type_name.startswith("TIMESTAMP WITH TIME ZONE"):
-        # MySQL TIMESTAMP columns: compare in UTC (the session time zone we set).
-        expression = f"strftime(timezone('UTC', max({column})), '%Y-%m-%d %H:%M:%S.%f')"
-    elif type_name.startswith("TIMESTAMP"):
-        expression = f"strftime(CAST(max({column}) AS TIMESTAMP), '%Y-%m-%d %H:%M:%S.%f')"
-    elif type_name == "DATE":
-        expression = f"strftime(max({column}), '%Y-%m-%d')"
-    elif type_name.startswith(_NUMERIC_PREFIXES):
-        expression = f"CAST(max({column}) AS VARCHAR)"
-        quoted = False
-    else:
-        expression = f"CAST(max({column}) AS VARCHAR)"
-
+    expression, kind = key_text_expression(str(type_name), f"max({column})")
     value = con.execute(f"SELECT {expression} FROM {source}").fetchone()[0]
-    return _mysql_string(value) if quoted else str(value)
+    return mysql_literal(str(value), kind)
 
 
 def ingest_table(spec: TableSpec, *, batch_id: str, ingestion_date: str) -> dict[str, Any]:

@@ -21,13 +21,25 @@ sources:
     description: "Raw tables of the source MySQL database, stored as Parquet in the bronze bucket."
     config:
       external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_BRONZE', 'bronze') }}/mysql/{name}/*/*.parquet', hive_partitioning = true, union_by_name = true)"
-    tables: []
-    # Example (replace the empty list above):
-    # tables:
-    #   - name: customers
-    #     description: "Full snapshot of the customers table."
-    #   - name: orders
-    #     description: "Incremental load of the orders table (watermark: updated_at)."
+    # The `name` is the bronze DATASET (the folder under s3://bronze/mysql/),
+    # which for unified tables is not the name of a single MySQL table.
+    tables:
+      - name: customers
+        description: "MySQL table customers."
+      - name: emails
+        description: "Union of the MySQL tables emails, emails_1, emails_2, ... (see _source_entity)."
+      - name: events
+        description: "MySQL table events."
+      - name: order_cab
+        description: "MySQL table order_cab."
+      - name: order_det
+        description: "MySQL table order_det."
+      - name: paid_media
+        description: "MySQL table paid_media."
+      - name: product
+        description: "MySQL table product."
+      - name: sessions
+        description: "Union of the MySQL tables sessions_1, sessions_2, ... (see _source_entity)."
 
   # ---------------------------------------------------------------------------
   # Example API data landed by the example_api_to_bronze DAG.

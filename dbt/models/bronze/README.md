@@ -28,23 +28,25 @@ um `read_parquet(...)` que lê **todas as partições** daquela tabela direto do
 
 - a coluna `ingestion_date` (vinda do nome da pasta) fica disponível para filtros;
 - colunas novas na origem não quebram a leitura (`union_by_name`);
-- como a bronze acumula histórico, o modelo silver deve usar as macros `latest_by_key` ou
-  `latest_snapshot` para ficar só com o estado atual (ver `macros/README.md`).
+- como a bronze acumula histórico, o modelo silver deve usar as macros `latest_load`,
+  `latest_by_key` ou `latest_snapshot` para ficar só com o estado atual (ver `macros/README.md`).
 
-## Como declarar uma tabela do MySQL
+## Como declarar um dataset do MySQL
 
-No `_bronze__sources.yml`, na fonte `bronze_mysql`, substitua `tables: []` por:
+No `_bronze__sources.yml`, a fonte `bronze_mysql` já lista os datasets conhecidos (`customers`,
+`emails`, `events`, `order_cab`, `order_det`, `paid_media`, `product`, `sessions`). Para incluir
+outro, acrescente um item em `tables:`:
 
 ```yaml
-    tables:
       - name: pedidos
-        description: "Pedidos (carga incremental por updated_at)."
-      - name: clientes
-        description: "Clientes (snapshot completo)."
+        description: "Pedidos."
 ```
 
-O `name` deve ser idêntico ao nome usado em `airflow/dags/config/mysql_tables.yml`, pois é ele que
-forma o caminho no bucket.
+O `name` é o nome do **dataset** da bronze (a pasta em `s3://bronze/mysql/`), pois é ele que forma
+o caminho no bucket. Para tabelas carregadas sozinhas, é o próprio nome da tabela; para tabelas
+unificadas, é o nome definido em `airflow/dags/config/mysql_tables.yml` (ex.: `emails` reúne
+`emails`, `emails_1`, `emails_2`...). A coluna `_source_entity` informa a tabela de origem de cada
+linha.
 
 ## Observação
 

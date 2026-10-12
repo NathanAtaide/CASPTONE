@@ -15,6 +15,17 @@
       snapshot (highest ingestion_date partition). Example, inside a model:
           from latest_snapshot(source('bronze_mysql', 'customers'))
 
+  latest_load(relation)
+      For tables ingested in BATCH mode: keeps only the rows of the most recent
+      load of each source table (highest _load_id per _source_entity). Without
+      a full_refresh there is a single load and nothing is removed, so it is
+      safe to use always. Example, inside a model:
+          from latest_load(source('bronze_mysql', 'emails'))
+
+  The macros can be nested, e.g. a batch table walked by an updated_at column
+  repeats the rows that changed:
+          from latest_by_key(latest_load(source('bronze_mysql', 'orders')), ['id'])
+
   (In a model the calls above are written between double curly braces.)
 #}
 
@@ -35,5 +46,14 @@
     select *
     from {{ relation }}
     where ingestion_date = (select max(ingestion_date) from {{ relation }})
+)
+{%- endmacro %}
+
+
+{% macro latest_load(relation) -%}
+(
+    select *
+    from {{ relation }}
+    qualify _load_id = max(_load_id) over (partition by _source_entity)
 )
 {%- endmacro %}

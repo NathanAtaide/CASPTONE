@@ -14,6 +14,7 @@ gravado no lake e como ler a bronze sem duplicidades.
 | `external_location.sql` | `external_location` | Sobrescreve a macro do dbt-duckdb que define o destino dos modelos `external`: `s3://<bucket da camada>/<modelo>.parquet`. O bucket vem de `LAKE_BUCKET_SILVER` / `LAKE_BUCKET_GOLD`. |
 | `bronze_helpers.sql` | `latest_by_key` | Devolve uma subconsulta com a versão mais recente de cada chave (para tabelas em modo `incremental` e lotes de API). |
 | `bronze_helpers.sql` | `latest_snapshot` | Devolve uma subconsulta só com o snapshot mais recente (para tabelas em modo `full`). |
+| `bronze_helpers.sql` | `latest_load` | Devolve uma subconsulta só com a carga mais recente de cada tabela de origem (para tabelas em modo `batch`). |
 
 ## Por que `latest_by_key` e `latest_snapshot` existem
 
@@ -22,8 +23,14 @@ negócio pode, portanto, aparecer várias vezes. A camada silver deve enxergar a
 
 | Modo de ingestão da tabela | Macro a usar no `FROM` do modelo silver | Critério |
 |---|---|---|
+| `batch` (padrão) | `latest_load(fonte)` | linhas da carga (`_load_id`) mais recente de cada tabela de origem; só remove algo depois de um `full_refresh` |
+| `batch` com `chunk_column` de data de alteração | `latest_by_key(latest_load(fonte), ['coluna_chave'])` | idem, e fica a versão mais recente de cada chave |
 | `incremental` | `latest_by_key(fonte, ['coluna_chave'])` | última linha por chave, ordenando por `_ingested_at` |
 | `full` | `latest_snapshot(fonte)` | linhas da partição `ingestion_date` mais recente |
+
+Em datasets que unificam várias tabelas (`emails`, `sessions`), os identificadores podem se repetir
+entre as tabelas de origem. Se for o caso, a chave do modelo silver é a combinação de
+`_source_entity` com o identificador.
 
 Nos modelos, a chamada é escrita entre chaves duplas do Jinja e seguida de um apelido
 (`... as bronze`). Há um exemplo completo em `models/silver/example/slv_example_weather_hourly.sql`
