@@ -10,6 +10,7 @@ camada bronze, como são agrupadas e o tamanho dos lotes, edita-se um YAML — s
 | Arquivo | Lido por | Conteúdo |
 |---|---|---|
 | `mysql_tables.yml` | DAG `bronze_mysql_ingestion` | agendamento, padrões de carga e datasets da bronze |
+| `weather_locations.yml` | DAG `open_meteo_daily_to_bronze` | agendamento, variáveis diárias pedidas à API e as 3 maiores cidades de cada país dos marketplaces |
 
 ## `mysql_tables.yml`
 
@@ -95,3 +96,17 @@ maiores (500 000 a 1 000 000) reduzem o número de arquivos.
    da fonte é o nome do **dataset**, não o da tabela) e crie o modelo silver.
 
 Dica: valide o mecanismo com a DAG `bronze_mysql_ingestion_test` antes da primeira carga completa.
+
+## `weather_locations.yml`
+
+Define **quais cidades** e **quais variáveis** a DAG `open_meteo_daily_to_bronze` pede à API
+Open-Meteo. Há três cidades por país dos marketplaces (as três maiores áreas urbanas do país); o
+modelo gold `gld_weather_country_daily` faz a média simples das três para ter um valor por país e
+dia. O `country_code` usa o código ISO de dois caracteres, o mesmo dos feriados (`Online UK` → `GB`).
+
+- Para incluir um país, acrescente uma linha em `locations` com `country_code`, `city`, `latitude`
+  e `longitude`.
+- Para pedir outra variável, acrescente-a em `daily_variables` (nomes da documentação da API de
+  histórico da Open-Meteo). Colunas novas não quebram a leitura da bronze (`union_by_name`).
+- `schedule` é o *cron* da DAG no fuso `PLATFORM_TIMEZONE`; `null` deixa só o disparo manual.
+

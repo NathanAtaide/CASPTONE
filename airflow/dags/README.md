@@ -16,6 +16,8 @@ A pasta é montada em `/opt/airflow/dags`; um arquivo novo ou alterado é detect
 | `bronze_mysql_ingestion.py` | bronze | *cron* (`config/mysql_tables.yml`) | Ingestão **em lotes** das tabelas do MySQL: percorre cada tabela pela chave e grava um Parquet por lote em `s3://bronze/mysql/<dataset>/...`. Continua de onde parou e unifica tabelas divididas (`emails_1`, `emails_2`...) em um dataset. Uma task por tabela de origem. |
 | `bronze_mysql_ingestion_test.py` | bronze (área de teste) | manual | **Teste da carga em lotes** em uma tabela pequena (padrão `product`): mesmo código da DAG acima, gravando em `s3://bronze/_test/mysql/...`, com conferência de contagem MySQL × bronze. Não dispara o dbt. |
 | `example_api_to_bronze.py` | staging → bronze | manual | Exemplo do padrão de **staging area**: API pública → Parquet em `s3://staging/...` → importação para `s3://bronze/...`. |
+| `nager_date_to_bronze.py` | staging → bronze | *cron* mensal (dia 1, 04:00) | **Feriados públicos** dos países dos marketplaces (29 países, lista em `DEFAULT_COUNTRIES`) via API Nager.Date → `s3://staging/nager_date/public_holidays/...` → `s3://bronze/nager_date/public_holidays/...`. Parâmetros: `countries`, `start_year`, `end_year`. Dispara o dbt. |
+| `open_meteo_daily_to_bronze.py` | staging → bronze | *cron* diário (`config/weather_locations.yml`) | **Meteorologia diária** das 3 maiores cidades de cada país dos marketplaces via API Open-Meteo (histórico) → `s3://staging/open_meteo/daily_weather/...` → `s3://bronze/open_meteo/daily_weather/...`. Execuções diárias trazem os últimos `lookback_days` dias; para a carga inicial, disparar com `start_date`. Dispara o dbt. |
 | `dbt_medallion.py` | silver, gold | quando a bronze é atualizada | Roda o dbt: `build` dos modelos `silver` e depois dos `gold` (com testes). Pula os modelos de exemplo enquanto os dados de exemplo não existirem na bronze. |
 | `gold_export_powerbi.py` | gold → host | quando a gold é atualizada | Exporta a gold para `./data/exports/powerbi/*.parquet` (fora do Docker). |
 
@@ -23,8 +25,8 @@ Arquivos de apoio:
 
 | Arquivo | Função |
 |---|---|
-| `caps_assets.py` | Declara os *Assets* (`lake_bronze_mysql`, `lake_bronze_example_api`, `lake_gold`) que encadeiam as DAGs. |
-| [`config/`](config/README.md) | Configuração lida pelas DAGs (lista de tabelas do MySQL). |
+| `caps_assets.py` | Declara os *Assets* (`lake_bronze_mysql`, `lake_bronze_example_api`, `lake_bronze_nager_date`, `lake_bronze_open_meteo_daily`, `lake_gold`) que encadeiam as DAGs. |
+| [`config/`](config/README.md) | Configuração lida pelas DAGs (lista de tabelas do MySQL, locais da meteorologia). |
 | `.airflowignore` | Diz ao Airflow quais arquivos desta pasta **não** são DAGs. |
 
 ## Primeiro teste (conexão com o MySQL)
@@ -80,3 +82,4 @@ Convenções usadas nas DAGs existentes:
   que reexecutar uma task sobrescreve o próprio arquivo em vez de duplicar dados;
 - comentários e *docstrings* em inglês; a descrição no topo de cada arquivo aparece na interface do
   Airflow (aba *Docs*).
+

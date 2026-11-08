@@ -1,0 +1,112 @@
+# =============================================================================
+# Locations and variables fetched by the open_meteo_daily_to_bronze DAG.
+#
+# Three cities per marketplace country (order_cab.MARK_COD): the three largest
+# urban areas of the country. The gold model gld_weather_country_daily turns
+# them into one value per country and day with a simple average.
+# country_code is ISO 3166-1 alpha-2, the same code used by the public
+# holidays dataset ("Online UK" -> GB).
+# Add, remove or change a location here; no Python change is needed.
+# =============================================================================
+
+schedule: "30 5 * * *"   # cron in PLATFORM_TIMEZONE; null = manual only
+
+# Daily variables requested from the Open-Meteo historical weather API.
+daily_variables:
+  - temperature_2m_max
+  - temperature_2m_min
+  - temperature_2m_mean
+  - precipitation_sum
+  - rain_sum
+  - snowfall_sum
+  - precipitation_hours
+  - sunshine_duration
+
+locations:
+  - {country_code: PT, city: Lisboa,            latitude: 38.72,   longitude: -9.14}
+  - {country_code: PT, city: Porto,             latitude: 41.15,   longitude: -8.61}
+  - {country_code: PT, city: Braga,             latitude: 41.55,   longitude: -8.42}
+  - {country_code: ES, city: Madrid,            latitude: 40.42,   longitude: -3.7}
+  - {country_code: ES, city: Barcelona,         latitude: 41.39,   longitude: 2.17}
+  - {country_code: ES, city: Valencia,          latitude: 39.47,   longitude: -0.38}
+  - {country_code: FR, city: Paris,             latitude: 48.86,   longitude: 2.35}
+  - {country_code: FR, city: Lyon,              latitude: 45.76,   longitude: 4.84}
+  - {country_code: FR, city: Marseille,         latitude: 43.3,    longitude: 5.37}
+  - {country_code: PL, city: Warszawa,          latitude: 52.23,   longitude: 21.01}
+  - {country_code: PL, city: Krakow,            latitude: 50.06,   longitude: 19.94}
+  - {country_code: PL, city: Wroclaw,           latitude: 51.11,   longitude: 17.03}
+  - {country_code: IT, city: Roma,              latitude: 41.9,    longitude: 12.5}
+  - {country_code: IT, city: Milano,            latitude: 45.46,   longitude: 9.19}
+  - {country_code: IT, city: Napoli,            latitude: 40.85,   longitude: 14.27}
+  - {country_code: GB, city: London,            latitude: 51.51,   longitude: -0.13}
+  - {country_code: GB, city: Manchester,        latitude: 53.48,   longitude: -2.24}
+  - {country_code: GB, city: Birmingham,        latitude: 52.49,   longitude: -1.89}
+  - {country_code: DE, city: Berlin,            latitude: 52.52,   longitude: 13.4}
+  - {country_code: DE, city: Hamburg,           latitude: 53.55,   longitude: 9.99}
+  - {country_code: DE, city: Munchen,           latitude: 48.14,   longitude: 11.58}
+  - {country_code: TR, city: Istanbul,          latitude: 41.01,   longitude: 28.98}
+  - {country_code: TR, city: Ankara,            latitude: 39.93,   longitude: 32.86}
+  - {country_code: TR, city: Izmir,             latitude: 38.42,   longitude: 27.14}
+  - {country_code: IE, city: Dublin,            latitude: 53.35,   longitude: -6.26}
+  - {country_code: IE, city: Cork,              latitude: 51.9,    longitude: -8.47}
+  - {country_code: IE, city: Limerick,          latitude: 52.66,   longitude: -8.63}
+  - {country_code: NL, city: Amsterdam,         latitude: 52.37,   longitude: 4.9}
+  - {country_code: NL, city: Rotterdam,         latitude: 51.92,   longitude: 4.48}
+  - {country_code: NL, city: Den Haag,          latitude: 52.08,   longitude: 4.3}
+  - {country_code: HU, city: Budapest,          latitude: 47.5,    longitude: 19.04}
+  - {country_code: HU, city: Debrecen,          latitude: 47.53,   longitude: 21.63}
+  - {country_code: HU, city: Szeged,            latitude: 46.25,   longitude: 20.15}
+  - {country_code: BE, city: Brussels,          latitude: 50.85,   longitude: 4.35}
+  - {country_code: BE, city: Antwerpen,         latitude: 51.22,   longitude: 4.4}
+  - {country_code: BE, city: Gent,              latitude: 51.05,   longitude: 3.72}
+  - {country_code: IL, city: Tel Aviv,          latitude: 32.09,   longitude: 34.78}
+  - {country_code: IL, city: Jerusalem,         latitude: 31.77,   longitude: 35.21}
+  - {country_code: IL, city: Haifa,             latitude: 32.79,   longitude: 34.99}
+  - {country_code: CH, city: Zurich,            latitude: 47.37,   longitude: 8.54}
+  - {country_code: CH, city: Geneve,            latitude: 46.2,    longitude: 6.14}
+  - {country_code: CH, city: Basel,             latitude: 47.56,   longitude: 7.59}
+  - {country_code: AT, city: Wien,              latitude: 48.21,   longitude: 16.37}
+  - {country_code: AT, city: Graz,              latitude: 47.07,   longitude: 15.44}
+  - {country_code: AT, city: Linz,              latitude: 48.31,   longitude: 14.29}
+  - {country_code: MX, city: Ciudad de Mexico,  latitude: 19.43,   longitude: -99.13}
+  - {country_code: MX, city: Guadalajara,       latitude: 20.67,   longitude: -103.35}
+  - {country_code: MX, city: Monterrey,         latitude: 25.69,   longitude: -100.32}
+  - {country_code: LV, city: Riga,              latitude: 56.95,   longitude: 24.11}
+  - {country_code: LV, city: Daugavpils,        latitude: 55.87,   longitude: 26.54}
+  - {country_code: LV, city: Liepaja,           latitude: 56.51,   longitude: 21.01}
+  - {country_code: CZ, city: Praha,             latitude: 50.08,   longitude: 14.44}
+  - {country_code: CZ, city: Brno,              latitude: 49.2,    longitude: 16.61}
+  - {country_code: CZ, city: Ostrava,           latitude: 49.82,   longitude: 18.26}
+  - {country_code: SE, city: Stockholm,         latitude: 59.33,   longitude: 18.07}
+  - {country_code: SE, city: Goteborg,          latitude: 57.71,   longitude: 11.97}
+  - {country_code: SE, city: Malmo,             latitude: 55.6,    longitude: 13.0}
+  - {country_code: SI, city: Ljubljana,         latitude: 46.06,   longitude: 14.51}
+  - {country_code: SI, city: Maribor,           latitude: 46.55,   longitude: 15.65}
+  - {country_code: SI, city: Celje,             latitude: 46.23,   longitude: 15.27}
+  - {country_code: EE, city: Tallinn,           latitude: 59.44,   longitude: 24.75}
+  - {country_code: EE, city: Tartu,             latitude: 58.38,   longitude: 26.72}
+  - {country_code: EE, city: Narva,             latitude: 59.38,   longitude: 28.18}
+  - {country_code: DK, city: Kobenhavn,         latitude: 55.68,   longitude: 12.57}
+  - {country_code: DK, city: Aarhus,            latitude: 56.16,   longitude: 10.2}
+  - {country_code: DK, city: Odense,            latitude: 55.4,    longitude: 10.39}
+  - {country_code: LT, city: Vilnius,           latitude: 54.69,   longitude: 25.28}
+  - {country_code: LT, city: Kaunas,            latitude: 54.9,    longitude: 23.9}
+  - {country_code: LT, city: Klaipeda,          latitude: 55.71,   longitude: 21.13}
+  - {country_code: LU, city: Luxembourg,        latitude: 49.61,   longitude: 6.13}
+  - {country_code: LU, city: Esch-sur-Alzette,  latitude: 49.5,    longitude: 5.98}
+  - {country_code: LU, city: Differdange,       latitude: 49.52,   longitude: 5.89}
+  - {country_code: PE, city: Lima,              latitude: -12.05,  longitude: -77.04}
+  - {country_code: PE, city: Arequipa,          latitude: -16.41,  longitude: -71.54}
+  - {country_code: PE, city: Trujillo,          latitude: -8.11,   longitude: -79.03}
+  - {country_code: SK, city: Bratislava,        latitude: 48.15,   longitude: 17.11}
+  - {country_code: SK, city: Kosice,            latitude: 48.72,   longitude: 21.26}
+  - {country_code: SK, city: Presov,            latitude: 49.0,    longitude: 21.24}
+  - {country_code: FI, city: Helsinki,          latitude: 60.17,   longitude: 24.94}
+  - {country_code: FI, city: Tampere,           latitude: 61.5,    longitude: 23.76}
+  - {country_code: FI, city: Turku,             latitude: 60.45,   longitude: 22.27}
+  - {country_code: CL, city: Santiago,          latitude: -33.45,  longitude: -70.67}
+  - {country_code: CL, city: Valparaiso,        latitude: -33.05,  longitude: -71.62}
+  - {country_code: CL, city: Concepcion,        latitude: -36.83,  longitude: -73.05}
+  - {country_code: MA, city: Casablanca,        latitude: 33.57,   longitude: -7.59}
+  - {country_code: MA, city: Rabat,             latitude: 34.02,   longitude: -6.84}
+  - {country_code: MA, city: Marrakech,         latitude: 31.63,   longitude: -8.01}

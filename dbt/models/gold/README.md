@@ -19,6 +19,7 @@ automaticamente o *schema* `gold` e a *tag* `gold` (configuração em `dbt_proje
 | Caminho | Função |
 |---|---|
 | [`example/`](example/README.md) | Modelo de demonstração (`gld_example_weather_daily`). |
+| `gld_weather_country_daily.sql` + `_weather__gold.yml` | Meteorologia diária por país: média simples das 3 maiores cidades (`slv_weather_daily`). Junta-se às vendas por `country_code` e data. |
 
 Seus modelos ficam diretamente nesta pasta (ou em subpastas por assunto), com o prefixo `gld_`.
 

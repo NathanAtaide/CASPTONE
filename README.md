@@ -240,3 +240,4 @@ docker compose build <serviço>            # reconstrói uma imagem após mudar 
 - Código e comentários de código em **inglês**.
 - Nenhum segredo em `docker-compose.yml`, `.env`, código ou imagens — apenas no cofre.
 - Arquivos executados em containers usam fim de linha LF (`.gitattributes`).
+

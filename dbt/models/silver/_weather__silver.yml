@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: slv_weather_daily
+    description: "Daily weather per city (three largest cities of each marketplace country), de-duplicated and typed. Source: Open-Meteo historical weather API."
+    columns:
+      - name: country_code
+        description: "ISO 3166-1 alpha-2 code of the country (GB for the United Kingdom)."
+        data_tests:
+          - not_null
+      - name: city
+        description: "City the measurement refers to."
+        data_tests:
+          - not_null
+      - name: weather_date
+        description: "Local calendar day of the city."
+        data_tests:
+          - not_null
+      - name: latitude
+        description: "Latitude of the grid cell returned by the API."
+      - name: longitude
+        description: "Longitude of the grid cell returned by the API."
+      - name: temperature_max_c
+        description: "Maximum air temperature at 2 m, in degrees Celsius."
+      - name: temperature_min_c
+        description: "Minimum air temperature at 2 m, in degrees Celsius."
+      - name: temperature_mean_c
+        description: "Mean air temperature at 2 m, in degrees Celsius."
+      - name: precipitation_mm
+        description: "Total precipitation (rain, showers, snow), in millimetres."
+      - name: rain_mm
+        description: "Total rain, in millimetres."
+      - name: snowfall_cm
+        description: "Total snowfall, in centimetres."
+      - name: precipitation_hours
+        description: "Number of hours with precipitation."
+      - name: sunshine_hours
+        description: "Hours of sunshine (the API reports seconds)."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

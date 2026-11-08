@@ -13,7 +13,7 @@ Por isso não há arquivos `.sql` nesta pasta, só a declaração de fontes.
 
 | Arquivo | Função |
 |---|---|
-| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL) e `bronze_open_meteo` (API de exemplo). |
+| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL), `bronze_open_meteo` (meteorologia: `hourly_weather` de exemplo e `daily_weather` por país) e `bronze_nager_date` (feriados públicos). |
 
 ## Como uma fonte é resolvida
 

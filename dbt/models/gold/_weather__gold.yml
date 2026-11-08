@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: gld_weather_country_daily
+    description: "Daily weather per marketplace country: simple average of its three largest cities."
+    columns:
+      - name: country_code
+        description: "ISO 3166-1 alpha-2 code of the country (GB for the United Kingdom)."
+        data_tests:
+          - not_null
+      - name: weather_date
+        description: "Calendar day."
+        data_tests:
+          - not_null
+      - name: cities_with_data
+        description: "Number of cities with a temperature value that day (normally 3)."
+      - name: avg_temperature_max_c
+        description: "Average of the cities' maximum temperature, in degrees Celsius."
+      - name: avg_temperature_min_c
+        description: "Average of the cities' minimum temperature, in degrees Celsius."
+      - name: avg_temperature_mean_c
+        description: "Average of the cities' mean temperature, in degrees Celsius."
+      - name: avg_precipitation_mm
+        description: "Average precipitation of the cities, in millimetres."
+      - name: avg_rain_mm
+        description: "Average rain of the cities, in millimetres."
+      - name: avg_snowfall_cm
+        description: "Average snowfall of the cities, in centimetres."
+      - name: avg_precipitation_hours
+        description: "Average number of hours with precipitation."
+      - name: avg_sunshine_hours
+        description: "Average hours of sunshine."

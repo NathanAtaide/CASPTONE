@@ -1,0 +1,146 @@
+# Documentation and data tests of the calendar (date dimension) silver model.
+# `dbt build` runs these tests right after building the model.
+version: 2
+
+models:
+  - name: slv_calendar
+    description: >
+      Date dimension (Kimball): one row per calendar day, with no gaps, generated in DuckDB
+      (it does not read the bronze layer). Join it to the other models on `calendar_date`
+      (type DATE). Range set by the dbt vars `calendar_start_date` (default 2020-01-01) and
+      `calendar_end_date` (default 31 December of the current year + 5). Labels in English;
+      holidays are the Brazilian national ones (no state or municipal holidays).
+    columns:
+      # Keys
+      - name: calendar_date
+        description: "Calendar day. Primary key and the column used to join with other models."
+        data_tests:
+          - not_null
+          - unique
+      - name: date_key
+        description: "Integer smart key in the YYYYMMDD format (e.g. 20261108). Alternate key."
+        data_tests:
+          - not_null
+          - unique
+
+      # Day
+      - name: day_of_month
+        description: "Day of the month, 1-31."
+        data_tests:
+          - not_null
+      - name: day_of_week
+        description: "ISO day of the week: 1 = Monday ... 7 = Sunday. Sort column of day_of_week_name."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+      - name: day_of_week_name
+        description: "Day of the week name (Monday ... Sunday)."
+      - name: day_of_week_short
+        description: "Abbreviated day of the week (Mon ... Sun)."
+      - name: day_of_year
+        description: "Day of the year, 1-366."
+      - name: date_label
+        description: "Date as text in the Brazilian format DD/MM/YYYY."
+
+      # Week
+      - name: iso_week_of_year
+        description: "ISO 8601 week number, 1-53 (weeks start on Monday)."
+      - name: iso_year
+        description: "ISO 8601 year the week belongs to (differs from year_number around 1 January)."
+      - name: iso_year_week
+        description: "ISO year and week as text, e.g. 2026-W45."
+      - name: week_start_date
+        description: "Monday of the ISO week."
+      - name: week_end_date
+        description: "Sunday of the ISO week."
+
+      # Month
+      - name: month_number
+        description: "Month, 1-12. Sort column of month_name and month_short."
+        data_tests:
+          - not_null
+      - name: month_name
+        description: "Month name (January ... December)."
+      - name: month_short
+        description: "Abbreviated month name (Jan ... Dec)."
+      - name: year_month_number
+        description: "Year and month as an integer YYYYMM. Sort column of year_month_label."
+      - name: year_month
+        description: "Year and month as text YYYY-MM."
+      - name: year_month_label
+        description: "Year and month for display, e.g. Nov 2026."
+      - name: month_start_date
+        description: "First day of the month."
+      - name: month_end_date
+        description: "Last day of the month."
+      - name: days_in_month
+        description: "Number of days in the month."
+      - name: is_month_start
+        description: "True on the first day of the month."
+      - name: is_month_end
+        description: "True on the last day of the month."
+
+      # Quarter
+      - name: quarter_number
+        description: "Quarter, 1-4."
+      - name: quarter_label
+        description: "Quarter label, Q1 ... Q4."
+      - name: year_quarter_number
+        description: "Year and quarter as an integer YYYYQ. Sort column of year_quarter."
+      - name: year_quarter
+        description: "Year and quarter as text, e.g. 2026-Q4."
+      - name: quarter_start_date
+        description: "First day of the quarter."
+      - name: quarter_end_date
+        description: "Last day of the quarter."
+
+      # Semester
+      - name: semester_number
+        description: "Semester, 1-2."
+      - name: year_semester
+        description: "Year and semester as text, e.g. 2026-S2."
+
+      # Year
+      - name: year_number
+        description: "Calendar year."
+        data_tests:
+          - not_null
+      - name: year_start_date
+        description: "1 January of the year."
+      - name: year_end_date
+        description: "31 December of the year."
+      - name: is_leap_year
+        description: "True when the year has 366 days."
+
+      # Weekend, holidays and business days
+      - name: is_weekend
+        description: "True on Saturday and Sunday."
+        data_tests:
+          - not_null
+      - name: is_holiday
+        description: "True on a Brazilian national holiday (federal law dates and Good Friday)."
+        data_tests:
+          - not_null
+      - name: is_optional_holiday
+        description: "True on a federal optional holiday (ponto facultativo): Carnival Monday and Tuesday, Corpus Christi."
+        data_tests:
+          - not_null
+      - name: holiday_name
+        description: "Name of the holiday or optional holiday; null on other days. Names are joined with ' / ' when two fall on the same day."
+      - name: holiday_type
+        description: "'national holiday', 'optional holiday' or null."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["national holiday", "optional holiday"]
+      - name: is_business_day
+        description: "True on Monday-Friday that is neither a national holiday nor an optional holiday."
+        data_tests:
+          - not_null
+      - name: business_day_of_month
+        description: "Sequence of the business day inside the month (1st, 2nd ... business day); null on non-business days."
+      - name: business_days_in_month
+        description: "Number of business days in the month."
