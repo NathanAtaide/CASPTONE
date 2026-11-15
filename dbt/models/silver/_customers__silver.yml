@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: slv_customers
+    description: >
+      Customers of the source table parfois.customers, typed. Text timestamps are split into a
+      DATE and a TIME column; BIRTHDAY (YYYYMMDD number) is a DATE; 'NaN' texts are null.
+    columns:
+      - name: customer_id
+        description: "Primary key of the customer. Referenced by emails, sessions and order_cab (customer_id_fk)."
+        data_tests:
+          - not_null
+          # Uniqueness not confirmed yet in the source: warn instead of blocking the gold layer.
+          - unique:
+              config:
+                severity: warn
+      - name: creation_date
+        description: "Day the customer account was created."
+      - name: creation_time
+        description: "Time of day the account was created; null when the source has only the date."
+      - name: creation_date_key
+        description: "creation_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: subscription_date
+        description: "Day the customer subscribed (newsletter)."
+      - name: subscription_time
+        description: "Time of day of the subscription; null when the source has only the date."
+      - name: subscription_date_key
+        description: "subscription_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: unsubscription_date
+        description: "Day the customer unsubscribed; null while subscribed."
+      - name: unsubscription_time
+        description: "Time of day of the unsubscription; null when the source has only the date."
+      - name: unsubscription_date_key
+        description: "unsubscription_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: country
+        description: "Country code of the customer; null when unknown (the source 'NaN' included)."
+      - name: birthday
+        description: "Date of birth, converted from the YYYYMMDD number; null when missing or not a valid date."
+      - name: subscription_source
+        description: "Channel of the subscription (e.g. Web); null when unknown (the source 'NaN' included)."
+      - name: email_domain
+        description: "Domain of the customer's e-mail address (e.g. gmail.com)."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

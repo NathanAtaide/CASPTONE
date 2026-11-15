@@ -4,9 +4,10 @@
   Date dimension (calendar) following the Kimball recommendations:
     * grain: exactly one row per calendar day, with no gaps between the first
       and the last day;
-    * key: `calendar_date` (type DATE) is the column the other models join on.
-      `date_key` (integer YYYYMMDD) is kept as the classic Kimball smart key
-      for tools that prefer an integer key;
+    * keys: `date_key` (BIGINT YYYYMMDD) is the classic Kimball smart key and
+      the relationship key: the other silver models carry it in their
+      *_date_key columns, and the gold layer / Power BI relate them on it.
+      `calendar_date` (DATE) is the same day as a date, for SQL joins on dates;
     * every attribute is pre-computed (no date math needed downstream) and
       every label has a matching numeric column to sort by;
     * descriptive labels in English (day, month, quarter and holiday names);
@@ -149,8 +150,9 @@ calendar as (
         -- ISO week
         cast(weekofyear(d.calendar_date) as integer)               as iso_week_of_year,
         cast(isoyear(d.calendar_date) as integer)                  as iso_year,
-        cast(d.calendar_date - (isodow(d.calendar_date) - 1) as date) as week_start_date,
-        cast(d.calendar_date + (7 - isodow(d.calendar_date)) as date) as week_end_date,
+        -- isodow() returns BIGINT and DuckDB only has DATE +/- INTEGER: cast before the date math.
+        cast(d.calendar_date - cast(isodow(d.calendar_date) - 1 as integer) as date) as week_start_date,
+        cast(d.calendar_date + cast(7 - isodow(d.calendar_date) as integer) as date) as week_end_date,
 
         -- Month / quarter / semester / year
         cast(month(d.calendar_date) as integer)                    as month_number,
@@ -182,7 +184,7 @@ enriched as (
 select
     -- Keys
     cast(calendar_date as date)                                                    as calendar_date,
-    cast(year_number * 10000 + month_number * 100 + day_of_month as integer)       as date_key,
+    cast(year_number * 10000 + month_number * 100 + day_of_month as bigint)        as date_key,
 
     -- Day
     cast(day_of_month as integer)                                                  as day_of_month,

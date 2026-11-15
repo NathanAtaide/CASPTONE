@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: slv_order_cab
+    description: >
+      Order headers from parfois.order_cab: one row per order placed from 2024-01-01 onwards.
+      ORDER_DATE is split into order_date and order_time.
+    columns:
+      - name: order_id
+        description: "Primary key of the order. Text: numeric for PARFOIS, alphanumeric for Franchise."
+        data_tests:
+          - not_null
+          - unique
+      - name: order_date
+        description: "Day the order was placed. Never before 2024-01-01."
+        data_tests:
+          - not_null
+      - name: order_time
+        description: "Time of day the order was placed; null when the source has only the date."
+      - name: order_date_key
+        description: "order_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: order_origin
+        description: "Origin of the order (e.g. PARFOIS, ECI)."
+      - name: order_chanel_type
+        description: "Channel type of the order (e.g. APP, DESKTOP, STORE). Name kept as in the source."
+      - name: customer_type
+        description: "Registered or Not_Registered."
+      - name: customer_id_fk
+        description: "Customer of the order; -1 for customers that are not registered."
+      - name: mark_cod
+        description: "Market of the order (e.g. Online ES, ECI ES)."
+      - name: fulfillment_status_id
+        description: "Fulfillment status of the order; mostly null."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

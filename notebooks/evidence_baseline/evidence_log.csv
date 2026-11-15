@@ -1,0 +1,11 @@
+id,kind,title,scope,file
+BL1,table,"Test rules: month to forecast, last day of data allowed, months of history and period",whole table,BL1.csv
+BL2,table,Baseline 1: error by market and period (target: orders),whole table,BL2.csv
+BL3,table,"Baseline 1: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL3.csv
+BL4,figure,"Baseline 1 against the real value by month, 2025 (target: orders)",whole table,BL4.png
+BL5,table,Baselines 1 and 2 compared on the same months (March to December 2025; target: orders),whole table,BL5.csv
+BL6,table,"Baseline 2: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL6.csv
+BL7,figure,"Baseline 2 against the real value by month, 2025 (target: orders)",whole table,BL7.png
+BL8,table,"Baselines 1, 2 and 3 compared on the same months (May to December 2025; target: orders)",whole table,BL8.csv
+BL9,table,"Baseline 3: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL9.csv
+BL10,figure,"Baseline 3 against the real value by month, 2025 (target: orders)",whole table,BL10.png

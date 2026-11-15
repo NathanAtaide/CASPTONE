@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: slv_emails
+    description: >
+      E-mail sends per customer and day, from the union of parfois.emails, parfois.emails_1, ...
+      Only rows whose customer exists in the customers table are kept.
+    columns:
+      - name: customer_id_fk
+        description: "Customer that received the e-mail. Always found in slv_customers."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_customers')
+                field: customer_id
+      - name: send_date
+        description: "Day the e-mail was sent (from SEND_DATE_SFK, YYYYMMDD)."
+        data_tests:
+          - not_null
+      - name: send_date_key
+        description: "send_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: sent
+        description: "Number of e-mails sent."
+      - name: opens
+        description: "Number of opens; null when the source has none recorded."
+      - name: clicks
+        description: "Number of clicks; null when the source has none recorded."
+      - name: unsubs
+        description: "Number of unsubscriptions; null when the source has none recorded."
+      - name: _source_entity
+        description: "Source MySQL table of the row (<database>.<table>, e.g. parfois.emails_3)."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

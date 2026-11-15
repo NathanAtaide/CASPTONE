@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: slv_product
+    description: >
+      Products from parfois.product, one row per PROD_SPK, without products lacking a
+      subfamily (GFS_DES_EN) and without the non-merchandise items of FASHIONTYPE 'NÃO DEFINIDO'.
+    columns:
+      - name: prod_spk
+        description: "Primary key of the product. Referenced by slv_order_det.prod_sfk."
+        data_tests:
+          - not_null
+          - unique
+      - name: prod_cod
+        description: "Product code (e.g. 228701_CAM). Not unique: one code can have several prod_spk."
+      - name: cat_des_en
+        description: "First level of the product hierarchy, the category (e.g. Hand Bag, Apparel)."
+      - name: gfa_des_en
+        description: "Second level of the product hierarchy (e.g. Cross, Rings)."
+      - name: gfs_des_en
+        description: "Third level of the product hierarchy (e.g. Fake Nylon, Band Ring)."
+        data_tests:
+          - not_null
+      - name: collection_type
+        description: "Collection (e.g. Core Collection, Exclusive Online)."
+      - name: sea_cod
+        description: "Season code (e.g. 251)."
+      - name: active_record
+        description: "True when the record is active (source 1/0)."
+      - name: fashiontype
+        description: "Fashion type (e.g. Basic, Fashion, Capsule, NÃO DEFINIDO)."
+      - name: cat_active
+        description: "True when the category is active (source Y/N)."
+      - name: tar_des
+        description: "Item type (e.g. Finished Product, Works, Consumable)."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

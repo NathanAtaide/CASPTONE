@@ -23,6 +23,12 @@ macro-paths: ["macros"]
 # that document each project folder are never parsed as dbt documentation.
 docs-paths: ["docs"]
 
+vars:
+  # First day of slv_calendar. Customer dates (creation, subscription) go back years before
+  # 2020, so the calendar starts earlier for every *_date_key to find its day. The relationships
+  # tests on the *_date_key columns warn about any date still outside the range.
+  calendar_start_date: "2000-01-01"
+
 clean-targets:
   - "target"
   - "dbt_packages"

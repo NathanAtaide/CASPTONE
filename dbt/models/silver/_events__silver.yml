@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: slv_events
+    description: >
+      Commercial events per market and period, from parfois.events. Event names normalized,
+      null markets replaced by 'All', end dates typed with the wrong year fixed, and the 2025
+      Christmas events replicated to the markets that ran them in 2024 (is_imputed = true).
+    columns:
+      - name: mark_cod
+        description: "Market of the event (e.g. Online FR); 'All' when the event ran in every market."
+        data_tests:
+          - not_null
+      - name: mark_des
+        description: "Description of the market (e.g. parfois.com)."
+      - name: event
+        description: "Event name, with repeated spaces collapsed and spelling variants unified."
+        data_tests:
+          - not_null
+      - name: start_date
+        description: "First day of the event."
+        data_tests:
+          - not_null
+      - name: start_date_key
+        description: "start_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: end_date
+        description: "Last day of the event. Never before start_date: a wrong year was moved to the next one."
+        data_tests:
+          - not_null
+      - name: end_date_key
+        description: "end_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: is_imputed
+        description: "True for rows created in the silver layer (2025 Christmas copies), false for rows from the source."
+        data_tests:
+          - not_null
+      - name: _ingested_at
+        description: "UTC time at which the source row entered the bronze layer (of the 2024 row, for the copies)."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the source row."

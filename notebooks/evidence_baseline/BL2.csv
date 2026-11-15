@@ -1,0 +1,13 @@
+Method,Market,Period,Months,WAPE,Bias,RMSE,R²
+B1 daily,Online ES,Training,7,"29,5%","-17,9%",32.831,"-0,59"
+B1 monthly,Online ES,Training,7,"28,5%","-17,5%",32.744,"-0,58"
+B1 daily,Online ES,Test,5,"30,9%","-21,4%",45.110,"-0,35"
+B1 monthly,Online ES,Test,5,"30,7%","-21,9%",44.957,"-0,34"
+B1 daily,Online PT,Training,7,"34,5%","-13,2%",13.331,"-0,33"
+B1 monthly,Online PT,Training,7,"33,6%","-12,8%",13.285,"-0,32"
+B1 daily,Online PT,Test,5,"29,7%","-13,4%",14.146,"-0,16"
+B1 monthly,Online PT,Test,5,"30,0%","-13,9%",14.013,"-0,14"
+B1 daily,ES + PT,Training,7,"30,8%","-16,7%",45.769,"-0,50"
+B1 monthly,ES + PT,Training,7,"29,8%","-16,3%",45.635,"-0,49"
+B1 daily,ES + PT,Test,5,"30,4%","-19,5%",58.678,"-0,30"
+B1 monthly,ES + PT,Test,5,"30,6%","-19,9%",58.397,"-0,29"

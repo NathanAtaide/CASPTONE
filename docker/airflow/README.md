@@ -60,6 +60,6 @@ Base: imagem oficial `apache/airflow:<AIRFLOW_VERSION>-python<PYTHON_VERSION>`.
 ```bash
 docker compose exec airflow-scheduler airflow dags list
 docker compose exec airflow-scheduler bash                       # shell com os segredos carregados
-docker compose exec airflow-scheduler bash -c 'cd $DBT_PROJECT_DIR && $DBT_BIN debug'
+docker compose exec airflow-scheduler bash -c 'cd $DBT_PROJECT_DIR && unset PYTHONPATH && $DBT_BIN debug'
 docker compose logs -f airflow-scheduler
 ```

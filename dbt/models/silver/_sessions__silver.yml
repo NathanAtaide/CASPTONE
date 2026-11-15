@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: slv_sessions
+    description: >
+      Web and app sessions from the union of parfois.sessions_1, parfois.sessions_2, ...
+      One row per session and order (a session with two orders has two rows). Sessions of
+      logged-in users whose customer does not exist in the customers table are dropped.
+    columns:
+      - name: session_date
+        description: "Day of the session (from DATE_SFK, YYYYMMDD)."
+        data_tests:
+          - not_null
+      - name: session_date_key
+        description: "session_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: session_time
+        description: "Time of day of the session (source column TIMESTAMP)."
+      - name: channel_desc
+        description: "Marketing channel (e.g. Paid Search, Organic Search, Direct)."
+      - name: country_cod
+        description: "Country code of the session (e.g. ES, FR)."
+      - name: client_sfk
+        description: "Client key of the source system."
+      - name: customer_id_fk
+        description: "Logged-in customer; -1 for anonymous sessions. Every other value exists in slv_customers."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_customers')
+                field: customer_id
+              config:
+                where: "customer_id_fk <> -1"
+      - name: session_sfk
+        description: "Session key. Repeated when the session has more than one order."
+        data_tests:
+          - not_null
+      - name: platform_desc
+        description: "Platform (Web or APP)."
+      - name: order_id
+        description: "Order placed in the session, as text (same format as slv_order_cab.order_id); null when there was none."
+      - name: user_type_sfk
+        description: "User type key; -1 when unknown."
+      - name: _source_entity
+        description: "Source MySQL table of the row (<database>.<table>, e.g. parfois.sessions_4)."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

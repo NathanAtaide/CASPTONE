@@ -15,6 +15,20 @@ gravado no lake e como ler a bronze sem duplicidades.
 | `bronze_helpers.sql` | `latest_by_key` | Devolve uma subconsulta com a versão mais recente de cada chave (para tabelas em modo `incremental` e lotes de API). |
 | `bronze_helpers.sql` | `latest_snapshot` | Devolve uma subconsulta só com o snapshot mais recente (para tabelas em modo `full`). |
 | `bronze_helpers.sql` | `latest_load` | Devolve uma subconsulta só com a carga mais recente de cada tabela de origem (para tabelas em modo `batch`). |
+| `cleaning_helpers.sql` | `clean_text` | Remove espaços das pontas e transforma `''`, `'NaN'`, `'None'` e `'null'` (qualquer caixa) em nulo. |
+| `cleaning_helpers.sql` | `yyyymmdd_to_date` | Converte um número ou texto AAAAMMDD (`20240922`, `19850312.0`) em DATE; valor inválido vira nulo. |
+| `customer_helpers.sql` | `customer_has_data` | Condição da regra 2.7.1: o cliente tem ao menos um dos campos de cadastro preenchido. Usada em `slv_customers`, `slv_emails` e `slv_sessions` para os três concordarem sobre quais clientes existem. |
+| `cleaning_helpers.sql` | `date_to_key` | Converte uma DATE na chave BIGINT AAAAMMDD (`2024-09-22` → `20240922`) usada nos relacionamentos com `slv_calendar.date_key`. |
+| `cleaning_helpers.sql` | `text_to_date` / `text_to_time` | Separam um texto de data e hora (`AAAA-MM-DD HH:MM:SS`) em DATE e TIME. A hora fica nula quando o texto só tem a data. |
+
+## Macros de limpeza (`cleaning_helpers.sql`)
+
+Usadas nos modelos silver para tipar as colunas da origem. Recebem o nome da coluna como texto. Se
+o modelo reaproveita o nome da coluna de origem para a coluna de saída (`order_date` vira
+`order_date` DATE e `order_time` TIME), qualifique a coluna com o apelido da tabela
+(`'latest.order_date'`) para deixar claro que as duas macros leem o texto original. As conversões
+usam `try_cast`: um valor fora do formato vira nulo em vez de interromper o `dbt build`, por isso
+os modelos têm testes `not_null` nas colunas que não podem ficar vazias.
 
 ## Por que `latest_by_key` e `latest_snapshot` existem
 

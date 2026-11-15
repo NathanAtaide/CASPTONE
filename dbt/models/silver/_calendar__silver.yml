@@ -6,8 +6,8 @@ models:
   - name: slv_calendar
     description: >
       Date dimension (Kimball): one row per calendar day, with no gaps, generated in DuckDB
-      (it does not read the bronze layer). Join it to the other models on `calendar_date`
-      (type DATE). Range set by the dbt vars `calendar_start_date` (default 2020-01-01) and
+      (it does not read the bronze layer). Relate it to the other models on `date_key`
+      (BIGINT YYYYMMDD, the *_date_key columns) or join on `calendar_date` (DATE). Range set by the dbt vars `calendar_start_date` (default 2020-01-01) and
       `calendar_end_date` (default 31 December of the current year + 5). Labels in English;
       holidays are the Brazilian national ones (no state or municipal holidays).
     columns:
@@ -18,7 +18,7 @@ models:
           - not_null
           - unique
       - name: date_key
-        description: "Integer smart key in the YYYYMMDD format (e.g. 20261108). Alternate key."
+        description: "BIGINT smart key in the YYYYMMDD format (e.g. 20261108). Relationship key with the *_date_key columns of the other models."
         data_tests:
           - not_null
           - unique

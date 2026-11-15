@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: slv_order_det
+    description: >
+      Order lines (sales and returns) from parfois.order_det, without the rows the source
+      repeats. Quantities as INTEGER, amounts as DECIMAL(18,5).
+    columns:
+      - name: type
+        description: "SALE or RETURN."
+        data_tests:
+          - not_null
+      - name: order_id
+        description: "Order of the line (text, same format as slv_order_cab.order_id)."
+        data_tests:
+          - not_null
+      - name: prod_sfk
+        description: "Product of the line (slv_product.prod_spk)."
+        data_tests:
+          - not_null
+      - name: prod_qty
+        description: "Quantity: positive for sales, negative for returns."
+      - name: mov_date
+        description: "Day of the movement (from MOV_DATE_SFK, YYYYMMDD)."
+        data_tests:
+          - not_null
+      - name: mov_date_key
+        description: "mov_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: amount_fixed_rate_w_disc_wo_vat
+        description: "Amount at a fixed exchange rate, with discount, without VAT."
+      - name: amount_fixed_rate_wo_disc_wo_vat
+        description: "Amount at a fixed exchange rate, without discount, without VAT."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

@@ -248,6 +248,13 @@ Projeto `caps_lakehouse` em `dbt/`, adaptador dbt-duckdb, dialeto SQL do DuckDB.
   (fica a partição `ingestion_date` mais recente). As macros podem ser aninhadas:
   `latest_by_key(latest_load(source(...)), ['chave'])` quando a tabela `batch` repete linhas
   alteradas.
+- **Tipagem de colunas da origem** pelas macros de `macros/cleaning_helpers.sql`: `clean_text`
+  (`'NaN'`/vazio → nulo), `yyyymmdd_to_date` (número AAAAMMDD → DATE) e `text_to_date` /
+  `text_to_time` (texto de data e hora → DATE + TIME). Os modelos das tabelas do MySQL seguem
+  `snake_case` minúsculo e guardam data e hora em duas colunas (`<nome>_date`, `<nome>_time`).
+- **Chave de data:** toda coluna de data de análise tem ao lado `<nome>_date_key` BIGINT
+  AAAAMMDD, gerada com a macro `date_to_key`. Os relacionamentos da gold e do Power BI com o
+  calendário usam essa coluna contra `slv_calendar.date_key` (também BIGINT).
 - **Fontes** são declaradas em `models/bronze/_bronze__sources.yml`. A fonte `bronze_mysql` já tem
   o padrão de caminho e lista os datasets atuais (`customers`, `emails`, `events`, `order_cab`,
   `order_det`, `paid_media`, `product`, `sessions`); o `name` é o nome do **dataset**, não o da
@@ -354,8 +361,13 @@ docker compose exec airflow-scheduler airflow dags list-import-errors
 docker compose exec airflow-scheduler airflow dags test <dag_id>
 
 # Build and test one dbt model and everything downstream of it
-docker compose exec airflow-scheduler bash -c 'cd $DBT_PROJECT_DIR && $DBT_BIN build --select <model>+'
+docker compose exec airflow-scheduler bash -c 'cd $DBT_PROJECT_DIR && unset PYTHONPATH && $DBT_BIN build --select <model>+'
 ```
+
+O `unset PYTHONPATH` é obrigatório: o `PYTHONPATH` do container inclui a pasta das DAGs, e o dbt
+importa todo módulo cujo nome começa com `dbt_` ao procurar plugins. Ele tentaria importar
+`dbt_medallion.py` sem ter o Airflow e falharia antes de rodar qualquer modelo. Pelo mesmo motivo,
+não crie arquivos com o prefixo `dbt_` em `src/`.
 
 Para conferir um resultado no lake, numa célula do Jupyter:
 

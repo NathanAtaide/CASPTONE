@@ -43,8 +43,16 @@ def dbt_command(arguments: str) -> str:
 
     The lake credentials and DuckDB settings reach dbt through the environment
     inherited from the Airflow worker (see dbt/profiles.yml).
+
+    PYTHONPATH is removed for dbt only: it points at the DAGs folder, and dbt imports
+    every top-level module whose name starts with `dbt_` while looking for plugins.
+    It would import this file (dbt_medallion.py) inside the dbt virtualenv, which has
+    no Airflow, and abort before running any model. dbt does not need `lakehouse`.
     """
-    return f"cd {DBT_PROJECT_DIR} && {DBT_BIN} --no-use-colors {arguments} {EXTRA_ARGUMENTS}"
+    return (
+        f"cd {DBT_PROJECT_DIR} && env -u PYTHONPATH "
+        f"{DBT_BIN} --no-use-colors {arguments} {EXTRA_ARGUMENTS}"
+    )
 
 
 with DAG(

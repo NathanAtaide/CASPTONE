@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: slv_paid_media
+    description: "Paid media spend per marketplace and day, from parfois.paid_media."
+    columns:
+      - name: paid_media_date
+        description: "Day of the spend (from DATE_SFK, YYYYMMDD)."
+        data_tests:
+          - not_null
+      - name: paid_media_date_key
+        description: "paid_media_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: marketplace
+        description: "Marketplace of the spend (e.g. Online BE)."
+        data_tests:
+          - not_null
+      - name: amount_paid_media
+        description: "Amount spent on paid media."
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

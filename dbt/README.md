@@ -78,11 +78,17 @@ Ele aceita um único processo escritor, por isso as tasks de dbt usam o *pool* `
 ```bash
 docker compose exec airflow-scheduler bash
 cd $DBT_PROJECT_DIR
+unset PYTHONPATH                            # obrigatório, ver abaixo
 $DBT_BIN debug                              # valida perfil e conexão
 $DBT_BIN build --select slv_pedidos+        # um modelo e seus dependentes
 $DBT_BIN build                              # tudo
 $DBT_BIN docs generate                      # documentação (em $DBT_TARGET_PATH)
 ```
+
+O `PYTHONPATH` do container inclui a pasta das DAGs (`/opt/airflow/dags`). Ao procurar plugins, o
+dbt importa todo módulo cujo nome começa com `dbt_`; com o `PYTHONPATH` definido ele importaria
+`dbt_medallion.py` no virtualenv do dbt, que não tem o Airflow, e falharia antes de rodar qualquer
+modelo. A DAG `dbt_medallion` já remove a variável no comando que chama o dbt.
 
 Não rode o dbt manualmente enquanto a DAG `dbt_medallion` estiver executando (o arquivo DuckDB
 fica bloqueado para o segundo processo).
