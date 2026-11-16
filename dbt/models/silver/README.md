@@ -58,6 +58,7 @@ de interromper a execução, e os testes `not_null` acusam o problema.
 | 2.1.1 | `slv_order_cab` | Uma linha por `order_id`; se as repetidas diferirem, fica a com status de *fulfillment* e depois a de data mais recente. |
 | 2.1.2 | `slv_order_cab` | Remove pedidos com `order_date` anterior a 2024-01-01. |
 | 2.2.1 | `slv_order_det` | Remove linhas idênticas em todas as colunas, mantendo uma. |
+| 2.2.2 | `slv_order_det` | Remove as devoluções (`TYPE = 'RETURN'`) com `mov_date` em 2024 de pedidos feitos antes de 2024 (pedidos que a regra 2.1.2 tira da `slv_order_cab`). Devoluções de pedidos de 2024 em diante ficam. A data do pedido vem da fonte `order_cab` da bronze. |
 | 2.3.1 | `slv_events` | Espaços repetidos no nome do evento viram um só (`Last Days  Christmas` → `Last Days Christmas`). |
 | 2.3.2 | `slv_events` | `Free Shipping Singles Day 20` → `Free Shipping Singles Day`. |
 | 2.3.3 | `slv_events` | `MARK_COD` nulo → `All` (evento em todos os mercados). |
@@ -68,6 +69,8 @@ de interromper a execução, e os testes `not_null` acusam o problema.
 | 2.6.1 | `slv_product` | Remove produtos com `GFS_DES_EN` nulo. |
 | 2.6.2 | `slv_product` | Remove produtos com `TAR_DES` nulo, `CAT_DES_EN` preenchido e `FASHIONTYPE` em (`NÃO DEFINIDO`, `Basic`). |
 | 2.6.3 | `slv_product` | Remove produtos com `FASHIONTYPE = 'NÃO DEFINIDO'` e `CAT_DES_EN` em (Marketing, Others, INT - BARAM, Consumable, Works, Informática). |
+| 2.6.4 | `slv_product` | Remove produtos com `CAT_DES_EN = 'Works'` e `COLLECTION_TYPE` nulo. |
+| 2.6.5 | `slv_product` | Remove todos os produtos das categorias Marketing, Consumable, Informática e Others, qualquer que seja o `FASHIONTYPE`. |
 | 2.7.1 | `slv_customers` (e, por consequência, `slv_emails` e `slv_sessions`) | Remove clientes com `CREATION_DATE`, `BIRTHDAY`, `UNSUBSCRIPTION_DATE`, `SUBSCRIPTION_DATE`, `SUBSCRIPTION_SOURCE` e `COUNTRY` **todos** nulos (depois da limpeza: `'NaN'` e data ilegível contam como nulo). Macro `customer_has_data`. |
 
 As regras 2.4.1 e 2.5.1 consultam a fonte `customers` da bronze, porque um modelo silver lê só a

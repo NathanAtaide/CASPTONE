@@ -20,6 +20,7 @@ automaticamente o *schema* `gold` e a *tag* `gold` (configuração em `dbt_proje
 |---|---|
 | [`example/`](example/README.md) | Modelo de demonstração (`gld_example_weather_daily`). |
 | `gld_weather_country_daily.sql` + `_weather__gold.yml` | Meteorologia diária por país: média simples das 3 maiores cidades (`slv_weather_daily`). Junta-se às vendas por `country_code` e data. |
+| `gld_ml_sales.sql` + `_ml_sales__gold.yml` | **Só para treino de ML/DL**, fora do *star schema*. Uma linha por dia, mercado, canal e categoria das vendas PARFOIS (`type = 'SALE'`), sobre um calendário completo (dia sem venda = 0). Alvos: unidades e pedidos; *features* de calendário, preço, mídia paga, *lags*, janelas móveis e campanhas (`slv_events` mapeado para as 33 flags do *profiling*). Ordenada por `order_date`. |
 
 Seus modelos ficam diretamente nesta pasta (ou em subpastas por assunto), com o prefixo `gld_`.
 

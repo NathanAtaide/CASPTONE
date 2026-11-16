@@ -1,0 +1,13 @@
+Month to forecast,Market,Campaign,Campaign days in the month,Factor applied,Days measured in the history,Note
+Jan 2025,Online ES,Reyes,2,"1,00",0,"not measured: factor 1,00"
+Feb 2025,Online ES,Valentines,3,"0,82",4,measured
+Feb 2025,Online PT,Valentines,3,"0,98",4,measured
+Apr 2025,Online ES,Easter and Holy Week,17,"0,91",17,measured
+Apr 2025,Online ES,Mothers Day,5,"1,33",3,measured
+Apr 2025,Online PT,Easter and Holy Week,17,"0,89",17,measured
+Apr 2025,Online PT,Mothers Day,6,"1,30",3,measured
+Nov 2025,Online ES,Black Friday,6,"6,72",6,measured
+Nov 2025,Online PT,Black Friday,6,"8,21",6,measured
+Dec 2025,Online ES,Christmas,4,"1,55",4,measured
+Dec 2025,Online ES,Reyes,4,"0,98",6,measured
+Dec 2025,Online PT,Christmas,4,"1,07",4,measured

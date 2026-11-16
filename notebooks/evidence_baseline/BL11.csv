@@ -1,0 +1,23 @@
+Campaign,Year,Market,Days,First day,Last day
+Black Friday,2024,Online ES,6,2024-11-26,2024-12-01
+Black Friday,2024,Online PT,6,2024-11-26,2024-12-01
+Black Friday,2025,Online ES,6,2025-11-25,2025-11-30
+Black Friday,2025,Online PT,6,2025-11-25,2025-11-30
+Christmas,2024,Online ES,4,2024-12-17,2024-12-20
+Christmas,2024,Online PT,4,2024-12-17,2024-12-20
+Christmas,2025,Online ES,4,2025-12-18,2025-12-21
+Christmas,2025,Online PT,4,2025-12-18,2025-12-21
+Easter and Holy Week,2024,Online ES,17,2024-03-16,2024-04-01
+Easter and Holy Week,2024,Online PT,17,2024-03-16,2024-04-01
+Easter and Holy Week,2025,Online ES,17,2025-04-05,2025-04-21
+Easter and Holy Week,2025,Online PT,17,2025-04-05,2025-04-21
+Mothers Day,2024,Online ES,3,2024-04-28,2024-04-30
+Mothers Day,2024,Online PT,3,2024-04-28,2024-04-30
+Mothers Day,2025,Online ES,5,2025-04-24,2025-04-28
+Mothers Day,2025,Online PT,6,2025-04-24,2025-04-29
+Reyes,2024,Online ES,4,2024-12-28,2024-12-31
+Reyes,2025,Online ES,6,2025-01-01,2025-12-30
+Valentines,2024,Online ES,4,2024-02-06,2024-02-09
+Valentines,2024,Online PT,4,2024-02-06,2024-02-09
+Valentines,2025,Online ES,3,2025-02-09,2025-02-11
+Valentines,2025,Online PT,3,2025-02-09,2025-02-11

@@ -1,0 +1,15 @@
+Market,Weekday,Average orders,Index (average = 100),Normal days
+Online ES,Monday,2.329,111,25
+Online ES,Tuesday,2.409,115,24
+Online ES,Wednesday,2.085,100,25
+Online ES,Thursday,2.090,100,26
+Online ES,Friday,1.956,94,25
+Online ES,Saturday,1.917,92,22
+Online ES,Sunday,1.792,86,22
+Online PT,Monday,757,110,25
+Online PT,Tuesday,770,112,23
+Online PT,Wednesday,703,103,24
+Online PT,Thursday,649,95,25
+Online PT,Friday,639,93,24
+Online PT,Saturday,597,87,22
+Online PT,Sunday,675,99,23

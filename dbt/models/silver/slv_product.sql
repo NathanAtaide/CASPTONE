@@ -9,7 +9,10 @@
     * products without TAR_DES, with CAT_DES_EN and FASHIONTYPE 'NÃO DEFINIDO' or 'Basic'
       are dropped (rule 2.6.2);
     * products with FASHIONTYPE 'NÃO DEFINIDO' in the non-merchandise categories listed below
-      are dropped (rule 2.6.3).
+      are dropped (rule 2.6.3);
+    * products of category 'Works' without COLLECTION_TYPE are dropped (rule 2.6.4);
+    * every product of the categories 'Marketing', 'Consumable', 'Informática' and 'Others' is
+      dropped, whatever its FASHIONTYPE (rule 2.6.5).
 
   The exclusions are wrapped in coalesce(..., false) so that a null in a tested column never
   drops a row by accident (NOT NULL is NULL, which a WHERE treats as false).
@@ -62,3 +65,7 @@ where prod_spk is not null
         and cat_des_en in ('Marketing', 'Others', 'INT - BARAM', 'Consumable', 'Works', 'Informática'),
         false
       )
+  -- Rule 2.6.4
+  and not coalesce(cat_des_en = 'Works' and collection_type is null, false)
+  -- Rule 2.6.5
+  and not coalesce(cat_des_en in ('Marketing', 'Consumable', 'Informática', 'Others'), false)

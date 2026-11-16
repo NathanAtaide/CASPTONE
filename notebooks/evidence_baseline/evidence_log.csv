@@ -9,3 +9,24 @@ BL7,figure,"Baseline 2 against the real value by month, 2025 (target: orders)",w
 BL8,table,"Baselines 1, 2 and 3 compared on the same months (May to December 2025; target: orders)",whole table,BL8.csv
 BL9,table,"Baseline 3: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL9.csv
 BL10,figure,"Baseline 3 against the real value by month, 2025 (target: orders)",whole table,BL10.png
+BL11,table,"Campaign days used by Baseline 4 (campaigns that follow the calendar), by campaign, year and market",whole table,BL11.csv
+BL12,table,"Baseline 4: campaign factor applied in each month to forecast, by market (target: orders)",whole table,BL12.csv
+BL13,table,"Without campaigns (Baseline 1, daily) against with campaigns (Baseline 4, daily), 2025 (target: orders)",whole table,BL13.csv
+BL14,table,Baselines 1 to 4 compared on the same months (May to December 2025; target: orders),whole table,BL14.csv
+BL15,table,"Baseline 4: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL15.csv
+BL16,figure,"Baseline 4 against the real value by month, 2025 (target: orders)",whole table,BL16.png
+BL17,table,Baseline 5: weeks used to measure the weekday profile in each month to forecast,whole table,BL17.csv
+BL18,table,"Average orders by weekday on normal days, January 2024 to July 2025",whole table,BL18.csv
+BL19,table,Baseline 5: factor applied to campaign days and holidays in each month to forecast (target: orders),whole table,BL19.csv
+BL20,table,"Baselines 1 and 4 against Baseline 5 (4 and 8 weeks), 2025 (target: orders)",whole table,BL20.csv
+BL21,table,Baselines 1 to 5 compared on the same months (May to December 2025; target: orders),whole table,BL21.csv
+BL22,table,"Baseline 5: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL22.csv
+BL23,figure,"Baseline 5 against the real value by month, 2025 (target: orders)",whole table,BL23.png
+BL24,table,Baseline 5b: factor applied to fixed-date campaign days in each month to forecast (target: orders),whole table,BL24.csv
+BL25,table,"Baselines 1 and 4 against Baseline 5 (all campaigns removed) and 5b (only fixed-date campaigns removed), 2025 (target: orders)",whole table,BL25.csv
+BL26,table,Baselines 1 to 5b compared on the same months (May to December 2025; target: orders),whole table,BL26.csv
+BL27,table,"Baseline 5b: real value and forecast by month, Online ES and Online PT together (target: orders)",whole table,BL27.csv
+BL28,figure,"Baseline 5b against the real value by month, 2025 (target: orders)",whole table,BL28.png
+BL37,table,Monthly forecast errors by baseline and market,"Training and Test; Online ES, Online PT and combined",BL37.csv
+BL38,table,"Campaign days by family, market and month","2025; Online ES, Online PT and combined",BL38.csv
+BL39,table,Monthly forecast errors combined with campaign information,"Training and Test; Online ES, Online PT and combined",BL39.csv
