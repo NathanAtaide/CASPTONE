@@ -21,7 +21,7 @@ O que **não** fazer aqui: agregações e regras de negócio específicas de um 
 |---|---|
 | [`example/`](example/README.md) | Modelo de demonstração (`slv_example_weather_hourly`). |
 | `slv_weather_daily.sql` + `_weather__silver.yml` | Meteorologia diária por cidade (3 maiores cidades de cada país dos marketplaces), deduplicada e tipada, a partir de `bronze_open_meteo.daily_weather`. |
-| `slv_calendar.sql` | Dimensão de datas (calendário) no padrão Kimball: uma linha por dia, sem lacunas, chaves `date_key` (BIGINT AAAAMMDD, usada nos relacionamentos) e `calendar_date` (DATE). Gerada no DuckDB, não lê a bronze. Inclui feriados nacionais e pontos facultativos federais, dias úteis e rótulos em inglês. |
+| `slv_calendar.sql` | Dimensão de datas (calendário) no padrão Kimball: uma linha por dia, sem lacunas, chaves `date_key` (BIGINT AAAAMMDD, usada nos relacionamentos) e `calendar_date` (DATE). Gerada no DuckDB, não lê a bronze. Rótulos em inglês. Sem feriados nem dias úteis: os mercados são de vários países, e os feriados brasileiros que ela trazia foram retirados. |
 | `_calendar__silver.yml` | Descrição das colunas de `slv_calendar` e testes (`unique` + `not_null` nas chaves). |
 | `slv_customers.sql` + `_customers__silver.yml` | Clientes (`bronze_mysql.customers`), tipados. Chave `customer_id`. |
 | `slv_emails.sql` + `_emails__silver.yml` | Envios de e-mail por cliente e dia (`bronze_mysql.emails`), só de clientes existentes. |
@@ -87,7 +87,7 @@ corrigir o problema.
 
 ### Intervalo da `slv_calendar`
 
-Definido por variáveis do dbt (ambas inclusivas): `calendar_start_date` (padrão `2020-01-01`) e `calendar_end_date` (padrão: 31/12 do ano corrente + 5). O bloco `vars` de `dbt_project.yml` fixa hoje o início em `2000-01-01`, para cobrir as datas de cadastro e inscrição dos clientes; se os testes `relationships` das colunas `*_date_key` ainda acusarem datas fora do calendário, antecipe esse valor. Feriados estaduais e municipais não estão incluídos.
+Definido por variáveis do dbt (ambas inclusivas): `calendar_start_date` (padrão `2020-01-01`) e `calendar_end_date` (padrão: 31/12 do ano corrente + 5). O bloco `vars` de `dbt_project.yml` fixa hoje o início em `2000-01-01`, para cobrir as datas de cadastro e inscrição dos clientes; se os testes `relationships` das colunas `*_date_key` ainda acusarem datas fora do calendário, antecipe esse valor.
 
 Seus modelos ficam diretamente nesta pasta (ou em subpastas por domínio, ex.: `vendas/`), com o prefixo `slv_`.
 

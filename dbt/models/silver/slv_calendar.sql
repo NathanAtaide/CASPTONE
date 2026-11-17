@@ -10,9 +10,10 @@
       `calendar_date` (DATE) is the same day as a date, for SQL joins on dates;
     * every attribute is pre-computed (no date math needed downstream) and
       every label has a matching numeric column to sort by;
-    * descriptive labels in English (day, month, quarter and holiday names);
-    * Brazilian national holidays (fixed by federal law and the Easter-based
-      ones) with the business-day flags derived from them.
+    * descriptive labels in English (day, month and quarter names);
+    * no holidays and no business-day flags: the markets are in several
+      countries, so a single national holiday list does not fit them (the
+      Brazilian holidays this model carried before were removed).
 
   This model does not read the bronze layer: the rows are generated in DuckDB.
   The range is set with dbt vars (both inclusive):
@@ -41,102 +42,6 @@ with date_spine as (
 
 ),
 
-years as (
-
-    select distinct cast(year(calendar_date) as integer) as year_number
-    from date_spine
-
-),
-
-easter as (
-
-    -- Easter Sunday per year (anonymous Gregorian algorithm, Meeus/Jones/Butcher).
-    select
-        year_number,
-        make_date(
-            year_number,
-            (h + l - 7 * m + 114) // 31,
-            ((h + l - 7 * m + 114) % 31) + 1
-        ) as easter_sunday
-    from (
-        select
-            year_number, a, h, l,
-            (a + 11 * h + 22 * l) // 451 as m
-        from (
-            select
-                year_number, a, h,
-                (32 + 2 * e + 2 * (c // 4) - h - (c % 4)) % 7 as l
-            from (
-                select
-                    year_number, a, c, e,
-                    (19 * a + b - (b // 4) - ((b - ((b + 8) // 25) + 1) // 3) + 15) % 30 as h
-                from (
-                    select
-                        year_number,
-                        year_number % 19  as a,
-                        year_number // 100 as b,
-                        year_number % 100 as c,
-                        (year_number // 100) % 4 as e
-                    from years
-                ) as step_1
-            ) as step_2
-        ) as step_3
-    ) as step_4
-
-),
-
-holiday_list as (
-
-    -- Fixed national holidays (Brazilian Laws 662/1949, 6.802/1980, 10.607/2002 and 14.759/2023).
-    select make_date(y.year_number, f.month_number, f.day_number) as holiday_date,
-           f.holiday_name,
-           'national holiday' as holiday_type
-    from years as y
-    cross join (
-        values
-            (1,  1,  'New Year''s Day', 0),
-            (4,  21, 'Tiradentes Day', 0),
-            (5,  1,  'Labour Day', 0),
-            (9,  7,  'Independence Day', 0),
-            (10, 12, 'Our Lady of Aparecida', 0),
-            (11, 2,  'All Souls'' Day', 0),
-            (11, 15, 'Proclamation of the Republic', 0),
-            (11, 20, 'Black Consciousness Day', 2024),
-            (12, 25, 'Christmas Day', 0)
-    ) as f(month_number, day_number, holiday_name, valid_from_year)
-    where y.year_number >= f.valid_from_year
-
-    union all
-
-    -- Easter-based dates, classified as in the yearly federal government ordinance.
-    select cast(e.easter_sunday + o.offset_days as date), o.holiday_name, o.holiday_type
-    from easter as e
-    cross join (
-        values
-            (-48, 'Carnival Monday',  'optional holiday'),
-            (-47, 'Carnival Tuesday', 'optional holiday'),
-            (-2,  'Good Friday',      'national holiday'),
-            (60,  'Corpus Christi',   'optional holiday')
-    ) as o(offset_days, holiday_name, holiday_type)
-
-),
-
-holidays as (
-
-    -- Two holidays can fall on the same day (e.g. Good Friday on 21 April, Tiradentes Day):
-    -- keep one row per date, the stronger type wins.
-    select
-        holiday_date,
-        string_agg(holiday_name, ' / ' order by holiday_name) as holiday_name,
-        case
-            when bool_or(holiday_type = 'national holiday') then 'national holiday'
-            else 'optional holiday'
-        end as holiday_type
-    from holiday_list
-    group by holiday_date
-
-),
-
 calendar as (
 
     select
@@ -158,13 +63,8 @@ calendar as (
         cast(month(d.calendar_date) as integer)                    as month_number,
         cast(quarter(d.calendar_date) as integer)                  as quarter_number,
         cast(case when month(d.calendar_date) <= 6 then 1 else 2 end as integer) as semester_number,
-        cast(year(d.calendar_date) as integer)                     as year_number,
-
-        h.holiday_name,
-        h.holiday_type
+        cast(year(d.calendar_date) as integer)                     as year_number
     from date_spine as d
-    left join holidays as h
-        on h.holiday_date = d.calendar_date
 
 ),
 
@@ -172,11 +72,7 @@ enriched as (
 
     select
         *,
-        day_of_week >= 6                                           as is_weekend,
-        coalesce(holiday_type = 'national holiday', false)         as is_holiday,
-        coalesce(holiday_type = 'optional holiday', false)        as is_optional_holiday,
-        -- Business day: weekday that is neither a national holiday nor an optional one.
-        day_of_week <= 5 and holiday_type is null                  as is_business_day
+        day_of_week >= 6                                           as is_weekend
     from calendar
 
 )
@@ -236,17 +132,6 @@ select
     cast(make_date(year_number, 12, 31) as date)                                   as year_end_date,
     cast((year_number % 4 = 0 and year_number % 100 <> 0) or year_number % 400 = 0 as boolean) as is_leap_year,
 
-    -- Weekend, holidays and business days
-    cast(is_weekend as boolean)                                                    as is_weekend,
-    cast(is_holiday as boolean)                                                    as is_holiday,
-    cast(is_optional_holiday as boolean)                                           as is_optional_holiday,
-    cast(holiday_name as varchar)                                                  as holiday_name,
-    cast(holiday_type as varchar)                                                  as holiday_type,
-    cast(is_business_day as boolean)                                               as is_business_day,
-    cast(case when is_business_day then
-        sum(case when is_business_day then 1 else 0 end)
-            over (partition by year_number, month_number order by calendar_date)
-    end as integer)                                                                as business_day_of_month,
-    cast(sum(case when is_business_day then 1 else 0 end)
-            over (partition by year_number, month_number) as integer)              as business_days_in_month
+    -- Weekend
+    cast(is_weekend as boolean)                                                    as is_weekend
 from enriched

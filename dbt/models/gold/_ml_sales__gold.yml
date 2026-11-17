@@ -6,7 +6,8 @@ models:
       Machine learning training set (not part of the star schema): one row per day, market,
       channel and product category of the PARFOIS sales (type SALE), on a complete date spine
       (days without sales hold 0), with calendar, price, paid media, autoregressive and
-      campaign features. Targets: total_prod_qty_sold and total_orders_count.
+      campaign features. Target: total_prod_qty_sold, plus the revenues as auxiliary targets.
+      Orders are not here (one order can span several categories): see gld_ml_orders.
     columns:
       # Granularity and categorization keys
       - name: order_date
@@ -54,11 +55,7 @@ models:
 
       # Targets and price context
       - name: total_prod_qty_sold
-        description: "Target 1: units sold (sum of slv_order_det.prod_qty of the SALE lines). 0 on days without sales."
-        data_tests:
-          - not_null
-      - name: total_orders_count
-        description: "Target 2: distinct orders with at least one SALE line of the category. 0 on days without sales."
+        description: "Target: units sold (sum of slv_order_det.prod_qty of the SALE lines). 0 on days without sales."
         data_tests:
           - not_null
       - name: gross_revenue_wo_disc
@@ -82,8 +79,6 @@ models:
         description: "Units sold by the series on t-7. Null on the first 7 days of the data."
       - name: qty_sold_rolling_7d_avg
         description: "Average of the units sold by the series over t-7..t-1. Null until the 7 days are available."
-      - name: orders_count_rolling_7d_avg
-        description: "Average of total_orders_count over t-7..t-1. Null until the 7 days are available."
       - name: cat_share_market_rolling_30d
         description: >
           Units of the category in the market (all channels) over t-30..t-1, divided by all units

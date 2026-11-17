@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: gld_ml_orders
+    description: >
+      Machine learning training set (not part of the star schema): one row per day, market and
+      channel with the distinct PARFOIS orders of the day (same order lines as gld_ml_sales), on
+      a complete date spine (days without orders hold 0), with calendar, paid media,
+      autoregressive and campaign features. No product category: every order counts once, so
+      the rows add up to the real orders of a day or a month.
+    columns:
+      # Granularity keys
+      - name: order_date
+        description: "Day of the orders (slv_order_cab.order_date). Time key for sorting and time-series splits."
+        data_tests:
+          - not_null
+      - name: mark_cod
+        description: "Market (e.g. Online ES)."
+        data_tests:
+          - not_null
+      - name: order_chanel_type
+        description: "Sales channel (e.g. DESKTOP, APP, STORE). Name kept as in the source."
+        data_tests:
+          - not_null
+
+      # Calendar
+      - name: year
+        description: "Calendar year (slv_calendar.year_number)."
+      - name: month
+        description: "Month of the year, 1 to 12 (slv_calendar.month_number)."
+      - name: day_of_week
+        description: "ISO day of the week: 1 = Monday ... 7 = Sunday (slv_calendar.day_of_week)."
+      - name: is_weekend
+        description: "1 on Saturdays and Sundays, 0 otherwise."
+
+      # Target
+      - name: total_orders_count
+        description: "Target: distinct orders of the day, market and channel with at least one SALE line in scope. 0 on days without orders."
+        data_tests:
+          - not_null
+
+      # Paid media and lags
+      - name: daily_market_paid_media
+        description: "Paid media spend of the market on day t, repeated across channels (from gld_ml_sales)."
+      - name: paid_media_rolling_7d_avg
+        description: "Average of daily_market_paid_media over t-6..t (from gld_ml_sales)."
+      - name: orders_count_lag_1d
+        description: "Orders of the series on t-1. Null on the first day of the data."
+      - name: orders_count_lag_7d
+        description: "Orders of the series on t-7. Null on the first 7 days of the data."
+      - name: orders_count_rolling_7d_avg
+        description: "Average of total_orders_count over t-7..t-1. Null until the 7 days are available."
+
+      # Campaign events (from gld_ml_sales; rules in gld_ml_sales.sql)
+      - name: macro_event_type
+        description: "Holiday / calendar event active on day t in the market. NONE when there is none."
+        data_tests:
+          - not_null
+      - name: general_campaign_type
+        description: "Tactical campaign active on day t in the market. NONE when there is none."
+        data_tests:
+          - not_null
+      - name: promo_urgency_level
+        description: "Highest urgency of the active flags: 0 none, 1 warm-up, 2 standard, 3 last days / extended, 4 last hours."
+        data_tests:
+          - not_null
+      - name: active_campaigns_count
+        description: "Number of distinct is_* flags of the profiling active on day t in the market."
+        data_tests:
+          - not_null

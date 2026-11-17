@@ -8,8 +8,8 @@ models:
       Date dimension (Kimball): one row per calendar day, with no gaps, generated in DuckDB
       (it does not read the bronze layer). Relate it to the other models on `date_key`
       (BIGINT YYYYMMDD, the *_date_key columns) or join on `calendar_date` (DATE). Range set by the dbt vars `calendar_start_date` (default 2020-01-01) and
-      `calendar_end_date` (default 31 December of the current year + 5). Labels in English;
-      holidays are the Brazilian national ones (no state or municipal holidays).
+      `calendar_end_date` (default 31 December of the current year + 5). Labels in English.
+      No holidays or business-day flags: the markets are in several countries.
     columns:
       # Keys
       - name: calendar_date
@@ -115,32 +115,8 @@ models:
       - name: is_leap_year
         description: "True when the year has 366 days."
 
-      # Weekend, holidays and business days
+      # Weekend
       - name: is_weekend
         description: "True on Saturday and Sunday."
         data_tests:
           - not_null
-      - name: is_holiday
-        description: "True on a Brazilian national holiday (federal law dates and Good Friday)."
-        data_tests:
-          - not_null
-      - name: is_optional_holiday
-        description: "True on a federal optional holiday (ponto facultativo): Carnival Monday and Tuesday, Corpus Christi."
-        data_tests:
-          - not_null
-      - name: holiday_name
-        description: "Name of the holiday or optional holiday; null on other days. Names are joined with ' / ' when two fall on the same day."
-      - name: holiday_type
-        description: "'national holiday', 'optional holiday' or null."
-        data_tests:
-          - accepted_values:
-              arguments:
-                values: ["national holiday", "optional holiday"]
-      - name: is_business_day
-        description: "True on Monday-Friday that is neither a national holiday nor an optional holiday."
-        data_tests:
-          - not_null
-      - name: business_day_of_month
-        description: "Sequence of the business day inside the month (1st, 2nd ... business day); null on non-business days."
-      - name: business_days_in_month
-        description: "Number of business days in the month."

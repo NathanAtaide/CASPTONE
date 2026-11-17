@@ -3,8 +3,13 @@
 
   One row per day, market (mark_cod), channel (order_chanel_type) and product category
   (cat_des_en): the daily demand of PARFOIS sales, with calendar, price, paid media,
-  autoregressive and campaign features for the forecasting models (units and orders).
+  autoregressive and campaign features for the forecasting models of units and revenue.
   Not part of the star schema: built only to train ML / DL models.
+
+  Orders are not here: one order can hold products of several categories, so orders counted
+  per category count it once per category and their sum overstates the day (about +34% in
+  Online ES and PT). The daily orders are in gld_ml_orders, one row per day, market and
+  channel, which also reads the paid media and campaign features from this model.
 
   Scope:
     * orders with order_origin = 'PARFOIS' and order lines with type = 'SALE';
@@ -43,7 +48,15 @@
         - active_campaigns_count: number of distinct flags active that day.
 
   Written to s3://<gold bucket>/gld_ml_sales.parquet, ordered by order_date.
+
+  Row order: the dbt profile sets preserve_insertion_order = false (less memory), which lets
+  DuckDB write the rows in any order. The hooks keep the insertion order during this model, so
+  the ORDER BY reaches the Parquet file, and then restore the profile value.
 #}
+{{ config(
+    pre_hook="set preserve_insertion_order = true",
+    post_hook="set preserve_insertion_order = false"
+) }}
 
 with
 
@@ -129,12 +142,12 @@ event_flags as (
 
 sales_lines as (
 
+    -- Same scope as gld_ml_orders: keep the joins and filters of both models in sync.
     select
         cab.order_date,
         cab.mark_cod,
         cab.order_chanel_type,
         prod.cat_des_en,
-        det.order_id,
         det.prod_qty,
         det.amount_fixed_rate_wo_disc_wo_vat,
         det.amount_fixed_rate_w_disc_wo_vat
@@ -161,7 +174,6 @@ daily_sales as (
         order_chanel_type,
         cat_des_en,
         cast(sum(prod_qty) as integer)                      as qty_sold,
-        cast(count(distinct order_id) as integer)           as orders_count,
         sum(amount_fixed_rate_wo_disc_wo_vat)               as gross_revenue,
         sum(amount_fixed_rate_w_disc_wo_vat)                as net_revenue
     from sales_lines
@@ -235,7 +247,6 @@ grid as (
         series.cat_des_en,
         series.first_sale_date,
         coalesce(sales.qty_sold, 0)                     as qty_sold,
-        coalesce(sales.orders_count, 0)                 as orders_count,
         coalesce(sales.gross_revenue, 0)                as gross_revenue,
         coalesce(sales.net_revenue, 0)                  as net_revenue,
         -- Price of the day; null on zero-sale days (filled in series_features).
@@ -262,8 +273,6 @@ series_features as (
         lag(qty_sold, 7) over w_series                          as qty_sold_lag_7d,
         case when count(*) over w_prev_7d = 7
             then avg(qty_sold) over w_prev_7d end               as qty_sold_rolling_7d_avg,
-        case when count(*) over w_prev_7d = 7
-            then avg(orders_count) over w_prev_7d end           as orders_count_rolling_7d_avg,
         coalesce(
             day_unit_base_price,
             last_value(day_unit_base_price ignore nulls) over w_past
@@ -492,7 +501,7 @@ market_events as (
 )
 
 -- ---------------------------------------------------------------------------------------
--- Final table: the 25 columns of the profiling
+-- Final table: the columns of the profiling, without the order counts (gld_ml_orders)
 -- ---------------------------------------------------------------------------------------
 
 select
@@ -511,7 +520,6 @@ select
 
     -- Targets and price context
     cast(sf.qty_sold as integer)                                        as total_prod_qty_sold,
-    cast(sf.orders_count as integer)                                    as total_orders_count,
     cast(sf.gross_revenue as double)                                    as gross_revenue_wo_disc,
     cast(sf.net_revenue as double)                                      as net_revenue_w_disc,
     cast(sf.avg_unit_base_price as double)                              as avg_unit_base_price,
@@ -522,7 +530,6 @@ select
     cast(sf.qty_sold_lag_1d as integer)                                 as qty_sold_lag_1d,
     cast(sf.qty_sold_lag_7d as integer)                                 as qty_sold_lag_7d,
     cast(sf.qty_sold_rolling_7d_avg as double)                          as qty_sold_rolling_7d_avg,
-    cast(sf.orders_count_rolling_7d_avg as double)                      as orders_count_rolling_7d_avg,
     cast(case when mr.days_30d = 30
         then cr.category_qty_30d / nullif(mr.market_qty_30d, 0)
     end as double)                                                      as cat_share_market_rolling_30d,
