@@ -22,6 +22,14 @@
       safe to use always. Example, inside a model:
           from latest_load(source('bronze_mysql', 'emails'))
 
+  latest_batch_by(relation, partition_columns)
+      For API datasets where every batch re-sends a complete slice of the data
+      (e.g. all the holidays of one country and year): keeps every row of the
+      most recent batch that delivered each slice. Unlike latest_by_key, a row
+      the API drops or renames in a newer batch also leaves silver. Example:
+          from latest_batch_by(source('bronze_nager_date', 'public_holidays'),
+                               ['requested_country_code', 'requested_year'])
+
   The macros can be nested, e.g. a batch table walked by an updated_at column
   repeats the rows that changed:
           from latest_by_key(latest_load(source('bronze_mysql', 'orders')), ['id'])
@@ -46,6 +54,18 @@
     select *
     from {{ relation }}
     where ingestion_date = (select max(ingestion_date) from {{ relation }})
+)
+{%- endmacro %}
+
+
+{% macro latest_batch_by(relation, partition_columns) -%}
+(
+    select *
+    from {{ relation }}
+    qualify _batch_id = first_value(_batch_id) over (
+        partition by {{ partition_columns | join(', ') }}
+        order by _ingested_at desc, _batch_id desc
+    )
 )
 {%- endmacro %}
 

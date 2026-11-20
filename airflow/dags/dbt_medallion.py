@@ -13,7 +13,7 @@ silver and gold models back to the lake as Parquet.
    the `lake_gold` asset, which starts `gold_export_powerbi`.
 
 **Schedule:** data-aware - it starts whenever a bronze ingestion finishes
-(`bronze_mysql_ingestion`, `example_api_to_bronze`, `nager_date_to_bronze`
+(`bronze_mysql_ingestion`, `example_api_to_bronze`, `public_holidays_to_bronze`
 or `open_meteo_daily_to_bronze`). It can also be triggered
 manually.
 
@@ -29,7 +29,7 @@ from datetime import datetime
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import DAG, task
 
-from caps_assets import BRONZE_EXAMPLE_API, BRONZE_MYSQL, BRONZE_NAGER_DATE, BRONZE_OPEN_METEO_DAILY, GOLD
+from caps_assets import BRONZE_EXAMPLE_API, BRONZE_MYSQL, BRONZE_OPEN_METEO_DAILY, BRONZE_PUBLIC_HOLIDAYS, GOLD
 
 DBT_BIN = os.environ.get("DBT_BIN", "/opt/dbt-venv/bin/dbt")
 DBT_PROJECT_DIR = os.environ.get("DBT_PROJECT_DIR", "/opt/platform/dbt")
@@ -59,7 +59,7 @@ with DAG(
     dag_id="dbt_medallion",
     description="Transforms bronze into silver and gold with dbt + DuckDB.",
     # Start when either bronze source has been refreshed.
-    schedule=(BRONZE_MYSQL | BRONZE_EXAMPLE_API | BRONZE_NAGER_DATE | BRONZE_OPEN_METEO_DAILY),
+    schedule=(BRONZE_MYSQL | BRONZE_EXAMPLE_API | BRONZE_PUBLIC_HOLIDAYS | BRONZE_OPEN_METEO_DAILY),
     start_date=datetime(2026, 1, 1),
     catchup=False,
     max_active_runs=1,

@@ -245,7 +245,9 @@ Projeto `caps_lakehouse` em `dbt/`, adaptador dbt-duckdb, dialeto SQL do DuckDB.
   `_load_id` mais recente de cada tabela de origem);
   `latest_by_key(source(...), ['chave'])` para tabelas `incremental` e lotes de API (fica a linha
   de `_ingested_at` mais recente por chave); `latest_snapshot(source(...))` para tabelas `full`
-  (fica a partição `ingestion_date` mais recente). As macros podem ser aninhadas:
+  (fica a partição `ingestion_date` mais recente); `latest_batch_by(source(...), ['fatia'])` para
+  APIs que reenviam uma fatia inteira a cada carga (fica o lote mais recente de cada fatia, ex.:
+  feriados por país e ano). As macros podem ser aninhadas:
   `latest_by_key(latest_load(source(...)), ['chave'])` quando a tabela `batch` repete linhas
   alteradas.
 - **Tipagem de colunas da origem** pelas macros de `macros/cleaning_helpers.sql`: `clean_text`

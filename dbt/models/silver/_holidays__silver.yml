@@ -1,0 +1,71 @@
+# Documentation and data tests of the public holidays silver model.
+# `dbt build` runs these tests right after building the model.
+version: 2
+
+models:
+  - name: slv_holidays
+    description: >
+      Public holidays of every marketplace country: one row per country, day and holiday, without
+      repetitions. Sources: Nager.Date API (every country but Israel) and Hebcal API (Israel, only the
+      official days of rest), both loaded once a year by the public_holidays_to_bronze DAG. Join with
+      the daily sales on country_code + holiday_date_key (slv_calendar.date_key). A country can have
+      several rows on the same day (e.g. a national and a regional holiday).
+    columns:
+      - name: holiday_id
+        description: "Primary key: country_code-YYYYMMDD-holiday_name (e.g. PT-20250425-Freedom Day)."
+        data_tests:
+          - not_null
+          - unique
+      - name: country_code
+        description: "ISO 3166-1 alpha-2 code of the country (GB for the marketplace 'Online UK')."
+        data_tests:
+          - not_null
+      - name: holiday_date
+        description: "Day of the holiday."
+        data_tests:
+          - not_null
+      - name: holiday_date_key
+        description: "holiday_date as the BIGINT key YYYYMMDD. Relates to slv_calendar.date_key."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('slv_calendar')
+                field: date_key
+              config:
+                severity: warn
+      - name: holiday_year
+        description: "Year of the holiday."
+        data_tests:
+          - not_null
+      - name: holiday_name
+        description: "Name of the holiday in English (Hebcal: English transliteration, e.g. Pesach I)."
+        data_tests:
+          - not_null
+      - name: local_name
+        description: "Name of the holiday in the local language (Israel: in Hebrew). When the source sends different local names for the same holiday, they are joined with ' / '."
+      - name: is_nationwide
+        description: "True when the holiday applies to the whole country; false when only some regions observe it (see subdivision_codes)."
+        data_tests:
+          - not_null
+      - name: subdivision_codes
+        description: "ISO 3166-2 codes of the regions that observe a regional holiday, comma separated (e.g. DE-BY, DE-BW). Null for nationwide holidays."
+      - name: holiday_types
+        description: "Types given by Nager.Date, comma separated: Public, Bank, School, Authorities, Optional, Observance. Israel: Public."
+      - name: is_public
+        description: "True when the holiday is a Public holiday (day off) in at least one region of the country."
+        data_tests:
+          - not_null
+      - name: launch_year
+        description: "Year the holiday was established, when the source knows it."
+      - name: source_system
+        description: "API the row came from: nager_date or hebcal."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["nager_date", "hebcal"]
+      - name: _ingested_at
+        description: "UTC time at which the row entered the bronze layer."
+      - name: _batch_id
+        description: "Identifier of the pipeline run that ingested the row."

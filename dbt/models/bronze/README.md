@@ -13,7 +13,7 @@ Por isso não há arquivos `.sql` nesta pasta, só a declaração de fontes.
 
 | Arquivo | Função |
 |---|---|
-| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL), `bronze_open_meteo` (meteorologia: `hourly_weather` de exemplo e `daily_weather` por país) e `bronze_nager_date` (feriados públicos). |
+| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL), `bronze_open_meteo` (meteorologia: `hourly_weather` de exemplo e `daily_weather` por país), `bronze_nager_date` (feriados públicos, API Nager.Date) e `bronze_hebcal` (feriados de Israel, API Hebcal). As duas fontes de feriados são gravadas pela DAG `public_holidays_to_bronze` e lidas pelo modelo `slv_holidays`. |
 
 ## Como uma fonte é resolvida
 

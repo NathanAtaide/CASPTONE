@@ -5,7 +5,7 @@ refreshed:
 
     bronze_mysql_ingestion  --produces-->  BRONZE_MYSQL  ----+
     example_api_to_bronze   --produces-->  BRONZE_EXAMPLE_API +--> dbt_medallion
-    nager_date_to_bronze    --produces-->  BRONZE_NAGER_DATE -+
+    public_holidays_to_bronze --produces--> BRONZE_PUBLIC_HOLIDAYS -+
     open_meteo_daily_to_bronze --produces--> BRONZE_OPEN_METEO_DAILY -+
     dbt_medallion           --produces-->  GOLD  ------------------> gold_export_powerbi
 
@@ -22,8 +22,8 @@ BRONZE_MYSQL = Asset("lake_bronze_mysql")
 # Raw data of the example API, promoted from the staging area to bronze.
 BRONZE_EXAMPLE_API = Asset("lake_bronze_example_api")
 
-# Public holidays (Nager.Date API), promoted from the staging area to bronze.
-BRONZE_NAGER_DATE = Asset("lake_bronze_nager_date")
+# Public holidays (Nager.Date API, plus Hebcal for Israel), promoted from the staging area to bronze.
+BRONZE_PUBLIC_HOLIDAYS = Asset("lake_bronze_public_holidays")
 
 # Daily weather per marketplace country (Open-Meteo API), promoted from staging to bronze.
 BRONZE_OPEN_METEO_DAILY = Asset("lake_bronze_open_meteo_daily")

@@ -59,10 +59,11 @@ sources:
         description: "One row per city (three largest cities of each marketplace country) and local day: temperature, rain, snow and sunshine, plus the lineage columns."
 
   # ---------------------------------------------------------------------------
-  # Public holidays landed by the nager_date_to_bronze DAG.
-  # One row per holiday and country as returned by the Nager.Date API, plus
-  # requested_country_code / requested_year and the lineage columns.
-  # Read it in silver with latest_by_key(..., ['countryCode', 'date', 'name']).
+  # Public holidays landed by the public_holidays_to_bronze DAG (yearly).
+  # Every load re-sends whole years, so read them in silver with
+  # latest_batch_by(..., ['requested_country_code', 'requested_year']).
+  #   bronze_nager_date - Nager.Date API, every marketplace country but Israel;
+  #   bronze_hebcal     - Hebcal API, Israel (Nager.Date has no data for it).
   # ---------------------------------------------------------------------------
   - name: bronze_nager_date
     description: "Public holidays per country returned by the Nager.Date public API."
@@ -70,4 +71,12 @@ sources:
       external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_BRONZE', 'bronze') }}/nager_date/{name}/*/*.parquet', hive_partitioning = true, union_by_name = true)"
     tables:
       - name: public_holidays
-        description: "One row per public holiday and country (fields: date, localName, name, countryCode, global, counties, types, launchYear)."
+        description: "One row per public holiday and country as returned by the API (date, localName, name, countryCode, fixed, global, counties, launchYear, types), plus requested_country_code, requested_year and the lineage columns."
+
+  - name: bronze_hebcal
+    description: "Jewish and Israeli holidays returned by the Hebcal public API (Israeli schedule)."
+    config:
+      external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_BRONZE', 'bronze') }}/hebcal/{name}/*/*.parquet', hive_partitioning = true, union_by_name = true)"
+    tables:
+      - name: israel_holidays
+        description: "One row per major or modern holiday of Israel as returned by the API (title, date, hdate, category, subcat, yomtov, title_orig, hebrew, link, memo; the nested Torah readings are dropped), plus requested_country_code, requested_year and the lineage columns."
