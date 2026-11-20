@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: gld_dim_event
+    description: >
+      Commercial event dimension: one row per event of slv_events, keyed by the normalized event
+      name (macro event_key). Keys 0-33 fixed (0 = no event); a new event gets the next key with
+      macro_event_type NONE. The Iberian blackout (apagao_iberico) is excluded on purpose.
+    columns:
+      - name: event_sk
+        description: "Primary key (surrogate). 0 = no event / unknown."
+        data_tests:
+          - not_null
+          - unique
+      - name: event
+        description: "Natural key: event name normalized by the macro event_key (e.g. black_friday_app_20pct_all_50pct_selected)."
+        data_tests:
+          - not_null
+          - unique
+      - name: macro_event_type
+        description: "Calendar moment of the event (BLACK_FRIDAY, CHRISTMAS, REYES, MOTHERS_DAY, VALENTINES, EASTER, SINGLES_DAY). NONE = not tied to the calendar; NO_EVENT on row 0. SCD type 1."
+        data_tests:
+          - not_null

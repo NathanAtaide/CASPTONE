@@ -28,6 +28,10 @@ vars:
   # 2020, so the calendar starts earlier for every *_date_key to find its day. The relationships
   # tests on the *_date_key columns warn about any date still outside the range.
   calendar_start_date: "2000-01-01"
+  # Range of gld_dim_date, the date dimension of the gold star schema (both inclusive). The
+  # facts only keep days inside it; slv_calendar stays wider for the customer dates.
+  gold_date_start: "2020-01-01"
+  gold_date_end: "2026-12-31"
 
 clean-targets:
   - "target"

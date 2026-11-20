@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: gld_dim_campaign_running
+    description: >
+      The "why" of a sale: one row per combination of the 3 context flags (8 rows) plus
+      row 0 = unknown. Assigned to gld_fact_sales from gld_fact_event_paid_media
+      (market x order date).
+    data_tests:
+      - unique_combination:
+          arguments:
+            combination: [has_paid_media, has_event, is_holiday]
+    columns:
+      - name: campaign_running_sk
+        description: "Primary key (generated). 1-8 = combinations; 0 = market or date not found."
+        data_tests:
+          - not_null
+          - unique
+      - name: has_paid_media
+        description: "Paid media spend (> 0) in the market on the order date. Null on row 0."
+      - name: has_event
+        description: "A commercial event in the market on the order date. Null on row 0."
+      - name: is_holiday
+        description: "A NATIONWIDE holiday in the market's country on the order date. Null on row 0."
+      - name: campaign_label
+        description: "Readable label (No, Paid Media, Event, Holiday, Paid Media + Event, ...)."
+        data_tests:
+          - not_null
+          - unique

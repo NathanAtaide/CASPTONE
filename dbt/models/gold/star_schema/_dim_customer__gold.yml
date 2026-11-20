@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: gld_dim_customer
+    description: >
+      Customer dimension (SCD type 2): one row per version of a customer. newsletter_status is
+      updated in place (Subscribed -> Unsubscribed is not a new row); a new row is created only
+      when the customer re-subscribes after cancelling (UNSUBSCRIPTION_DATE before
+      SUBSCRIPTION_DATE in the source). The fact looks a version up by customer_id + order
+      date. Inferred members cover the customer_id_fk of the orders missing in slv_customers;
+      row 0 = unknown / no ID (customer_id -1). No names or e-mails; birthday is personal data,
+      show it aggregated only.
+    data_tests:
+      - unique_combination:
+          arguments:
+            combination: [customer_id]
+          config:
+            where: "is_current"
+      - scd2_versions:
+          arguments:
+            version_key: customer_id
+    columns:
+      - name: customer_sk
+        description: "Primary key (surrogate), one per version. 0 = unknown customer or no ID (franchise orders, customer_id_fk -1)."
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Natural key (guests have an ID too). -1 on row 0. SCD type 0."
+        data_tests:
+          - not_null
+      - name: creation_date
+        description: "Day the account was opened. Same in every version. SCD type 0."
+      - name: country
+        description: "Country declared by the customer (not the market's), trimmed. 'Unknown' when missing. SCD type 1."
+        data_tests:
+          - not_null
+      - name: subscription_date
+        description: "Newsletter subscription date as it applies to this version. Null in the first version of a re-subscribed customer (the original date was lost in the source). SCD type 2."
+      - name: unsubscription_date
+        description: "Newsletter cancellation date as it applies to this version. Null in the version opened by a re-subscription. SCD type 2."
+      - name: newsletter_status
+        description: "Not subscribed / Subscribed / Unsubscribed (Unknown on row 0 and inferred members). Updated in place inside a version (SCD type 1)."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Not subscribed", "Subscribed", "Unsubscribed", "Unknown"]
+      - name: subscription_source
+        description: "Where the customer subscribed (e.g. Web, App). SCD type 1."
+      - name: birthday
+        description: "Date of birth; the source placeholder 1900-01-01 becomes null. Personal data: aggregated use only. SCD type 0."
+      - name: valid_from
+        description: "First day of the version. 1900-01-01 on the first version."
+        data_tests:
+          - not_null
+      - name: valid_to
+        description: "Last day of the version (next valid_from - 1). 9999-12-31 while open."
+        data_tests:
+          - not_null
+      - name: is_current
+        description: "True = open version (exactly one per customer_id)."
+        data_tests:
+          - not_null
+      - name: is_inferred
+        description: "True = customer_id_fk seen in the orders but missing in slv_customers."
+        data_tests:
+          - not_null

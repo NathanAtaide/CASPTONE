@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: gld_fact_event_paid_media
+    description: >
+      Fact of the marketing context: one row per market x day x event x holiday, when there is
+      paid media, an event or a holiday on that day and market. amount_paid_media is written once
+      per market and day (row with the lowest event_sk and holiday_sk), 0 on the other rows, so
+      SUM never double counts. Source of gld_dim_campaign_running for gld_fact_sales.
+    data_tests:
+      - unique_combination:
+          arguments:
+            combination: [date_key, mark_sk, event_sk, holiday_sk]
+      # The spend of a market and day sits on a single row.
+      - unique_combination:
+          arguments:
+            combination: [date_key, mark_sk]
+          config:
+            where: "amount_paid_media <> 0"
+    columns:
+      - name: date_key
+        description: "The day, YYYYMMDD. FK to gld_dim_date."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_date')
+                field: date_key
+      - name: mark_sk
+        description: "Market. FK to gld_dim_market (0 = unknown; Online ND has its own key)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_market')
+                field: mark_sk
+      - name: event_sk
+        description: "Event running on the day. FK to gld_dim_event (0 = none)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_event')
+                field: event_sk
+      - name: holiday_sk
+        description: "Holiday in the country of the market (nationwide or regional). FK to gld_dim_holiday (0 = none)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_holiday')
+                field: holiday_sk
+      - name: amount_paid_media
+        description: "Paid media spend of the market on the day (EUR). 0 when there is none or on the repeated rows of the same market and day."
+        data_tests:
+          - not_null

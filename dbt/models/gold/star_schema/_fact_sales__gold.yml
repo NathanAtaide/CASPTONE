@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: gld_fact_sales
+    description: >
+      Fact of every sale, return and cancellation: one row per product version x movement type
+      in an order. Lines of slv_order_det that share order + product + type are summed
+      (n_source_lines). Header keys (date, customer, market, origin, registered, campaign context)
+      are shared by every row of the order. Count orders with COUNT(DISTINCT order_id) and
+      customers with COUNT(DISTINCT customer_sk): counting rows counts product lines.
+    data_tests:
+      - unique_combination:
+          arguments:
+            combination: [order_id, prod_sk, type_sk]
+    columns:
+      - name: order_id
+        description: "Order number (degenerate dimension). Text: franchise IDs are not numeric."
+        data_tests:
+          - not_null
+      - name: prod_sk
+        description: "Product version valid on the order date. FK to gld_dim_product (0 = unknown; inferred members when the product is missing)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_product')
+                field: prod_sk
+      - name: type_sk
+        description: "SALE, RETURN or CANCELLED. FK to gld_dim_type."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_type')
+                field: type_sk
+      - name: order_date_key
+        description: "Order date YYYYMMDD, the only date of the fact. FK to gld_dim_date (0 = unknown)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_date')
+                field: date_key
+      - name: customer_sk
+        description: "Customer version valid on the order date. FK to gld_dim_customer (0 = no ID, e.g. franchise, or unknown)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_customer')
+                field: customer_sk
+      - name: mark_sk
+        description: "Market where the sale was registered. FK to gld_dim_market."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_market')
+                field: mark_sk
+      - name: origin_sk
+        description: "Who sold and through which platform. FK to gld_dim_origin."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_origin')
+                field: origin_sk
+      - name: is_registered
+        description: "Degenerate flag: true = customer_type Registered at the moment of the order, false = guest (Not_Registered). Describes the order, not the customer."
+        data_tests:
+          - not_null
+      - name: campaign_running_sk
+        description: "Paid media / event / nationwide holiday in the market on the order date. FK to gld_dim_campaign_running (0 = unknown market or date)."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('gld_dim_campaign_running')
+                field: campaign_running_sk
+      - name: prod_qty
+        description: "Units of the row: positive for sales, negative for returns and cancellations."
+        data_tests:
+          - not_null
+      - name: amount_fixed_rate_w_disc_wo_vat
+        description: "Amount paid, EUR, without VAT, with discount. Negative when the money goes back."
+        data_tests:
+          - not_null
+      - name: amount_fixed_rate_wo_disc_wo_vat
+        description: "Full catalog price, EUR, without VAT."
+        data_tests:
+          - not_null
+      - name: n_source_lines
+        description: "How many slv_order_det lines formed this row (almost always 1)."
+        data_tests:
+          - not_null

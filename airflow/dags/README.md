@@ -20,6 +20,7 @@ A pasta é montada em `/opt/airflow/dags`; um arquivo novo ou alterado é detect
 | `open_meteo_daily_to_bronze.py` | staging → bronze | *cron* diário (`config/weather_locations.yml`) | **Meteorologia diária** das 3 maiores cidades de cada país dos marketplaces via API Open-Meteo (histórico) → `s3://staging/open_meteo/daily_weather/...` → `s3://bronze/open_meteo/daily_weather/...`. Execuções diárias trazem os últimos `lookback_days` dias; para a carga inicial, disparar com `start_date`. Dispara o dbt. |
 | `dbt_medallion.py` | silver, gold | quando a bronze é atualizada | Roda o dbt: `build` dos modelos `silver` e depois dos `gold` (com testes). Pula os modelos de exemplo enquanto os dados de exemplo não existirem na bronze. |
 | `gold_export_powerbi.py` | gold → host | quando a gold é atualizada | Exporta a gold para `./data/exports/powerbi/*.parquet` (fora do Docker). |
+| `gold_scd2_simulation.py` | gold (área de simulação) | manual | **Simula uma mudança SCD2** em `gld_dim_product` ou `gld_dim_customer`: fecha/atualiza a versão atual, abre a nova e regrava a `gld_fact_sales` com as chaves daquele membro buscadas de novo pela data do pedido. Grava em `s3://gold/_simulation/<cenário>/<execução>/` e copia o resultado para `./data/exports/scd2_simulation/<cenário>/`; nunca altera a saída do dbt. Lógica em `lakehouse.scd2`. |
 
 Arquivos de apoio:
 

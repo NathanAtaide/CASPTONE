@@ -10,6 +10,7 @@ pipelines and exploration always talk to the lake the same way:
     objects       small JSON state files on the lake
     staging       API payloads -> staging (Parquet) -> bronze
     export        gold -> Parquet files on the host (Power BI)
+    scd2          simulated SCD type 2 changes on the gold dimensions (separate lake area)
     bootstrap     bucket creation (run by the lake-init service)
     naming        batch ids and partition dates
 """

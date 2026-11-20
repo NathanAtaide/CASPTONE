@@ -22,6 +22,7 @@ API ──staging.write_records──► staging ──staging.promote_to_bronze
 | `objects.py` | Lê e grava pequenos arquivos JSON no lake (estado das cargas). | `mysql_batch` |
 | `staging.py` | **Staging area**: grava registros de API como Parquet e os promove para a bronze. | DAG `example_api_to_bronze` |
 | `export.py` | Exporta datasets da gold para Parquet no host. | DAG `gold_export_powerbi` |
+| `scd2.py` | **Simulação de SCD2** nas dimensões da gold (`gld_dim_product`, `gld_dim_customer`): valida a mudança pelo tipo SCD de cada coluna, fecha/abre versões, regrava a `gld_fact_sales` com as chaves buscadas de novo e guarda o histórico de cada cenário. Grava só em `s3://gold/_simulation/`. | DAG `gold_scd2_simulation` |
 | `bootstrap.py` | Cria os buckets e a regra de expiração da staging (`python -m lakehouse.bootstrap`). | serviço `lake-init` |
 | `naming.py` | Identificador de lote (`safe_name`) e data de partição (`partition_date`). | DAGs |
 
@@ -37,6 +38,7 @@ API ──staging.write_records──► staging ──staging.promote_to_bronze
 | área de teste da carga em lotes | `s3://bronze/_test/mysql/<dataset>/...` (estado em `s3://bronze/_state/_test/mysql/...`) | DAG `bronze_mysql_ingestion_test` |
 | silver | `s3://silver/<modelo>.parquet` | dbt |
 | gold | `s3://gold/<modelo>.parquet` | dbt |
+| simulação SCD2 | `s3://gold/_simulation/<cenário>/<lote>/<modelo>.parquet` (estado em `s3://gold/_simulation/<cenário>/_state.json`) | `scd2` (DAG `gold_scd2_simulation`) |
 
 Os nomes dos buckets vêm de `LAKE_BUCKET_*` (`.env`); use `LakeConfig.from_env().uri("gold", "x.parquet")`
 em vez de escrever o caminho fixo.

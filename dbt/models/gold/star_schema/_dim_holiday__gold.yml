@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: gld_dim_holiday
+    description: >
+      Holiday dimension: one row per holiday in a country on a date (nationwide or regional),
+      from slv_holidays (Nager.Date + Hebcal for Israel), plus row 0 = no holiday. Linked only to
+      gld_fact_event_paid_media; not related to gld_dim_date. SCD type 0.
+    columns:
+      - name: holiday_sk
+        description: "Primary key (surrogate). 0 = no holiday."
+        data_tests:
+          - not_null
+          - unique
+      - name: holiday_id
+        description: "Natural key: country_code-YYYYMMDD-holiday_name (changes if the source renames the holiday)."
+        data_tests:
+          - not_null
+          - unique
+      - name: country_code
+        description: "ISO code of the country; matches gld_dim_market.country_code. 'n/a' on row 0."
+        data_tests:
+          - not_null
+      - name: is_nationwide
+        description: "True when the holiday applies to the whole country. Only these count in gld_dim_campaign_running.is_holiday."
+      - name: subdivision_codes
+        description: "ISO 3166-2 codes of the regions of a regional holiday, comma separated. Null for nationwide holidays."
+      - name: holiday_date
+        description: "Day of the holiday. Null on row 0."
+        data_tests:
+          - not_null:
+              config:
+                where: "holiday_sk <> 0"
+      - name: holiday_date_key
+        description: "holiday_date as YYYYMMDD (attribute only, not a relationship). 0 on row 0."
+        data_tests:
+          - not_null
+      - name: holiday_year
+        description: "Year of the holiday. 0 on row 0."
+        data_tests:
+          - not_null
+      - name: holiday_name
+        description: "Name in English."
+        data_tests:
+          - not_null
+      - name: local_name
+        description: "Name in the local language (Israel: Hebrew)."
+      - name: holiday_types
+        description: "Type(s) of the holiday, comma separated (e.g. Public, Bank)."
+      - name: is_public
+        description: "True when it is a Public holiday in at least one region of the country."

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: gld_dim_type
+    description: >
+      Movement type of an order line: one row per value of slv_order_det.type. Keys 0-3 fixed,
+      0 = unknown (UNK). SCD type 0.
+    columns:
+      - name: type_sk
+        description: "Primary key (surrogate). 0 = unknown type."
+        data_tests:
+          - not_null
+          - unique
+      - name: type
+        description: "Natural key: source value (SALE, RETURN, CANCELLED)."
+        data_tests:
+          - not_null
+          - unique
+      - name: type_desc
+        description: "Sale; Return (left the warehouse and came back); Cancellation (never left the warehouse)."
+        data_tests:
+          - not_null

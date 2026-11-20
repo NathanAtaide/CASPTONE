@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: gld_dim_origin
+    description: >
+      How the order came in: one row per ORDER_ORIGIN x ORDER_CHANEL_TYPE combination found in
+      slv_order_cab (no cartesian product). Keys 0-6 fixed, 0 = unknown. SCD type 0.
+    data_tests:
+      - unique_combination:
+          arguments:
+            combination: [order_origin, order_chanel_type]
+    columns:
+      - name: origin_sk
+        description: "Primary key (surrogate). 0 = unknown origin."
+        data_tests:
+          - not_null
+          - unique
+      - name: order_origin
+        description: "Natural key (part): who sold - PARFOIS, PARFOIS Franchise, ECI, ZALANDO."
+        data_tests:
+          - not_null
+      - name: order_chanel_type
+        description: "Natural key (part): platform - DESKTOP, APP, STORE, ND. Source spelling kept."
+        data_tests:
+          - not_null

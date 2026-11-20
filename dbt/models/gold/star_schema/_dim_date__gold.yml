@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: gld_dim_date
+    description: >
+      Date dimension of the star schema, conformed (shared by gld_fact_sales and
+      gld_fact_event_paid_media). One row per day from the dbt var gold_date_start to
+      gold_date_end (default 2020-01-01 -> 2026-12-31), plus row 0 = unknown date. Attributes
+      from slv_calendar. Relate the facts on date_key (smart key YYYYMMDD).
+    columns:
+      - name: calendar_date
+        description: "Calendar day. Null on row 0."
+        data_tests:
+          - unique
+          - not_null:
+              config:
+                where: "date_key <> 0"
+      - name: date_key
+        description: "Primary key, smart key YYYYMMDD (e.g. 20241129). 0 = unknown date."
+        data_tests:
+          - not_null
+          - unique
+      - name: day_of_month
+        description: "Day of the month, 1-31."
+      - name: day_of_week
+        description: "ISO day of the week: 1 = Monday ... 7 = Sunday. Sort column of day_of_week_name."
+      - name: day_of_week_name
+        description: "Day name (e.g. Thursday)."
+      - name: day_of_week_short
+        description: "Short day name (e.g. Thu)."
+      - name: day_of_year
+        description: "Day of the year, 1-366."
+      - name: date_label
+        description: "Date as text YYYY-MM-DD."
+      - name: iso_week_of_year
+        description: "ISO 8601 week, 1-53."
+      - name: iso_year
+        description: "ISO year the week belongs to (can differ from year_number around 1 January)."
+      - name: iso_year_week
+        description: "ISO year and week as text, YYYY-Www."
+      - name: week_start_date
+        description: "Monday of the ISO week."
+      - name: week_end_date
+        description: "Sunday of the ISO week."
+      - name: month_number
+        description: "Month, 1-12. Sort column of month_name and month_short."
+      - name: month_name
+        description: "Month name (e.g. October)."
+      - name: month_short
+        description: "Short month name (e.g. Oct)."
+      - name: year_month_number
+        description: "Year and month as the integer YYYYMM (numeric sort)."
+      - name: year_month
+        description: "Year and month as text YYYY-MM."
+      - name: year_month_label
+        description: "Year and month for display, Mmm YYYY (e.g. Oct 2024). Sort by year_month_number."
+      - name: month_start_date
+        description: "First day of the month."
+      - name: month_end_date
+        description: "Last day of the month."
+      - name: days_in_month
+        description: "Days in the month, 28-31."
+      - name: is_month_start
+        description: "True on the first day of the month."
+      - name: is_month_end
+        description: "True on the last day of the month."
+      - name: quarter_number
+        description: "Quarter, 1-4."
+      - name: quarter_label
+        description: "Quarter label, Qn."
+      - name: year_quarter_number
+        description: "Year and quarter as the integer YYYYQ."
+      - name: year_quarter
+        description: "Year and quarter as text, YYYY-Qn."
+      - name: quarter_start_date
+        description: "First day of the quarter."
+      - name: quarter_end_date
+        description: "Last day of the quarter."
+      - name: semester_number
+        description: "Semester: 1 = January-June, 2 = July-December."
+      - name: year_semester
+        description: "Year and semester as text, YYYY-Sn."
+      - name: year_number
+        description: "Calendar year."
+      - name: year_start_date
+        description: "1 January of the year."
+      - name: year_end_date
+        description: "31 December of the year."
+      - name: is_leap_year
+        description: "True when the year has 366 days."
+      - name: is_weekend
+        description: "True on Saturday and Sunday (day_of_week 6-7)."

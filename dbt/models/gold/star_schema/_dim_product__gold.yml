@@ -1,0 +1,87 @@
+version: 2
+
+models:
+  - name: gld_dim_product
+    description: >
+      Product dimension (SCD type 2): one row per version of a SKU. The source already versions
+      each prod_cod through prod_spk (exactly one with active_record = true). Without validity
+      dates in the source, every row is valid 1900-01-01 -> 9999-12-31 and is_current =
+      active_record. The fact looks a version up by prod_spk + order date. Inferred members
+      (is_inferred) cover the prod_sfk of the orders missing in slv_product; row 0 = unknown.
+    data_tests:
+      # Exactly one open version per SKU (the inferred members and row 0 have prod_cod 'Unknown').
+      - unique_combination:
+          arguments:
+            combination: [prod_cod]
+          config:
+            where: "is_current and not is_inferred and prod_sk <> 0"
+      # Each prod_spk resolves to exactly one row for any date.
+      - scd2_versions:
+          arguments:
+            version_key: prod_spk
+    columns:
+      - name: prod_sk
+        description: "Primary key (surrogate), one per version. 0 = unknown product."
+        data_tests:
+          - not_null
+          - unique
+      - name: prod_spk
+        description: "Version key of the source (target of slv_order_det.prod_sfk). A prod_spk can have several rows after a SCD2 change. -1 on row 0."
+        data_tests:
+          - not_null
+      - name: prod_cod
+        description: "Natural key: the SKU (6-digit model + suffix). Count distinct prod_cod = kinds of product; count distinct prod_spk = product versions. SCD type 0."
+        data_tests:
+          - not_null
+      - name: cat_des_en
+        description: "Hierarchy level 1: category. SCD type 0."
+        data_tests:
+          - not_null
+      - name: gfa_des_en
+        description: "Hierarchy level 2: family. SCD type 0."
+        data_tests:
+          - not_null
+      - name: gfs_des_en
+        description: "Hierarchy level 3: subfamily. SCD type 0."
+        data_tests:
+          - not_null
+      - name: collection_type
+        description: "Collection type (e.g. Core Collection). 'Unknown' when the source has none. SCD type 0."
+        data_tests:
+          - not_null
+      - name: sea_cod
+        description: "Season code (e.g. 261). 0 when unknown. SCD type 0."
+        data_tests:
+          - not_null
+      - name: active
+        description: "True = active record in the source (active_record). SCD type 2."
+        data_tests:
+          - not_null
+      - name: fashiontype
+        description: "Assortment type (e.g. Basic, Continuity, Permanent). NÃO DEFINIDO = not defined in the source. SCD type 2."
+        data_tests:
+          - not_null
+      - name: active_category
+        description: "True = active category (cat_active). SCD type 2."
+        data_tests:
+          - not_null
+      - name: target_description
+        description: "Kind of item (tar_des, e.g. Finished Product). SCD type 0."
+        data_tests:
+          - not_null
+      - name: valid_from
+        description: "First day of the version. 1900-01-01 on the first version."
+        data_tests:
+          - not_null
+      - name: valid_to
+        description: "Last day of the version (next valid_from - 1). 9999-12-31 while open."
+        data_tests:
+          - not_null
+      - name: is_current
+        description: "True = current version of the SKU (exactly one per prod_cod)."
+        data_tests:
+          - not_null
+      - name: is_inferred
+        description: "True = prod_sfk seen in the orders but missing in slv_product (attributes Unknown until it arrives)."
+        data_tests:
+          - not_null

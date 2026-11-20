@@ -21,6 +21,9 @@ gravado no lake e como ler a bronze sem duplicidades.
 | `customer_helpers.sql` | `customer_has_data` | Condição da regra 2.7.1: o cliente tem ao menos um dos campos de cadastro preenchido. Usada em `slv_customers`, `slv_emails` e `slv_sessions` para os três concordarem sobre quais clientes existem. |
 | `cleaning_helpers.sql` | `date_to_key` | Converte uma DATE na chave BIGINT AAAAMMDD (`2024-09-22` → `20240922`) usada nos relacionamentos com `slv_calendar.date_key`. |
 | `cleaning_helpers.sql` | `text_to_date` / `text_to_time` | Separam um texto de data e hora (`AAAA-MM-DD HH:MM:SS`) em DATE e TIME. A hora fica nula quando o texto só tem a data. |
+| `gold_helpers.sql` | `event_key` | Normaliza o nome de um evento de `slv_events` na chave da `gld_dim_event` (`Black Friday App 20% all + 50% selected` → `black_friday_app_20pct_all_50pct_selected`). Mesma regra da `gld_ml_sales`. |
+| `test_helpers.sql` | teste `unique_combination` | Teste genérico: falha quando duas linhas repetem a combinação de colunas. Usado nas PKs compostas das fatos e, com `config: where`, em "uma versão corrente por chave natural". |
+| `test_helpers.sql` | teste `scd2_versions` | Teste genérico das dimensões SCD2: por chave de versão, a primeira versão começa em 1900-01-01, a última termina em 9999-12-31 e cada uma começa no dia seguinte ao fim da anterior. |
 
 ## Macros de limpeza (`cleaning_helpers.sql`)
 

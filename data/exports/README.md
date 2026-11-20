@@ -18,6 +18,11 @@ data/exports/
     └── _manifest.json                      # data/hora (UTC) da exportação e nº de linhas por arquivo
 ```
 
+A DAG `gold_scd2_simulation` grava, ao lado, `scd2_simulation/<cenário>/` com a última versão
+simulada da dimensão alterada e da `gld_fact_sales` (mais `_history.json` com as mudanças do
+cenário). Para ver o efeito no Power BI, troque só esses dois arquivos e mantenha as demais tabelas
+de `powerbi/`.
+
 - Cada execução **substitui** os arquivos (troca atômica: o Power BI nunca lê um arquivo pela metade).
 - Compressão Snappy, a mais compatível com ferramentas de BI.
 

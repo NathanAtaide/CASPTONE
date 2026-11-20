@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: gld_dim_market
+    description: >
+      Market dimension of the star schema, conformed (shared by both facts): one row per market
+      code (MARK_COD) of slv_order_cab, slv_paid_media and slv_events. Keys 0-34 are fixed
+      (0 = unknown); 'Online ND' keeps its own row (ND / Not Defined). SCD: mark_cod and
+      country_code type 0, country_name type 1.
+    columns:
+      - name: mark_sk
+        description: "Primary key (surrogate). 0 = unknown market."
+        data_tests:
+          - not_null
+          - unique
+      - name: mark_cod
+        description: "Natural key: market code of the source (e.g. Online ES, ECI ES)."
+        data_tests:
+          - not_null
+          - unique
+      - name: country_code
+        description: "ISO 3166-1 alpha-2 code of the market's country, from the last word of mark_cod (UK -> GB). Not the customer's country. 'n/a' on row 0, ND for Online ND."
+        data_tests:
+          - not_null
+      - name: country_name
+        description: "Country name, from gld_ref_countries. 'Not Defined' for Online ND, 'Unknown' on row 0."
+        data_tests:
+          - not_null

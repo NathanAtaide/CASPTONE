@@ -60,6 +60,9 @@ Fatos que os modelos precisam respeitar:
   d'água em uma consulta). A configuração está em `airflow/dags/config/mysql_tables.yml`, com
   `discover: true`: toda tabela do banco vira um dataset, salvo as unificadas.
 - `s3://bronze/_test/` é a área da DAG `bronze_mysql_ingestion_test`; não é fonte de dados.
+- `s3://gold/_simulation/` é a área da DAG `gold_scd2_simulation` (mudanças SCD2 simuladas nas
+  dimensões do *star schema*, `dbt/models/gold/star_schema/`); não é fonte de dados nem vai para o
+  Power BI.
 - Os nomes dos buckets vêm de variáveis `LAKE_BUCKET_*`. No código Python use
   `LakeConfig.from_env().uri("silver", "x.parquet")`; não escreva `s3://silver/...` fixo.
 
@@ -333,6 +336,7 @@ conexões e caminhos manualmente; lógica nova e reutilizável entra aqui.
 | `staging.promote_to_bronze(*, source, entity, batch_id, load_date)` | Staging → bronze com colunas de linhagem. |
 | `export.export_gold(datasets=None, *, subdir="powerbi")`, `export.list_gold_datasets()` | Gold → Parquet no host. |
 | `naming.safe_name(run_id)`, `naming.partition_date(dt)`, `naming.utc_timestamp()` | Identificador de lote, data de partição no fuso da plataforma, carimbo UTC. |
+| `scd2.plan_change(...)`, `.apply_change(plan)`, `.rebuild_fact(plan, change)`, `.publish(...)` | Simulação de SCD2 em `gld_dim_product` / `gld_dim_customer`, gravada em `s3://gold/_simulation/`. |
 
 Caminhos dentro do container do Airflow: DAGs em `/opt/airflow/dags`, pacote em
 `/opt/platform/src`, projeto dbt em `/opt/platform/dbt` (`$DBT_PROJECT_DIR`), binário do dbt em
@@ -386,7 +390,10 @@ fica bloqueado para o segundo processo.
 **Estado em 12/10/2026 (atualize ou apague este parágrafo):** as imagens constroem e os serviços
 sobem. A execução das DAGs, do pacote `lakehouse` e do projeto dbt ainda não foi confirmada num
 ambiente real. Trate o código existente como referência de estilo, não como código comprovado; se
-um erro apontar para ele, corrija na origem em vez de contornar na DAG nova.
+um erro apontar para ele, corrija na origem em vez de contornar na DAG nova. Em 20/11/2026 o
+`dbt build` do *star schema* (`models/gold/star_schema`, 117 nós) e a DAG `gold_scd2_simulation`
+rodaram com sucesso no ambiente local. A gravação em `./data/exports` falha enquanto
+`AIRFLOW_UID` (hoje 50000) não for o dono da pasta no host.
 
 ## 9. O que informar ao pedir uma pipeline
 

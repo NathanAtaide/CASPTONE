@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: gld_ref_countries
+    description: >
+      Lookup of the star schema: ISO 3166-1 alpha-2 country code -> country name, one row per
+      marketplace country. Fills gld_dim_market.country_name; not related to the facts.
+    columns:
+      - name: country_code
+        description: "ISO 3166-1 alpha-2 code (GB for the United Kingdom)."
+        data_tests:
+          - not_null
+          - unique
+      - name: country_name
+        description: "Country name in English."
+        data_tests:
+          - not_null
