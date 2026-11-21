@@ -77,7 +77,7 @@ Esta é a decisão mais importante. A maior parte dos pedidos **não** precisa d
 | Validação de dados | `data_tests` no `.yml` do modelo | Não. `dbt build` roda os testes. |
 | Trazer mais uma tabela do MySQL | já é carregada sozinha (`discover: true`); declare o dataset em `dbt/models/bronze/_bronze__sources.yml`. Edite `airflow/dags/config/mysql_tables.yml` só para unificar tabelas ou mudar o lote | Não. |
 | Nova API ou arquivo externo | nova DAG no padrão staging → bronze (seção 4) + fonte no dbt | Sim. |
-| Levar um dado ao Power BI | criar o modelo gold; a exportação é automática | Não. |
+| Levar um dado ao Power BI | criar o modelo gold; a exportação é automática. O modelo do Power BI (tabelas, relacionamentos, medidas) está em `dbt/models/gold/star_schema/README.md` | Não. |
 | Processamento que SQL não resolve (parsing complexo, aplicar um modelo de ML, chamada externa por linha) | task Python que lê uma camada e grava Parquet na seguinte com DuckDB | Sim. |
 | Rodar um subconjunto do dbt em outro horário | DAG com `BashOperator` no padrão da `dbt_medallion.py` | Sim. |
 | Função usada por mais de uma DAG ou por notebooks | `src/lakehouse/` | — |
@@ -316,6 +316,33 @@ models:
           - not_null
 ```
 
+### Star schema da gold e Power BI
+
+O modelo dimensional (Kimball) que o Power BI usa está em `dbt/models/gold/star_schema/`:
+- fatos `gld_fact_sales` e `gld_fact_event_paid_media`;
+- nove dimensões `gld_dim_*`, sendo produto e cliente em SCD2;
+- o *lookup* `gld_ref_countries`.
+
+O `README.md` dessa pasta é o contrato completo do modelo: granularidade, chaves, regras de carga e
+SCD2. A seção *Integração com o Power BI* traz:
+- os arquivos a carregar e as consultas Power Query (M) com parâmetros;
+- o dicionário de colunas com os tipos;
+- os relacionamentos, com cardinalidade e direção do filtro;
+- a tabela de data, as colunas ocultas, as ordenações e as medidas DAX.
+
+Em qualquer trabalho de Power BI, leia esse README antes; não deduza o modelo pelos Parquets.
+
+Regras para mudanças no star schema:
+
+- membro desconhecido = 0 em toda dimensão;
+- as chaves fixas não mudam: mercado 0-34, origem 0-6, tipo 0-3, evento 0-33, campanha 0-8. Um
+  valor novo recebe a próxima chave livre;
+- relacionamentos só fato → dimensão (muitos para um, filtro em direção única). Dimensões não se
+  ligam entre si e as duas fatos se cruzam só por `gld_dim_date` e `gld_dim_market`;
+- chaves `integer`, valores em euro `decimal(18,5)`;
+- ao mudar uma coluna, chave ou relacionamento, atualize no mesmo pedido o `.yml` do modelo e a
+  seção *Integração com o Power BI* do README.
+
 ## 6. Pacote `lakehouse` (`src/lakehouse/`)
 
 Disponível nas tasks do Airflow e nos notebooks (`PYTHONPATH`). Use estas funções em vez de montar
@@ -392,8 +419,9 @@ sobem. A execução das DAGs, do pacote `lakehouse` e do projeto dbt ainda não 
 ambiente real. Trate o código existente como referência de estilo, não como código comprovado; se
 um erro apontar para ele, corrija na origem em vez de contornar na DAG nova. Em 20/11/2026 o
 `dbt build` do *star schema* (`models/gold/star_schema`, 117 nós) e a DAG `gold_scd2_simulation`
-rodaram com sucesso no ambiente local. A gravação em `./data/exports` falha enquanto
-`AIRFLOW_UID` (hoje 50000) não for o dono da pasta no host.
+rodaram com sucesso no ambiente local. A `gold_export_powerbi` também, depois que `AIRFLOW_UID` no
+`.env` passou a ser o dono da pasta `./data/exports` no host (1000). Os containers foram recriados
+com essa configuração. O modelo no Power BI ainda não foi montado nem testado.
 
 ## 9. O que informar ao pedir uma pipeline
 
