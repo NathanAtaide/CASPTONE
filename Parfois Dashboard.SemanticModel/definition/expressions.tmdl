@@ -1,0 +1,8 @@
+/// Folder with the gold Parquet exports (data/exports/powerbi), ending with a backslash. Written by the gold_export_powerbi DAG.
+expression GoldFolder = "C:\Users\natha\Downloads\CAPSTONE\CASPTONE\data\exports\powerbi\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e1d29477-f44b-5b5f-8d8a-29c44eb6fac0
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Parfois Dashboard"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "531cf912-84ee-478d-81bb-aab5e3698269"
+  }
+}

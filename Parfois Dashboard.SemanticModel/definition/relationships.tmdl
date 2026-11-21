@@ -1,0 +1,44 @@
+relationship 730ea485-ac43-5326-a5e0-1985af8f209a
+	fromColumn: Sales.'Order Date Key'
+	toColumn: Date.'Date Key'
+
+relationship 3dee3801-b70f-5f55-9b9b-d507612ca044
+	fromColumn: Sales.'Product Key'
+	toColumn: Product.'Product Key'
+
+relationship d491a8db-831d-503d-bc30-e5edba5f3ad1
+	fromColumn: Sales.'Movement Type Key'
+	toColumn: 'Movement Type'.'Movement Type Key'
+
+relationship 6061430f-5673-5d08-b428-72574458879e
+	fromColumn: Sales.'Customer Key'
+	toColumn: Customer.'Customer Key'
+
+relationship c116a49b-5676-550f-affe-e1c675738da0
+	fromColumn: Sales.'Market Key'
+	toColumn: Market.'Market Key'
+
+relationship a50425e5-a1c2-5975-9136-6c9f8bd27e23
+	fromColumn: Sales.'Origin Key'
+	toColumn: Origin.'Origin Key'
+
+relationship 8084d9ca-0a49-5ce3-9cb8-b14d4c913ac3
+	fromColumn: Sales.'Campaign Context Key'
+	toColumn: 'Campaign Context'.'Campaign Context Key'
+
+relationship 5d31d5ca-41ef-5224-ad55-5546c01c7ba3
+	fromColumn: 'Marketing Activity'.'Date Key'
+	toColumn: Date.'Date Key'
+
+relationship ac4cad2c-aa75-5391-acd6-9ca3a436bc22
+	fromColumn: 'Marketing Activity'.'Market Key'
+	toColumn: Market.'Market Key'
+
+relationship 68eb154b-0242-5c60-b424-bb1bb27c0505
+	fromColumn: 'Marketing Activity'.'Event Key'
+	toColumn: Event.'Event Key'
+
+relationship 1daad085-ecd4-5e7a-b0bd-4ddddff9a650
+	fromColumn: 'Marketing Activity'.'Holiday Key'
+	toColumn: Holiday.'Holiday Key'
+

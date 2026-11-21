@@ -1,0 +1,138 @@
+/// Sales fact (gld_fact_sales): one row per product version x movement type in an order. Movement Type Key 1 = sale, 2 = return, 3 = cancellation. Amounts in EUR without VAT.
+table Sales
+	lineageTag: fed36d07-da24-54eb-8eb0-e331ccdaa8e9
+
+	/// Order number (degenerate dimension). Count orders with DISTINCTCOUNT.
+	column 'Order ID'
+		dataType: string
+		lineageTag: 233d80a2-0eda-5106-9a3b-770a2db19481
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9fabe84d-d612-5127-88b0-a3b577a4c784
+		summarizeBy: none
+		sourceColumn: prod_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 = sale, 2 = return, 3 = cancellation.
+	column 'Movement Type Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 95bd347d-019b-5364-8797-d15359f72c94
+		summarizeBy: none
+		sourceColumn: type_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c2664f05-c074-5d84-abfc-6b4c46c22b35
+		summarizeBy: none
+		sourceColumn: order_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9a92c4a2-b300-597d-9235-0c0575f8bd73
+		summarizeBy: none
+		sourceColumn: customer_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Market Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 61d83474-8098-5d0a-9da8-1b42541a7343
+		summarizeBy: none
+		sourceColumn: mark_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Origin Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a155436e-0387-53be-a2d6-f93cf75c68b4
+		summarizeBy: none
+		sourceColumn: origin_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	/// True when the order was placed by a registered customer, false for guests.
+	column 'Registered Customer'
+		dataType: boolean
+		isHidden
+		lineageTag: adde7fff-900c-5729-9fce-3baaa02664f9
+		summarizeBy: none
+		sourceColumn: is_registered
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Campaign Context Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 32639ac1-0822-537f-9646-375cd32d6f81
+		summarizeBy: none
+		sourceColumn: campaign_running_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Units: positive for sales, negative for returns and cancellations.
+	column Quantity
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 33ca4e59-2965-5fe4-85ea-12bc666d70b9
+		summarizeBy: none
+		sourceColumn: prod_qty
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Amount paid, EUR, without VAT, with discount. Negative when money goes back.
+	column 'Net Amount'
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: bcb1d0b7-2ca6-5404-9426-a1f8cf18bd68
+		summarizeBy: none
+		sourceColumn: amount_fixed_rate_w_disc_wo_vat
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Catalog price, EUR, without VAT and without discount.
+	column 'Full Price Amount'
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: e74da320-5d4a-54fa-a860-1926db7d0bd9
+		summarizeBy: none
+		sourceColumn: amount_fixed_rate_wo_disc_wo_vat
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_fact_sales.parquet")),
+				    Selected = Table.SelectColumns(Source, {"order_id", "prod_sk", "type_sk", "order_date_key", "customer_sk", "mark_sk", "origin_sk", "is_registered", "campaign_running_sk", "prod_qty", "amount_fixed_rate_w_disc_wo_vat", "amount_fixed_rate_wo_disc_wo_vat"})
+				in
+				    Selected
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,259 @@
+/// Calendar 2020-01-01 to 2026-12-31 (gld_dim_date without the unknown row 0). Marked as date table.
+table Date
+	lineageTag: 12f4de99-9193-57af-889f-749cc99568f0
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: a9d46515-5d14-513e-9d73-b6ccf5851ef7
+		summarizeBy: none
+		sourceColumn: calendar_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6db7575a-ef73-50f4-a49e-98695c03a8d0
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 02264235-1af9-5ee6-bc4c-25758b4f8807
+		summarizeBy: none
+		sourceColumn: day_of_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Weekday Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 06b845ea-58a5-5ed3-8eec-7fdd4d5d834a
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weekday
+		dataType: string
+		lineageTag: bd64f82d-a2da-5428-b460-bacb26aca273
+		summarizeBy: none
+		sourceColumn: day_of_week_name
+		sortByColumn: 'Weekday Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Weekday Short'
+		dataType: string
+		lineageTag: 7471f3f5-0e2a-5196-9080-5115397b6641
+		summarizeBy: none
+		sourceColumn: day_of_week_short
+		sortByColumn: 'Weekday Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ISO Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: e0e6cf46-b98f-51cd-83ae-0ef78717490c
+		summarizeBy: none
+		sourceColumn: iso_week_of_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Week Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: b9c31bd3-2ed4-5664-b6c6-8ef6eb5a6d34
+		summarizeBy: none
+		sourceColumn: week_start_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2c98b2ba-c91a-5d36-97dd-fdbbc83c5f5d
+		summarizeBy: none
+		sourceColumn: month_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: 4d967214-f481-5a31-b3fc-f1f1e5a6503d
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Short'
+		dataType: string
+		lineageTag: 9ddf0a9e-d749-57b4-8c3a-c8c327c0c80a
+		summarizeBy: none
+		sourceColumn: month_short
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ee380a1c-1bfa-51c3-86b8-f5846cd95ae5
+		summarizeBy: none
+		sourceColumn: year_month_number
+
+		annotation SummarizationSetBy = Automatic
+
+	/// YYYY-MM
+	column 'Year Month Code'
+		dataType: string
+		lineageTag: 39e984e8-02e9-5508-9f9b-0da5a1703134
+		summarizeBy: none
+		sourceColumn: year_month
+		sortByColumn: 'Year Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Mon YYYY, e.g. Nov 2025
+	column 'Year Month'
+		dataType: string
+		lineageTag: c9c4bc7b-f868-5fa9-968d-3649eee84551
+		summarizeBy: none
+		sourceColumn: year_month_label
+		sortByColumn: 'Year Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: e3833ef1-ef8f-570d-91fd-6c577b0b776d
+		summarizeBy: none
+		sourceColumn: month_start_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Month End'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 97a68668-9e13-5570-8e23-4784c80857e7
+		summarizeBy: none
+		sourceColumn: month_end_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Days in Month'
+		dataType: int64
+		formatString: 0
+		lineageTag: b550e847-3041-5ded-a32b-b01fa81a5d18
+		summarizeBy: none
+		sourceColumn: days_in_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quarter Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2a0cbdec-031e-54b2-b57b-30b0ede56e4f
+		summarizeBy: none
+		sourceColumn: quarter_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		lineageTag: cf409c8b-c20c-501b-a6c4-220cd15f1a4e
+		summarizeBy: none
+		sourceColumn: quarter_label
+		sortByColumn: 'Quarter Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 30129aeb-3b84-5aeb-9114-c6c1e5626c4d
+		summarizeBy: none
+		sourceColumn: year_quarter_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter'
+		dataType: string
+		lineageTag: 076e6fab-d995-5061-9cf5-67947daf505d
+		summarizeBy: none
+		sourceColumn: year_quarter
+		sortByColumn: 'Year Quarter Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: fa79d36c-2ca6-5078-b2a2-53ab834c5f03
+		summarizeBy: none
+		sourceColumn: year_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		dataType: boolean
+		lineageTag: db8bb9a6-85fa-5485-840f-d892039cc63a
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy Calendar
+		lineageTag: 222bc71f-6cad-5398-9688-810c8248ee39
+
+		level Year
+			lineageTag: 39f9f320-2393-5ebf-92ea-8108b4ee8cb4
+			column: Year
+
+		level Quarter
+			lineageTag: 5cdeca7d-08d4-54ac-8b87-718fc1a26669
+			column: Quarter
+
+		level Month
+			lineageTag: 45b5bdb1-5ad5-57f8-acb5-c469c0ea3980
+			column: Month
+
+		level Date
+			lineageTag: 4d30a3a8-516b-5014-9163-d5ecbef44dfa
+			column: Date
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_date.parquet")),
+				    Selected = Table.SelectColumns(Source, {"calendar_date", "date_key", "day_of_month", "day_of_week", "day_of_week_name", "day_of_week_short", "iso_week_of_year", "week_start_date", "month_number", "month_name", "month_short", "year_month_number", "year_month", "year_month_label", "month_start_date", "month_end_date", "days_in_month", "quarter_number", "quarter_label", "year_quarter_number", "year_quarter", "year_number", "is_weekend"}),
+				    NoUnknown = Table.SelectRows(Selected, each [date_key] <> 0)
+				in
+				    NoUnknown
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,127 @@
+/// Product version (gld_dim_product, SCD2). Sales show the attributes valid on the order date.
+table Product
+	lineageTag: e81eee5c-3bf3-5282-bb60-2242b7c2b2d4
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a7be274e-5d9a-57bb-ae8b-d160ecf42fd1
+		summarizeBy: none
+		sourceColumn: prod_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Code'
+		dataType: string
+		lineageTag: 39c0767d-09a6-577e-8180-766d1fba1e62
+		summarizeBy: none
+		sourceColumn: prod_cod
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: c39fc52b-1750-5105-bb3f-7bb65931fe54
+		summarizeBy: none
+		sourceColumn: cat_des_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column Family
+		dataType: string
+		lineageTag: 2c4fcca9-b349-5f12-a124-91dae159cfb2
+		summarizeBy: none
+		sourceColumn: gfa_des_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subfamily
+		dataType: string
+		lineageTag: 1b15a259-165a-5d5e-9145-45354b94e06d
+		summarizeBy: none
+		sourceColumn: gfs_des_en
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Collection Type'
+		dataType: string
+		lineageTag: 3c677a84-ad03-5c0c-867e-96ee23566b00
+		summarizeBy: none
+		sourceColumn: collection_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Season
+		dataType: int64
+		formatString: 0
+		lineageTag: 34c150ed-200f-57c6-a1f0-1aa5019abb08
+		summarizeBy: none
+		sourceColumn: sea_cod
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fashion Type'
+		dataType: string
+		lineageTag: 25ec6a2e-5a1d-5c53-b9c6-2841bf9c59fb
+		summarizeBy: none
+		sourceColumn: fashiontype
+
+		annotation SummarizationSetBy = Automatic
+
+	column Target
+		dataType: string
+		lineageTag: 4d5b9f27-8771-54f0-8107-0f300fb0649f
+		summarizeBy: none
+		sourceColumn: target_description
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Current Version'
+		dataType: boolean
+		isHidden
+		lineageTag: 69b9eb72-584c-572d-a13f-48b843aa842b
+		summarizeBy: none
+		sourceColumn: is_current
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Inferred'
+		dataType: boolean
+		isHidden
+		lineageTag: 8bfdfbd2-8ec1-57bb-ae60-b76232e0651c
+		summarizeBy: none
+		sourceColumn: is_inferred
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Product Hierarchy'
+		lineageTag: f43accf5-c9b3-5f4a-b75f-738904221258
+
+		level Category
+			lineageTag: d69cf7e9-154a-5b4a-997a-46126a4debe6
+			column: Category
+
+		level Family
+			lineageTag: 546ba3dc-88a6-5c10-b1c7-04d4b778951f
+			column: Family
+
+		level Subfamily
+			lineageTag: ad14ad7f-4374-59f7-a8ab-67a662d4c410
+			column: Subfamily
+
+		level 'Product Code'
+			lineageTag: 5f19d3e0-abd6-52ea-b21d-a014da58a67a
+			column: 'Product Code'
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_product.parquet")),
+				    Selected = Table.SelectColumns(Source, {"prod_sk", "prod_cod", "cat_des_en", "gfa_des_en", "gfs_des_en", "collection_type", "sea_cod", "fashiontype", "target_description", "is_current", "is_inferred"})
+				in
+				    Selected
+
+	annotation PBI_ResultType = Table
+

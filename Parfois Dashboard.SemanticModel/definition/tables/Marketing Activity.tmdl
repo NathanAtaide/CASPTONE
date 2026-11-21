@@ -1,0 +1,65 @@
+/// Marketing context fact (gld_fact_event_paid_media): one row per market x day x event x holiday. Paid media is written once per market and day, so SUM never double counts.
+table 'Marketing Activity'
+	lineageTag: 738cb3c2-aebb-5835-8df2-6682f1be4883
+
+	column 'Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 95df20f8-4c0d-5038-b2e7-0b542742feee
+		summarizeBy: none
+		sourceColumn: date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Market Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c149eb3c-5936-530e-94be-b5dfea7e49f3
+		summarizeBy: none
+		sourceColumn: mark_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Event Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2a5dc86d-afca-520b-92f4-6dbe4d347cfb
+		summarizeBy: none
+		sourceColumn: event_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Holiday Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 40433749-1e4c-54de-97c2-78789e158c6d
+		summarizeBy: none
+		sourceColumn: holiday_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Paid media spend of the market on the day (EUR).
+	column 'Paid Media Amount'
+		dataType: double
+		isHidden
+		formatString: #,0.00
+		lineageTag: 3f1199be-d3f7-52f8-95cb-2fa46ee39832
+		summarizeBy: none
+		sourceColumn: amount_paid_media
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Marketing Activity' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_fact_event_paid_media.parquet"))
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

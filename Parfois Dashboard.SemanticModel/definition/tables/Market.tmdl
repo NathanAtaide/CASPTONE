@@ -1,0 +1,81 @@
+/// Market where the sale was registered (gld_dim_market). Country is the market's country, not the customer's.
+table Market
+	lineageTag: 4efa27c6-5f60-54af-a951-068a44fa01d8
+
+	column 'Market Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7a02d895-c180-52ff-9851-ce042614770e
+		summarizeBy: none
+		sourceColumn: mark_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Market code of the source, e.g. Online ES, ECI ES.
+	column Market
+		dataType: string
+		lineageTag: cc6ec39a-50f8-5a23-8d29-7a7c662d9c86
+		summarizeBy: none
+		sourceColumn: mark_cod
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Country Code'
+		dataType: string
+		lineageTag: 4ce03298-5ba1-5a3e-8c91-f06d73c93a8c
+		summarizeBy: none
+		sourceColumn: country_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 20883861-8ca5-5fbb-8876-70b768b38107
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: country_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Europe, Rest of world or Not defined (built in Power Query from the country code).
+	column Region
+		dataType: string
+		lineageTag: 7b982094-f87c-513c-bebc-39e15f4ce8bc
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Store front of the market: Parfois Online or the marketplace name.
+	column 'Market Channel'
+		dataType: string
+		lineageTag: 6f96aa06-37a6-53c0-a7cb-07341fd3a10d
+		summarizeBy: none
+		sourceColumn: market_channel
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Market = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_market.parquet")),
+				    Europe = {"PT", "ES", "GB", "DE", "CH", "SK", "FI", "IT", "FR", "LU", "IE", "AT", "LV", "SI", "PL", "HU", "NL", "CZ", "BE", "EE", "DK", "SE", "LT"},
+				    WithRegion = Table.AddColumn(Source, "region", each
+				        if List.Contains(Europe, [country_code]) then "Europe"
+				        else if [country_code] = "ND" or [country_code] = "n/a" then "Not defined"
+				        else "Rest of world", type text),
+				    WithChannel = Table.AddColumn(WithRegion, "market_channel", each
+				        let prefix = Text.Upper(Text.BeforeDelimiter(Text.Trim([mark_cod]), " ")) in
+				        if prefix = "ONLINE" then "Parfois Online"
+				        else if prefix = "ECI" then "El Corte Inglés"
+				        else if prefix = "ZALANDO" then "Zalando"
+				        else if prefix = "HEPSIBURADA" then "Hepsiburada"
+				        else if prefix = "TRENDYOL" then "Trendyol"
+				        else "Unknown", type text)
+				in
+				    WithChannel
+
+	annotation PBI_ResultType = Table
+

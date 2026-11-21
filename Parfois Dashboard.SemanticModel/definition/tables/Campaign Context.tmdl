@@ -1,0 +1,59 @@
+/// Marketing context of the market on the order date: paid media, commercial event and nationwide holiday flags.
+table 'Campaign Context'
+	lineageTag: 8b212379-6a9a-5202-ad10-28297f6d0ed6
+
+	column 'Campaign Context Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 300f28ab-3886-59af-81c3-5e65ad5b85e8
+		summarizeBy: none
+		sourceColumn: campaign_running_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Has Paid Media'
+		dataType: boolean
+		lineageTag: 97dfa2ab-3e5f-5986-b924-5ac2b6a2b2a4
+		summarizeBy: none
+		sourceColumn: has_paid_media
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Has Event'
+		dataType: boolean
+		lineageTag: 2d32384b-42f5-5f60-a5fa-47a8626d1a58
+		summarizeBy: none
+		sourceColumn: has_event
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Nationwide holiday in the market's country.
+	column 'Is Holiday'
+		dataType: boolean
+		lineageTag: 08e65a4b-79d0-58fb-b0e6-e19f31d7ace0
+		summarizeBy: none
+		sourceColumn: is_holiday
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Campaign Context'
+		dataType: string
+		lineageTag: ac3ab1d4-c789-55f7-a723-60e236abd0cf
+		summarizeBy: none
+		sourceColumn: campaign_label
+		sortByColumn: 'Campaign Context Key'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Campaign Context' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_campaign_running.parquet")),
+				    Labeled = Table.TransformColumns(Source, {{"campaign_label", each if _ = "No" then "No campaign" else _, type text}})
+				in
+				    Labeled
+
+	annotation PBI_ResultType = Table
+

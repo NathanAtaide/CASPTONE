@@ -1,0 +1,74 @@
+/// Commercial events of parfois.com (gld_dim_event) with readable names.
+table Event
+	lineageTag: 26ebceb7-ecf5-57f1-b254-d554c8ac9d7e
+
+	column 'Event Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 08f1d519-be04-5d99-afec-4c4cdf8a78c7
+		summarizeBy: none
+		sourceColumn: event_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Event Code'
+		dataType: string
+		isHidden
+		lineageTag: 65c5fb56-dce8-5c43-bbb6-97e331a11cbb
+		summarizeBy: none
+		sourceColumn: event
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Event Type Code'
+		dataType: string
+		isHidden
+		lineageTag: 4d1955b0-481f-588d-b828-9b03d79c426d
+		summarizeBy: none
+		sourceColumn: macro_event_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Event
+		dataType: string
+		lineageTag: d1152e84-057f-535c-87d5-65926d8548be
+		summarizeBy: none
+		sourceColumn: event_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Event Type'
+		dataType: string
+		lineageTag: 86edf59d-cd9c-5607-bb65-494ef200f433
+		summarizeBy: none
+		sourceColumn: event_type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Event = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_event.parquet")),
+				    Named = Table.AddColumn(Source, "event_name", each
+				        if [event_sk] = 0 then "No event"
+				        else Text.Replace(Text.Replace(Text.Replace(
+				            Text.Proper(Text.Replace([event], "_", " ")), "Pct", "%"), " Ss", " SS"), " Fw", " FW"),
+				        type text),
+				    Typed = Table.AddColumn(Named, "event_type", each
+				        if [macro_event_type] = "BLACK_FRIDAY" then "Black Friday"
+				        else if [macro_event_type] = "CHRISTMAS" then "Christmas"
+				        else if [macro_event_type] = "REYES" then "Three Kings Day"
+				        else if [macro_event_type] = "MOTHERS_DAY" then "Mothers Day"
+				        else if [macro_event_type] = "VALENTINES" then "Valentines Day"
+				        else if [macro_event_type] = "EASTER" then "Easter"
+				        else if [macro_event_type] = "SINGLES_DAY" then "Singles Day"
+				        else if [macro_event_type] = "NONE" then "Seasonal and other"
+				        else if [macro_event_type] = "NO_EVENT" then "No event"
+				        else Text.Proper(Text.Replace([macro_event_type], "_", " ")), type text)
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

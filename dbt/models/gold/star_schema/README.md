@@ -128,6 +128,24 @@ do Power BI sem consultar outro arquivo. As tabelas e colunas do Power BI têm e
 dos arquivos e das colunas abaixo. A descrição de cada coluna está no `_<modelo>__gold.yml` desta
 pasta e pode ir para o campo *Descrição* da coluna no Power BI.
 
+O dashboard de apresentação (`Parfois Dashboard.pbip`, na raiz do repositório; ver a seção 8 do
+README principal) implementa este contrato com nomes amigáveis em inglês. O `sourceColumn` de cada
+coluna continua sendo o nome da coluna no Parquet:
+
+| Modelo | Tabela no dashboard |
+|---|---|
+| `gld_fact_sales` | `Sales` |
+| `gld_fact_event_paid_media` | `Marketing Activity` |
+| `gld_dim_date` | `Date` |
+| `gld_dim_market` | `Market` (+ colunas `Region` e `Market Channel`, criadas no Power Query) |
+| `gld_dim_origin` | `Origin` (`Origin`, `Origin Type` e `Platform` com rótulos legíveis) |
+| `gld_dim_type` | `Movement Type` |
+| `gld_dim_product` | `Product` |
+| `gld_dim_customer` | `Customer` (só chave, ID, país, newsletter e origem da inscrição) |
+| `gld_dim_campaign_running` | `Campaign Context` (`No` aparece como `No campaign`) |
+| `gld_dim_event` | `Event` (nome do evento e tipo legíveis) |
+| `gld_dim_holiday` | `Holiday` |
+
 ### 1. Origem dos dados
 
 | Item | Definição |

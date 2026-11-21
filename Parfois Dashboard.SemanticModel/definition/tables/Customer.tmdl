@@ -1,0 +1,59 @@
+/// Customer version (gld_dim_customer, SCD2). Count people with Customer ID, never with the key.
+table Customer
+	lineageTag: 7f09c7e3-0182-5cf5-840d-7b25c6479dd2
+
+	column 'Customer Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 675c8e6f-37a1-56d5-ad53-7349eafb1865
+		summarizeBy: none
+		sourceColumn: customer_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 88413558-e981-5af0-b250-c5ffc4e1fe0a
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Country'
+		dataType: string
+		lineageTag: b90d2942-e73e-583a-9557-a66af9628820
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Newsletter Status'
+		dataType: string
+		lineageTag: e36baab5-b298-58eb-abd5-8ee4b47cd241
+		summarizeBy: none
+		sourceColumn: newsletter_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Subscription Source'
+		dataType: string
+		lineageTag: e78f3d8f-53e2-56d8-97d3-39a4bf70e548
+		summarizeBy: none
+		sourceColumn: subscription_source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customer = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_customer.parquet")),
+				    Selected = Table.SelectColumns(Source, {"customer_sk", "customer_id", "country", "newsletter_status", "subscription_source"})
+				in
+				    Selected
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,101 @@
+/// Who sold and through which platform (gld_dim_origin), with friendly names.
+table Origin
+	lineageTag: 184f0ab6-22b4-5c96-89c3-a8c2fb1fda87
+
+	column 'Origin Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1ec2f289-731c-5184-84cc-92143bc69407
+		summarizeBy: none
+		sourceColumn: origin_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Origin Code'
+		dataType: string
+		isHidden
+		lineageTag: 9f664ff1-07fc-528b-a2d5-0ff122cffc75
+		summarizeBy: none
+		sourceColumn: order_origin
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Platform Code'
+		dataType: string
+		isHidden
+		lineageTag: 4af34dc3-3899-51e1-b9f5-d8f07be73a7c
+		summarizeBy: none
+		sourceColumn: order_chanel_type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Parfois Online, Parfois Franchise, El Corte Inglés or Zalando.
+	column Origin
+		dataType: string
+		lineageTag: 9d6229df-2530-5071-8726-c49406e5b866
+		summarizeBy: none
+		sourceColumn: origin_name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Own e-commerce, Marketplace or Franchise.
+	column 'Origin Type'
+		dataType: string
+		lineageTag: d94b88bf-5577-5294-87b8-d8506e80f7a8
+		summarizeBy: none
+		sourceColumn: origin_type
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Web, App, Store or Not defined (marketplaces and franchise).
+	column Platform
+		dataType: string
+		lineageTag: 2b087197-ed35-5b94-9ecf-994fac4819d0
+		summarizeBy: none
+		sourceColumn: platform
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Origin Hierarchy'
+		lineageTag: 903c265b-1a47-5d18-913c-45e2b1987445
+
+		level 'Origin Type'
+			lineageTag: a4c409b0-7eff-581a-b97b-3a2fc65f9a77
+			column: 'Origin Type'
+
+		level Origin
+			lineageTag: ef678aa1-fe3b-57dd-be29-08452b1b37d9
+			column: Origin
+
+		level Platform
+			lineageTag: 4b237b4d-dd06-5f35-9dc2-1ad9e1f930e9
+			column: Platform
+
+	partition Origin = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_origin.parquet")),
+				    WithName = Table.AddColumn(Source, "origin_name", each
+				        if [order_origin] = "PARFOIS" then "Parfois Online"
+				        else if [order_origin] = "PARFOIS Franchise" then "Parfois Franchise"
+				        else if [order_origin] = "ECI" then "El Corte Inglés"
+				        else if [order_origin] = "ZALANDO" then "Zalando"
+				        else [order_origin], type text),
+				    WithType = Table.AddColumn(WithName, "origin_type", each
+				        if [order_origin] = "PARFOIS" then "Own e-commerce"
+				        else if [order_origin] = "PARFOIS Franchise" then "Franchise"
+				        else if [order_origin] = "Unknown" then "Unknown"
+				        else "Marketplace", type text),
+				    WithPlatform = Table.AddColumn(WithType, "platform", each
+				        if [order_chanel_type] = "APP" then "App"
+				        else if [order_chanel_type] = "DESKTOP" then "Web"
+				        else if [order_chanel_type] = "STORE" then "Store"
+				        else if [order_chanel_type] = "ND" then "Not defined"
+				        else [order_chanel_type], type text)
+				in
+				    WithPlatform
+
+	annotation PBI_ResultType = Table
+

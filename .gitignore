@@ -25,6 +25,11 @@ __pycache__/
 .ipynb_checkpoints/
 .venv/
 
+# --- Power BI project (PBIP) ------------------------------------------------
+# cache.abf holds the imported data (hundreds of MB) and localSettings.json is per machine.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
 # --- OS / editors -----------------------------------------------------------
 .DS_Store
 Thumbs.db

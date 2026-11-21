@@ -1,0 +1,42 @@
+/// Movement type of a sales line: Sale, Return (left the warehouse and came back) or Cancellation (never left the warehouse).
+table 'Movement Type'
+	lineageTag: e80508ae-bb9a-5137-90be-1875812a5b97
+
+	column 'Movement Type Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0dbf8c1d-14d4-5ad7-9eff-683803998a2c
+		summarizeBy: none
+		sourceColumn: type_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Movement Code'
+		dataType: string
+		isHidden
+		lineageTag: 90102395-62a8-5bdd-9d7e-bf1cb1ef05ed
+		summarizeBy: none
+		sourceColumn: type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Movement Type'
+		dataType: string
+		lineageTag: d992e180-1166-5223-8335-1a6cd9f564c5
+		summarizeBy: none
+		sourceColumn: type_desc
+		sortByColumn: 'Movement Type Key'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Movement Type' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_type.parquet"))
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

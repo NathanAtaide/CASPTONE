@@ -1,0 +1,1610 @@
+/// Home of every measure of the dashboard, organised in display folders.
+table Metrics
+	lineageTag: dd8eefe6-11f9-5759-be29-6589caeb3338
+
+	/// First day of the month the dashboard is showing: the month picked in the Month slicer, or the latest complete month.
+	measure 'Selected Month Start' = MAX ( 'Month Selector'[Month Start] )
+		formatString: mmm yyyy
+		displayFolder: 0 Period
+		lineageTag: c69bc491-a30d-5189-9d24-5de4c44215a5
+
+	measure 'Selected Month Label' = FORMAT ( [Selected Month Start], "mmmm yyyy", "en-US" )
+		displayFolder: 0 Period
+		lineageTag: 1028899c-8828-5b41-a8e3-b144e9ce49c6
+
+	/// Header subtitle: selected month and the two comparison months.
+	measure 'Report Subtitle' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    FORMAT ( _month, "mmmm yyyy", "en-US" )
+			        & IF ( [Is Provisional], " (provisional)", "" )
+			        & "   ·   vs " & FORMAT ( EDATE ( _month, -1 ), "mmm yyyy", "en-US" )
+			        & " and " & FORMAT ( EDATE ( _month, -12 ), "mmm yyyy", "en-US" )
+		displayFolder: 0 Period
+		lineageTag: 7c261d55-747a-535d-be2c-35fefae98d5d
+
+	/// Header subtitle of the Forecast page.
+	measure 'Forecast Subtitle' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    "Forecast for " & FORMAT ( EDATE ( _month, 1 ), "mmmm yyyy", "en-US" )
+			        & "   ·   accuracy: " & FORMAT ( _month, "mmm yyyy", "en-US" ) & " and the last 6 months"
+		displayFolder: 0 Period
+		lineageTag: 12254837-3a44-5d5c-91a2-f2337dd86d0e
+
+	measure 'Data Through' =
+			VAR _lastKey = CALCULATE ( MAX ( Sales[Order Date Key] ), ALL () )
+			VAR _lastDate = DATE ( INT ( _lastKey / 10000 ), MOD ( INT ( _lastKey / 100 ), 100 ), MOD ( _lastKey, 100 ) )
+			RETURN
+			    "Sales data through " & FORMAT ( _lastDate, "d mmm yyyy", "en-US" )
+		displayFolder: 0 Period
+		lineageTag: 986bc3f9-f659-51bf-a70c-68f96302c3ef
+
+	measure '_Net Sales' = SUM ( Sales[Net Amount] )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 7d070191-cb18-58cb-922e-41af0e698e68
+
+	measure '_Full Price Sales' = SUM ( Sales[Full Price Amount] )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 385e6267-836f-5bfe-a161-5a251ebf84da
+
+	measure '_Gross Sales' = CALCULATE ( [_Net Sales], Sales[Movement Type Key] = 1 )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 906c06c5-6269-5607-9a1c-83bb87b6dbc1
+
+	measure _Returns = CALCULATE ( [_Net Sales], Sales[Movement Type Key] = 2 )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 6f743ad4-7254-5975-a2f8-7cc74956b056
+
+	measure _Cancellations = CALCULATE ( [_Net Sales], Sales[Movement Type Key] = 3 )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 1c3fabb7-2a75-5a28-bd99-d5e6ab965dec
+
+	measure '_Units Sold' = CALCULATE ( SUM ( Sales[Quantity] ), Sales[Movement Type Key] = 1 )
+		formatString: #,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 481dd69a-ec99-5fb6-bc54-a4c5b32abae5
+
+	measure '_Units Returned' = - CALCULATE ( SUM ( Sales[Quantity] ), Sales[Movement Type Key] = 2 )
+		formatString: #,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: a1b440ef-cc27-51ca-b4b1-d1f8ae602959
+
+	measure '_Units Cancelled' = - CALCULATE ( SUM ( Sales[Quantity] ), Sales[Movement Type Key] = 3 )
+		formatString: #,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: ba211662-1614-5236-846b-1f18c707e6a3
+
+	measure _Orders = CALCULATE ( DISTINCTCOUNT ( Sales[Order ID] ), Sales[Movement Type Key] = 1 )
+		formatString: #,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: c1ffa0f8-dbc0-53d6-b72a-d55f9844a9ca
+
+	measure _Customers =
+			CALCULATE (
+			    DISTINCTCOUNT ( Customer[Customer ID] ),
+			    Sales,
+			    Customer[Customer Key] <> 0
+			)
+		formatString: #,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 6a4681c7-89fc-5e8d-8fdf-2e35cbf7116d
+
+	measure '_Paid Media' = SUM ( 'Marketing Activity'[Paid Media Amount] )
+		formatString: \€#,0;-\€#,0;\€#,0
+		isHidden
+		displayFolder: 9 Base
+		lineageTag: 33f5dae3-6e0d-5a0f-a906-9f93460c37a1
+
+	/// Net sales of the selected month (sales + returns + cancellations), EUR without VAT, after discount.
+	measure Revenue =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Net Sales], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 1 Sales
+		lineageTag: 103c7122-4132-566c-81c8-e08031b13195
+
+	/// Sales lines only (movement type 1).
+	measure 'Gross Sales' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Gross Sales], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 1 Sales
+		lineageTag: cd9db9c6-429c-571b-ad95-0753f80392fb
+
+	/// Returned amount (movement type 2), negative.
+	measure Returns =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Returns], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 1 Sales
+		lineageTag: d3051567-66ee-5ef9-9e9b-4a40f45e22c8
+
+	/// Cancelled amount (movement type 3), negative.
+	measure Cancellations =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Cancellations], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 1 Sales
+		lineageTag: 8e054f2d-caca-5147-84bc-ce784350ccb1
+
+	/// Catalog value before discount.
+	measure 'Full Price Sales' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Full Price Sales], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 1 Sales
+		lineageTag: b94c3aab-e73f-5ee2-be09-dd8534e27d59
+
+	/// Distinct orders with at least one sale line.
+	measure Orders =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Orders], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: d40496ae-a6a1-51b0-b48a-bb7cd48359d4
+
+	/// Units on sale lines.
+	measure 'Units Sold' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Units Sold], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: 061eb814-1666-5fd2-92a6-b53a1f7f7c11
+
+	/// Units returned (positive number).
+	measure 'Units Returned' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Units Returned], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: e2b82093-04e9-5e8a-beb8-3ab6b529f532
+
+	/// Units cancelled (positive number).
+	measure 'Units Cancelled' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Units Cancelled], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: ffd34a47-66b6-520b-bb74-0d43cae04776
+
+	/// Units of each movement type as a positive number. Use with Movement Type on the axis.
+	measure 'Units by Movement' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( ABS ( SUM ( Sales[Quantity] ) ), KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: 670de690-2859-55e2-9f82-6f8abe699658
+
+	/// Distinct customers (people, not SCD2 versions).
+	measure Customers =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Customers], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: 478ecc40-2187-5710-acb4-ab45b4a16333
+
+	/// Revenue / Orders.
+	measure 'Average Order Value' = DIVIDE ( [Revenue], [Orders] )
+		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
+		displayFolder: 1 Sales
+		lineageTag: 2941fc61-9fea-5b93-963c-24d547240d5d
+
+	/// Share of the revenue of the markets currently selected.
+	measure 'Revenue Share' = DIVIDE ( [Revenue], CALCULATE ( [Revenue], ALLSELECTED ( Market ) ) )
+		formatString: 0.0%
+		displayFolder: 1 Sales
+		lineageTag: 5bb2e6e1-3f4a-51e1-940e-44fc9bce2dd5
+
+	/// Returned amount / gross sales.
+	measure 'Return Rate' = DIVIDE ( - [Returns], [Gross Sales] )
+		formatString: 0.0%
+		displayFolder: 2 Rates
+		lineageTag: 0850bfc7-d4d9-551b-984a-297e1e07dcc7
+
+	/// Cancelled amount / gross sales.
+	measure 'Cancellation Rate' = DIVIDE ( - [Cancellations], [Gross Sales] )
+		formatString: 0.0%
+		displayFolder: 2 Rates
+		lineageTag: 2009056c-cf1b-556f-82df-2ba7052f3c9a
+
+	/// 1 - revenue / catalog value: average discount given.
+	measure 'Discount Rate' =
+			VAR _fullPrice = [Full Price Sales]
+			RETURN
+			    IF ( NOT ISBLANK ( _fullPrice ) && _fullPrice <> 0, 1 - DIVIDE ( [Revenue], _fullPrice ) )
+		formatString: 0.0%
+		displayFolder: 2 Rates
+		lineageTag: ff04e8a1-99b0-5c4f-90de-1389cd995438
+
+	/// Share of revenue made on market-days with paid media, an event or a nationwide holiday.
+	measure 'Sales Under Campaign %' =
+			DIVIDE (
+			    CALCULATE ( [Revenue], KEEPFILTERS ( 'Campaign Context'[Campaign Context Key] >= 2 ) ),
+			    [Revenue]
+			)
+		formatString: 0.0%
+		displayFolder: 2 Rates
+		lineageTag: ed1fae25-d137-593c-88f0-64d45eac53d5
+
+	/// Paid media spend of the selected month.
+	measure 'Paid Media Spend' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Paid Media], KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 6 Marketing
+		lineageTag: 7ce43dde-f414-59ab-8f7b-4b5377dd9e56
+
+	/// Revenue per euro of paid media (all origins of the selected markets).
+	measure ROAS = DIVIDE ( [Revenue], [Paid Media Spend] )
+		formatString: #,0.0\x
+		displayFolder: 6 Marketing
+		lineageTag: bfa63fca-2835-5f43-8a75-2ce720a6d681
+
+	/// Days of the month with at least one commercial event running.
+	measure 'Event Days' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( CALCULATE ( DISTINCTCOUNT ( 'Marketing Activity'[Date Key] ), 'Marketing Activity'[Event Key] <> 0 ), KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 6 Marketing
+		lineageTag: 0cc80500-813d-5640-a7bb-7e02a78b31f9
+
+	/// Days of the month with a nationwide holiday in at least one selected market.
+	measure 'Holiday Days' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( CALCULATE ( DISTINCTCOUNT ( 'Marketing Activity'[Date Key] ), 'Marketing Activity'[Holiday Key] <> 0, Holiday[Nationwide] = TRUE () ), KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 6 Marketing
+		lineageTag: cbf7d003-293a-5caa-8c26-d14736e93b23
+
+	/// Distinct commercial events active in the month.
+	measure 'Events Running' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( CALCULATE ( DISTINCTCOUNT ( 'Marketing Activity'[Event Key] ), 'Marketing Activity'[Event Key] <> 0 ), KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		displayFolder: 6 Marketing
+		lineageTag: 7bee2f19-529f-50f9-9e45-82d420e4150e
+
+	measure 'Market-Days with Sales' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( COUNTROWS ( SUMMARIZE ( Sales, Sales[Order Date Key], Sales[Market Key] ) ), KEEPFILTERS ( 'Date'[Month Start] = _month ) )
+		formatString: #,0
+		isHidden
+		displayFolder: 6 Marketing
+		lineageTag: 9487dc61-d765-5b15-9e45-2eb2456aa701
+
+	/// Average revenue of one market on one day. Compares campaign contexts fairly.
+	measure 'Avg Revenue per Market-Day' = DIVIDE ( [Revenue], [Market-Days with Sales] )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 6 Marketing
+		lineageTag: 456a4580-38ee-56e9-bc4a-098457fe32ae
+
+	measure 'Event Market-Days' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE (
+			        COUNTROWS ( SUMMARIZE ( 'Marketing Activity', 'Marketing Activity'[Date Key], 'Marketing Activity'[Market Key] ) ),
+			        KEEPFILTERS ( 'Date'[Month Start] = _month ),
+			        'Marketing Activity'[Event Key] <> 0
+			    )
+		formatString: #,0
+		isHidden
+		displayFolder: 6 Marketing
+		lineageTag: 45bb6f0b-c90d-55ce-a05d-f9337776269c
+
+	/// Revenue made in the markets and days where the event applied.
+	measure 'Revenue on Event Days' =
+			VAR _month = [Selected Month Start]
+			VAR _pairs =
+			    CALCULATETABLE (
+			        SUMMARIZE ( 'Marketing Activity', 'Marketing Activity'[Date Key], 'Marketing Activity'[Market Key] ),
+			        KEEPFILTERS ( 'Date'[Month Start] = _month ),
+			        'Marketing Activity'[Event Key] <> 0
+			    )
+			RETURN
+			    CALCULATE ( [_Net Sales], TREATAS ( _pairs, Sales[Order Date Key], Sales[Market Key] ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 6 Marketing
+		lineageTag: 2293f833-8cca-50ef-a564-7fd6762724ea
+
+	/// Revenue on the event days versus a normal day of the same markets in the same month.
+	measure 'Event Uplift %' =
+			-- Expected revenue = for each market, its event days x its average revenue per day in the month.
+			VAR _actual = [Revenue on Event Days]
+			VAR _expected =
+			    SUMX ( VALUES ( Market[Market Key] ), [Event Market-Days] * [Avg Revenue per Market-Day] )
+			RETURN
+			    IF ( NOT ISBLANK ( _actual ) && _expected > 0, DIVIDE ( _actual, _expected ) - 1 )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 6 Marketing
+		lineageTag: a9620125-b657-5744-838d-6b127fb0530e
+
+	measure 'Holiday Market-Days' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE (
+			        COUNTROWS ( SUMMARIZE ( 'Marketing Activity', 'Marketing Activity'[Date Key], 'Marketing Activity'[Market Key] ) ),
+			        KEEPFILTERS ( 'Date'[Month Start] = _month ),
+			        'Marketing Activity'[Holiday Key] <> 0, Holiday[Nationwide] = TRUE ()
+			    )
+		formatString: #,0
+		isHidden
+		displayFolder: 6 Marketing
+		lineageTag: a5021781-40d0-5093-8b42-99fcf7627499
+
+	/// Revenue made in the markets and days where the holiday applied (nationwide holidays only).
+	measure 'Revenue on Holiday Days' =
+			VAR _month = [Selected Month Start]
+			VAR _pairs =
+			    CALCULATETABLE (
+			        SUMMARIZE ( 'Marketing Activity', 'Marketing Activity'[Date Key], 'Marketing Activity'[Market Key] ),
+			        KEEPFILTERS ( 'Date'[Month Start] = _month ),
+			        'Marketing Activity'[Holiday Key] <> 0, Holiday[Nationwide] = TRUE ()
+			    )
+			RETURN
+			    CALCULATE ( [_Net Sales], TREATAS ( _pairs, Sales[Order Date Key], Sales[Market Key] ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 6 Marketing
+		lineageTag: 8b3c8903-1bf7-5932-996b-60c66d7eb3f7
+
+	/// Revenue on the holiday days versus a normal day of the same markets in the same month.
+	measure 'Holiday Uplift %' =
+			-- Expected revenue = for each market, its holiday days x its average revenue per day in the month.
+			VAR _actual = [Revenue on Holiday Days]
+			VAR _expected =
+			    SUMX ( VALUES ( Market[Market Key] ), [Holiday Market-Days] * [Avg Revenue per Market-Day] )
+			RETURN
+			    IF ( NOT ISBLANK ( _actual ) && _expected > 0, DIVIDE ( _actual, _expected ) - 1 )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 6 Marketing
+		lineageTag: 17488e24-14c0-55ef-bc12-5ad4584267e2
+
+	/// Bar colour of the daily chart: taupe = event day, rose = nationwide holiday, black = regular day.
+	measure 'Day Colour' =
+			VAR _month = [Selected Month Start]
+			VAR _event =
+			    CALCULATE ( COUNTROWS ( 'Marketing Activity' ), KEEPFILTERS ( 'Date'[Month Start] = _month ), 'Marketing Activity'[Event Key] <> 0 ) > 0
+			VAR _holiday =
+			    CALCULATE ( COUNTROWS ( 'Marketing Activity' ), KEEPFILTERS ( 'Date'[Month Start] = _month ), 'Marketing Activity'[Holiday Key] <> 0, Holiday[Nationwide] = TRUE () ) > 0
+			RETURN
+			    SWITCH ( TRUE (), _event, "#A58D74", _holiday, "#D9A39A", "#1C1C1C" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 00258b45-5908-58c8-8d0b-848bed3b46bd
+
+	/// Tooltip: events running on the day.
+	measure 'Events on Day' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			CONCATENATEX (
+			    CALCULATETABLE ( VALUES ( Event[Event] ), CALCULATETABLE ( 'Marketing Activity', KEEPFILTERS ( 'Date'[Month Start] = _month ) ), Event[Event Key] <> 0 ),
+			    Event[Event],
+			    ", "
+			)
+		displayFolder: 6 Marketing
+		lineageTag: 6ae6b46c-5154-5a4f-a68a-a23ae91634d5
+
+	/// Tooltip: nationwide holidays on the day.
+	measure 'Holidays on Day' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			CONCATENATEX (
+			    CALCULATETABLE ( VALUES ( Holiday[Holiday] ), CALCULATETABLE ( 'Marketing Activity', KEEPFILTERS ( 'Date'[Month Start] = _month ) ), Holiday[Holiday Key] <> 0, Holiday[Nationwide] = TRUE () ),
+			    Holiday[Holiday],
+			    ", "
+			)
+		displayFolder: 6 Marketing
+		lineageTag: aad984b5-ff7b-594a-9e6e-ad86ecbff9c7
+
+	/// Revenue of the previous month.
+	measure 'Revenue PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Revenue],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: 2176b62e-d119-523d-9127-6ef6d5cd5561
+
+	/// Revenue of the same month last year.
+	measure 'Revenue PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Revenue],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: 71c25fc3-4192-5882-8dc5-5b7b3a919c87
+
+	/// Revenue: change versus the previous month.
+	measure 'Revenue MoM %' =
+			VAR _current = [Revenue]
+			VAR _previous = [Revenue PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 7f53ed6f-d3d0-5349-9ac2-a77e2f6b1516
+
+	/// Revenue: change versus the same month last year.
+	measure 'Revenue YoY %' =
+			VAR _current = [Revenue]
+			VAR _previous = [Revenue PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 0e17eed3-d880-5817-9cd3-db63499b66c2
+
+	measure 'Revenue MoM Colour' =
+			VAR _delta = [Revenue MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 4f83d9bb-6aa0-5317-a0f0-7de7fdfaa702
+
+	measure 'Revenue YoY Colour' =
+			VAR _delta = [Revenue YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 0883ec24-6da0-50e5-ad7e-528c385e7b0b
+
+	/// Orders of the previous month.
+	measure 'Orders PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Orders],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0
+		displayFolder: 3 Comparisons
+		lineageTag: 8ccd8611-b375-5066-9de2-36bef0702e0d
+
+	/// Orders of the same month last year.
+	measure 'Orders PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Orders],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0
+		displayFolder: 3 Comparisons
+		lineageTag: acf82877-9de8-5447-b2d9-fa240ded092b
+
+	/// Orders: change versus the previous month.
+	measure 'Orders MoM %' =
+			VAR _current = [Orders]
+			VAR _previous = [Orders PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 63e33381-08cc-5e6d-931b-8b3e9bb6f32e
+
+	/// Orders: change versus the same month last year.
+	measure 'Orders YoY %' =
+			VAR _current = [Orders]
+			VAR _previous = [Orders PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 75c00df9-988b-5d88-88cf-b202513ea858
+
+	measure 'Orders MoM Colour' =
+			VAR _delta = [Orders MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 6d84c3bb-86bb-5e33-b9e3-6ef6c3219fdc
+
+	measure 'Orders YoY Colour' =
+			VAR _delta = [Orders YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: b372ddab-3ad3-5c04-90df-5ab1bfa236e9
+
+	/// Units Sold of the previous month.
+	measure 'Units Sold PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Units Sold],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0
+		displayFolder: 3 Comparisons
+		lineageTag: 997d4c3e-c9a4-5865-8a61-3b80902b3910
+
+	/// Units Sold of the same month last year.
+	measure 'Units Sold PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Units Sold],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0
+		displayFolder: 3 Comparisons
+		lineageTag: bb677e98-e5aa-5982-b762-6fbe469c8fe8
+
+	/// Units Sold: change versus the previous month.
+	measure 'Units Sold MoM %' =
+			VAR _current = [Units Sold]
+			VAR _previous = [Units Sold PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 4e83bc66-9391-5ce9-afc8-93329c71205e
+
+	/// Units Sold: change versus the same month last year.
+	measure 'Units Sold YoY %' =
+			VAR _current = [Units Sold]
+			VAR _previous = [Units Sold PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: fbd05c3f-febb-5cb3-94ad-ce18a55aab89
+
+	measure 'Units Sold MoM Colour' =
+			VAR _delta = [Units Sold MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 6cc35080-b990-5f5a-bbe2-028d775895e3
+
+	measure 'Units Sold YoY Colour' =
+			VAR _delta = [Units Sold YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 52147982-3cb1-53f8-8be0-54e5d42855ce
+
+	/// Average Order Value of the previous month.
+	measure 'Average Order Value PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Average Order Value],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
+		displayFolder: 3 Comparisons
+		lineageTag: 5b781983-49ed-526f-9141-9d7d1f6ccb09
+
+	/// Average Order Value of the same month last year.
+	measure 'Average Order Value PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Average Order Value],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
+		displayFolder: 3 Comparisons
+		lineageTag: 732cc98d-1473-52ec-870a-8f80211cb285
+
+	/// Average Order Value: change versus the previous month.
+	measure 'Average Order Value MoM %' =
+			VAR _current = [Average Order Value]
+			VAR _previous = [Average Order Value PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: d151738c-dd24-5ad9-b2b9-3eb7c027e5bc
+
+	/// Average Order Value: change versus the same month last year.
+	measure 'Average Order Value YoY %' =
+			VAR _current = [Average Order Value]
+			VAR _previous = [Average Order Value PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: dc8070cd-d3b1-585e-8edf-75a4b01f32ce
+
+	measure 'Average Order Value MoM Colour' =
+			VAR _delta = [Average Order Value MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: e50eb526-2a3c-5576-90ce-86e341c7915a
+
+	measure 'Average Order Value YoY Colour' =
+			VAR _delta = [Average Order Value YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: c743c001-f3fd-506f-b389-fa7e3932a531
+
+	/// Gross Sales of the previous month.
+	measure 'Gross Sales PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Gross Sales],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: 8cac16c5-56d4-5a82-8f2c-370d4b75877e
+
+	/// Gross Sales of the same month last year.
+	measure 'Gross Sales PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Gross Sales],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: c37c0953-be80-5a45-93e8-30cf8e766ba6
+
+	/// Gross Sales: change versus the previous month.
+	measure 'Gross Sales MoM %' =
+			VAR _current = [Gross Sales]
+			VAR _previous = [Gross Sales PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 3aefe29d-cf06-590e-b37a-88e8b558025f
+
+	/// Gross Sales: change versus the same month last year.
+	measure 'Gross Sales YoY %' =
+			VAR _current = [Gross Sales]
+			VAR _previous = [Gross Sales PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 9f9a9409-1e6f-5857-83a1-84012a62d016
+
+	measure 'Gross Sales MoM Colour' =
+			VAR _delta = [Gross Sales MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 6f427ada-6f48-51c3-8891-41ee2a7dedc5
+
+	measure 'Gross Sales YoY Colour' =
+			VAR _delta = [Gross Sales YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 3f999224-17ac-5df9-afba-d00e5f4b9ce5
+
+	/// Paid Media Spend of the previous month.
+	measure 'Paid Media Spend PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Paid Media Spend],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: b4d5b1f1-b1d3-5ea2-a99d-732aace5e57a
+
+	/// Paid Media Spend of the same month last year.
+	measure 'Paid Media Spend PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Paid Media Spend],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 3 Comparisons
+		lineageTag: eb3f8860-197c-5e6b-b267-a0f3847b4a03
+
+	/// Paid Media Spend: change versus the previous month.
+	measure 'Paid Media Spend MoM %' =
+			VAR _current = [Paid Media Spend]
+			VAR _previous = [Paid Media Spend PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 65af407d-c0da-5202-b033-22517a00df90
+
+	/// Paid Media Spend: change versus the same month last year.
+	measure 'Paid Media Spend YoY %' =
+			VAR _current = [Paid Media Spend]
+			VAR _previous = [Paid Media Spend PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 5493f81b-e75e-5765-ac3e-07bc5980c46e
+
+	measure 'Paid Media Spend MoM Colour' =
+			VAR _delta = [Paid Media Spend MoM %]
+			RETURN
+			    IF ( ISBLANK ( _delta ), "#8C8781", "#1C1C1C" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 91c73a7b-31f4-5b52-b00c-9fe7d03adf85
+
+	measure 'Paid Media Spend YoY Colour' =
+			VAR _delta = [Paid Media Spend YoY %]
+			RETURN
+			    IF ( ISBLANK ( _delta ), "#8C8781", "#1C1C1C" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 03493d69-1da3-5fce-aa77-eb0e61f58fd4
+
+	/// ROAS of the previous month.
+	measure 'ROAS PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [ROAS],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0.0\x
+		displayFolder: 3 Comparisons
+		lineageTag: ea5b50b9-1dea-54c3-96aa-93b5cd500b10
+
+	/// ROAS of the same month last year.
+	measure 'ROAS PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [ROAS],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: #,0.0\x
+		displayFolder: 3 Comparisons
+		lineageTag: b6e002d2-778f-515e-b836-b8b2cae9b513
+
+	/// ROAS: change versus the previous month.
+	measure 'ROAS MoM %' =
+			VAR _current = [ROAS]
+			VAR _previous = [ROAS PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 75800d95-297b-5dd0-a1cc-11c01ed6242e
+
+	/// ROAS: change versus the same month last year.
+	measure 'ROAS YoY %' =
+			VAR _current = [ROAS]
+			VAR _previous = [ROAS PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), DIVIDE ( _current - _previous, _previous ) )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 8ac2c727-3703-52cb-8dc4-5f772272b558
+
+	measure 'ROAS MoM Colour' =
+			VAR _delta = [ROAS MoM %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 0791d389-baa4-57b5-b385-9020ccf088b6
+
+	measure 'ROAS YoY Colour' =
+			VAR _delta = [ROAS YoY %]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 6133629a-6726-50a7-8f0f-4cd1581b6f41
+
+	/// Return Rate of the previous month.
+	measure 'Return Rate PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Return Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 69ddfa89-3f83-5556-a164-253ede6dce73
+
+	/// Return Rate of the same month last year.
+	measure 'Return Rate PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Return Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: e20388a7-3cb3-5a23-ad5b-2a98bc277d90
+
+	/// Return Rate minus the previous month (percentage points).
+	measure 'Return Rate MoM Δ' =
+			VAR _current = [Return Rate]
+			VAR _previous = [Return Rate PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 47f0ba55-58c7-5f2a-a567-ee3ce6dc659c
+
+	/// Return Rate minus the same month last year (percentage points).
+	measure 'Return Rate YoY Δ' =
+			VAR _current = [Return Rate]
+			VAR _previous = [Return Rate PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 812a42a3-d8f3-5523-888b-44696dc10ad0
+
+	measure 'Return Rate MoM Label' =
+			VAR _delta = [Return Rate MoM Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: badf1069-ea2f-548c-acf2-996de666aaa2
+
+	measure 'Return Rate YoY Label' =
+			VAR _delta = [Return Rate YoY Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: c9ab59a7-b024-53d7-ac00-7eb17a84d64e
+
+	measure 'Return Rate MoM Colour' =
+			VAR _delta = [Return Rate MoM Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 4230b04d-255a-59af-b111-a79a828eba02
+
+	measure 'Return Rate YoY Colour' =
+			VAR _delta = [Return Rate YoY Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 18ca166d-0ec5-5193-b7f5-c96b53c03bb9
+
+	/// Cancellation Rate of the previous month.
+	measure 'Cancellation Rate PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Cancellation Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 6dd02a3e-172f-57de-9861-130d3a3ba2bf
+
+	/// Cancellation Rate of the same month last year.
+	measure 'Cancellation Rate PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Cancellation Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 1c0dd26b-f96a-55c2-bef9-5a5fa791b962
+
+	/// Cancellation Rate minus the previous month (percentage points).
+	measure 'Cancellation Rate MoM Δ' =
+			VAR _current = [Cancellation Rate]
+			VAR _previous = [Cancellation Rate PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 5a5efbd3-a178-5b28-a2f9-75c47e7785a2
+
+	/// Cancellation Rate minus the same month last year (percentage points).
+	measure 'Cancellation Rate YoY Δ' =
+			VAR _current = [Cancellation Rate]
+			VAR _previous = [Cancellation Rate PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: bc46f3ab-82c5-58f6-a801-8a23eaffcff3
+
+	measure 'Cancellation Rate MoM Label' =
+			VAR _delta = [Cancellation Rate MoM Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: 140bcd0d-314b-55c8-bd27-050c0914fc21
+
+	measure 'Cancellation Rate YoY Label' =
+			VAR _delta = [Cancellation Rate YoY Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: fbadc8fb-eedb-5f3d-9c4a-913dd173795e
+
+	measure 'Cancellation Rate MoM Colour' =
+			VAR _delta = [Cancellation Rate MoM Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: ef29a6a0-6394-5671-b888-b77c38c1e84e
+
+	measure 'Cancellation Rate YoY Colour' =
+			VAR _delta = [Cancellation Rate YoY Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 1a93c717-f6c6-5444-acbd-613f4721c249
+
+	/// Discount Rate of the previous month.
+	measure 'Discount Rate PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Discount Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 131ee2be-5960-5931-ad8f-cd607ecd25bd
+
+	/// Discount Rate of the same month last year.
+	measure 'Discount Rate PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Discount Rate],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 52ebd552-5ffd-5037-b011-86d9b25f0b27
+
+	/// Discount Rate minus the previous month (percentage points).
+	measure 'Discount Rate MoM Δ' =
+			VAR _current = [Discount Rate]
+			VAR _previous = [Discount Rate PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 114d6da3-d0ac-523f-9155-aa2c2c8ecdf4
+
+	/// Discount Rate minus the same month last year (percentage points).
+	measure 'Discount Rate YoY Δ' =
+			VAR _current = [Discount Rate]
+			VAR _previous = [Discount Rate PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 7a7905c2-06fe-5fcf-9739-ee56920857df
+
+	measure 'Discount Rate MoM Label' =
+			VAR _delta = [Discount Rate MoM Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: 9ac57788-0d42-5018-a839-1ac77e4e5971
+
+	measure 'Discount Rate YoY Label' =
+			VAR _delta = [Discount Rate YoY Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: b1c03621-afe8-578f-87aa-4c964569e780
+
+	measure 'Discount Rate MoM Colour' =
+			VAR _delta = [Discount Rate MoM Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: b3fa5b6a-55da-557f-9994-01021296a3e5
+
+	measure 'Discount Rate YoY Colour' =
+			VAR _delta = [Discount Rate YoY Δ]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta >= 0, "#B04A3E", "#4E7D5B" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 01c8164e-876e-5cbe-b47a-71e4185cdf5a
+
+	/// Sales Under Campaign % of the previous month.
+	measure 'Sales Under Campaign % PM' =
+			VAR _target = EDATE ( [Selected Month Start], -1 )
+			RETURN
+			    CALCULATE (
+			        [Sales Under Campaign %],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: a6e744b0-0fc4-58fb-bc2b-b20545474cbe
+
+	/// Sales Under Campaign % of the same month last year.
+	measure 'Sales Under Campaign % PY' =
+			VAR _target = EDATE ( [Selected Month Start], -12 )
+			RETURN
+			    CALCULATE (
+			        [Sales Under Campaign %],
+			        REMOVEFILTERS ( 'Month Selector' ),
+			        TREATAS ( { _target }, 'Month Selector'[Month Start] )
+			    )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: eb84f5ec-3f90-57fe-883a-89a55081c984
+
+	/// Sales Under Campaign % minus the previous month (percentage points).
+	measure 'Sales Under Campaign % MoM Δ' =
+			VAR _current = [Sales Under Campaign %]
+			VAR _previous = [Sales Under Campaign % PM]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 07750ae6-7bc5-59f7-85bf-18e612d413b2
+
+	/// Sales Under Campaign % minus the same month last year (percentage points).
+	measure 'Sales Under Campaign % YoY Δ' =
+			VAR _current = [Sales Under Campaign %]
+			VAR _previous = [Sales Under Campaign % PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _current ) && NOT ISBLANK ( _previous ), _current - _previous )
+		formatString: 0.0%
+		displayFolder: 3 Comparisons
+		lineageTag: 479f93bf-b2a1-5025-8f1e-31c64e2d06b8
+
+	measure 'Sales Under Campaign % MoM Label' =
+			VAR _delta = [Sales Under Campaign % MoM Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: aa546b06-69a3-511d-8664-4bc7f648bab4
+
+	measure 'Sales Under Campaign % YoY Label' =
+			VAR _delta = [Sales Under Campaign % YoY Δ]
+			RETURN
+			    IF (
+			        ISBLANK ( _delta ),
+			        "n/a",
+			        IF ( _delta >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( _delta ) * 100, "0.0", "en-US" ) & " pp"
+			    )
+		displayFolder: 7 Labels and colours
+		lineageTag: 22f48298-687b-5590-82ae-6734dc3dee04
+
+	measure 'Sales Under Campaign % MoM Colour' =
+			VAR _delta = [Sales Under Campaign % MoM Δ]
+			RETURN
+			    IF ( ISBLANK ( _delta ), "#8C8781", "#1C1C1C" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 46988e8b-0b77-594f-9218-dcedcbf7940e
+
+	measure 'Sales Under Campaign % YoY Colour' =
+			VAR _delta = [Sales Under Campaign % YoY Δ]
+			RETURN
+			    IF ( ISBLANK ( _delta ), "#8C8781", "#1C1C1C" )
+		displayFolder: 7 Labels and colours
+		lineageTag: 6c99a412-5628-5fca-a2f5-80d4319f4a52
+
+	/// Monthly revenue of the 12 months up to the selected month.
+	measure 'Revenue (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Net Sales], KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 4 Trends
+		lineageTag: 7d3eb661-e12c-5928-ad29-4dc70d2dc8ec
+
+	/// Monthly orders of the 12 months up to the selected month.
+	measure 'Orders (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Orders], KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: #,0
+		displayFolder: 4 Trends
+		lineageTag: 4ce432e7-1e47-5966-afda-061ffa58f643
+
+	/// Monthly units of the 12 months up to the selected month.
+	measure 'Units Sold (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [_Units Sold], KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: #,0
+		displayFolder: 4 Trends
+		lineageTag: a272ba6a-76ad-5acc-a8a1-1383aca49a8c
+
+	/// Revenue of the same month one year earlier, for each month of the trend.
+	measure 'Revenue LY (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    IF (
+			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month,
+			        CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _axis, -12 ) )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 4 Trends
+		lineageTag: 71d2e79c-3bcd-54d7-90b4-4dac0351f77b
+
+	measure 'Return Rate (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( DIVIDE ( - [_Returns], [_Gross Sales] ), KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: ecf33092-434c-5288-9afc-29d1ab9e707b
+
+	measure 'Cancellation Rate (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( DIVIDE ( - [_Cancellations], [_Gross Sales] ), KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: 2741e58b-c4ed-5cd4-ba52-aeb1ad9bc855
+
+	measure 'Discount Rate (Trend)' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( IF ( NOT ISBLANK ( [_Full Price Sales] ), 1 - DIVIDE ( [_Net Sales], [_Full Price Sales] ) ), KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: 0cd0f6b3-f6ca-5aa6-ba82-de940995b5a1
+
+	/// PLACEHOLDER forecast of revenue for the month in context. Replace with the ML model output; every other forecast measure reads this one.
+	measure 'Revenue Forecast (Model)' =
+			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
+			-- model output for the month in the filter context, for example:
+			--     SUM ( 'Sales Forecast'[revenue_forecast] )
+			-- Current logic (seasonal naive with trend): same month last year x growth of the last
+			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
+			-- Uses only data before the month.
+			VAR _month = MAX ( 'Date'[Month Start] )
+			VAR _sameMonthLastYear =
+			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
+			VAR _last3Months =
+			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
+			VAR _sameMonthsLastYear =
+			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
+			VAR _hasFullHistory =
+			    NOT ISBLANK ( CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
+			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
+			RETURN
+			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast\Model output (replace)
+		lineageTag: fa6348ad-da82-519a-aa8f-7a3dea60c56e
+
+	/// Forecast of revenue for the selected month (compare with the actual value).
+	measure 'Revenue Forecast' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Revenue Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast
+		lineageTag: e2746478-7aef-5a77-a850-9a0f3bea5447
+
+	/// Forecast of revenue for the month after the selected one.
+	measure 'Revenue Forecast Next Month' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Revenue Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast
+		lineageTag: 81f39090-4052-5a9e-92ff-6d13395b56e6
+
+	/// 1 - absolute percentage error of the revenue forecast in the selected month.
+	measure 'Revenue Forecast Accuracy' =
+			VAR _actual = [Revenue]
+			VAR _forecast = [Revenue Forecast]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: c714e082-9da2-54c4-afcb-b10ed4cac469
+
+	/// 1 - MAPE of the revenue forecast over the 6 months up to the selected month.
+	measure 'Revenue Forecast Accuracy 6M' =
+			VAR _month = [Selected Month Start]
+			VAR _months =
+			    CALCULATETABLE (
+			        VALUES ( 'Date'[Month Start] ),
+			        REMOVEFILTERS ( 'Date' ),
+			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
+			    )
+			VAR _points =
+			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Net Sales] ), "@forecast", CALCULATE ( [Revenue Forecast (Model)] ) )
+			VAR _mape =
+			    AVERAGEX (
+			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
+			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: b1233366-9455-596a-b7ad-438b8d133b0f
+
+	/// Forecast of revenue for the 12 months up to the selected month plus the next month.
+	measure 'Revenue Forecast (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Revenue Forecast (Model)] )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 4 Trends
+		lineageTag: 096e8774-79c2-5f95-a50a-584a2c9b2894
+
+	measure 'Revenue Forecast Accuracy (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			VAR _actual = [_Net Sales]
+			VAR _forecast = [Revenue Forecast (Model)]
+			RETURN
+			    IF (
+			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
+			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: 331ee3c4-fa04-5183-ad93-7eb090a806be
+
+	/// PLACEHOLDER forecast of orders for the month in context. Replace with the ML model output; every other forecast measure reads this one.
+	measure 'Orders Forecast (Model)' =
+			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
+			-- model output for the month in the filter context, for example:
+			--     SUM ( 'Sales Forecast'[orders_forecast] )
+			-- Current logic (seasonal naive with trend): same month last year x growth of the last
+			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
+			-- Uses only data before the month.
+			VAR _month = MAX ( 'Date'[Month Start] )
+			VAR _sameMonthLastYear =
+			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
+			VAR _last3Months =
+			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
+			VAR _sameMonthsLastYear =
+			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
+			VAR _hasFullHistory =
+			    NOT ISBLANK ( CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
+			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
+			RETURN
+			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
+		formatString: #,0
+		displayFolder: 5 Forecast\Model output (replace)
+		lineageTag: 496ec3c5-0ae1-5a01-af75-2db5ba24d40b
+
+	/// Forecast of orders for the selected month (compare with the actual value).
+	measure 'Orders Forecast' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Orders Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: 0deea694-6251-544e-92ad-a2a387ab89c7
+
+	/// Forecast of orders for the month after the selected one.
+	measure 'Orders Forecast Next Month' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Orders Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: 1d65c7a0-1959-55e8-a8e9-3912c253b680
+
+	/// 1 - absolute percentage error of the orders forecast in the selected month.
+	measure 'Orders Forecast Accuracy' =
+			VAR _actual = [Orders]
+			VAR _forecast = [Orders Forecast]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: d99b7d38-be36-581f-b720-c8357bfba295
+
+	/// 1 - MAPE of the orders forecast over the 6 months up to the selected month.
+	measure 'Orders Forecast Accuracy 6M' =
+			VAR _month = [Selected Month Start]
+			VAR _months =
+			    CALCULATETABLE (
+			        VALUES ( 'Date'[Month Start] ),
+			        REMOVEFILTERS ( 'Date' ),
+			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
+			    )
+			VAR _points =
+			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Orders] ), "@forecast", CALCULATE ( [Orders Forecast (Model)] ) )
+			VAR _mape =
+			    AVERAGEX (
+			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
+			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 86b4169a-ac78-5538-aeb6-46f02795bbc3
+
+	/// Forecast of orders for the 12 months up to the selected month plus the next month.
+	measure 'Orders Forecast (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Orders Forecast (Model)] )
+		formatString: #,0
+		displayFolder: 4 Trends
+		lineageTag: 1fe86408-943a-5de2-8a1a-746cbce6f520
+
+	measure 'Orders Forecast Accuracy (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			VAR _actual = [_Orders]
+			VAR _forecast = [Orders Forecast (Model)]
+			RETURN
+			    IF (
+			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
+			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: a68324a0-2f9f-57dc-be3b-57c28793e8ed
+
+	/// PLACEHOLDER forecast of units sold for the month in context. Replace with the ML model output; every other forecast measure reads this one.
+	measure 'Units Sold Forecast (Model)' =
+			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
+			-- model output for the month in the filter context, for example:
+			--     SUM ( 'Sales Forecast'[units_forecast] )
+			-- Current logic (seasonal naive with trend): same month last year x growth of the last
+			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
+			-- Uses only data before the month.
+			VAR _month = MAX ( 'Date'[Month Start] )
+			VAR _sameMonthLastYear =
+			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
+			VAR _last3Months =
+			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
+			VAR _sameMonthsLastYear =
+			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
+			VAR _hasFullHistory =
+			    NOT ISBLANK ( CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
+			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
+			RETURN
+			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
+		formatString: #,0
+		displayFolder: 5 Forecast\Model output (replace)
+		lineageTag: e22e2c29-7db9-51be-bb08-7a428bd09774
+
+	/// Forecast of units sold for the selected month (compare with the actual value).
+	measure 'Units Sold Forecast' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Units Sold Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: e0396981-2561-5790-b794-0e0efb4c67ad
+
+	/// Forecast of units sold for the month after the selected one.
+	measure 'Units Sold Forecast Next Month' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE ( [Units Sold Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: 13afece1-ba10-5572-b544-f54761223074
+
+	/// 1 - absolute percentage error of the units sold forecast in the selected month.
+	measure 'Units Sold Forecast Accuracy' =
+			VAR _actual = [Units Sold]
+			VAR _forecast = [Units Sold Forecast]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: e5aa494c-1bcc-526c-a3dc-49e68a5a2866
+
+	/// 1 - MAPE of the units sold forecast over the 6 months up to the selected month.
+	measure 'Units Sold Forecast Accuracy 6M' =
+			VAR _month = [Selected Month Start]
+			VAR _months =
+			    CALCULATETABLE (
+			        VALUES ( 'Date'[Month Start] ),
+			        REMOVEFILTERS ( 'Date' ),
+			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
+			    )
+			VAR _points =
+			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Units Sold] ), "@forecast", CALCULATE ( [Units Sold Forecast (Model)] ) )
+			VAR _mape =
+			    AVERAGEX (
+			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
+			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 7892fc6d-1a68-5cf3-ab72-daa8b725f8e7
+
+	/// Forecast of units sold for the 12 months up to the selected month plus the next month.
+	measure 'Units Sold Forecast (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Units Sold Forecast (Model)] )
+		formatString: #,0
+		displayFolder: 4 Trends
+		lineageTag: 0f5ae0a8-5627-5356-b462-35dfeaba90dd
+
+	measure 'Units Sold Forecast Accuracy (Trend)' =
+			VAR _month = [Selected Month Start]
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			VAR _actual = [_Units Sold]
+			VAR _forecast = [Units Sold Forecast (Model)]
+			RETURN
+			    IF (
+			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
+			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 4 Trends
+		lineageTag: 1d8820bd-090e-5c24-8b37-3ce22a16363b
+
+	/// Revenue forecast / orders forecast for the month after the selected one.
+	measure 'Average Order Value Forecast Next Month' = DIVIDE ( [Revenue Forecast Next Month], [Orders Forecast Next Month] )
+		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
+		displayFolder: 5 Forecast
+		lineageTag: a0960b08-4235-5f56-af39-7f049c9760f4
+
+	measure 'Average Order Value Forecast Accuracy' =
+			VAR _actual = [Average Order Value]
+			VAR _forecast = DIVIDE ( [Revenue Forecast], [Orders Forecast] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 03359fcc-7271-5cbc-8e98-b759dc1b090e
+
+	/// TRUE when the selected month ended less than 30 days before the last sales date: returns are still being booked, so revenue and return rate are provisional.
+	measure 'Is Provisional' =
+			VAR _lastKey = CALCULATE ( MAX ( Sales[Order Date Key] ), ALL () )
+			VAR _lastDate = DATE ( INT ( _lastKey / 10000 ), MOD ( INT ( _lastKey / 100 ), 100 ), MOD ( _lastKey, 100 ) )
+			RETURN
+			    EOMONTH ( [Selected Month Start], 0 ) > _lastDate - 30
+		displayFolder: 0 Period
+		lineageTag: b8f7103a-c8fe-545f-962a-577c648c0502
+
+	/// Revenue in a campaign context versus a normal day of the same markets in the same month.
+	measure 'Campaign Uplift %' =
+			-- Expected revenue = for each market, its days in this context x its average revenue per day in the month,
+			-- so big and small markets are compared with themselves.
+			VAR _expected =
+			    SUMX (
+			        VALUES ( Market[Market Key] ),
+			        [Market-Days with Sales] * CALCULATE ( [Avg Revenue per Market-Day], REMOVEFILTERS ( 'Campaign Context' ) )
+			    )
+			RETURN
+			    IF ( _expected > 0, DIVIDE ( [Revenue], _expected ) - 1 )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		displayFolder: 6 Marketing
+		lineageTag: 1e8e70bc-788b-5982-8783-8e393fa6fb6c
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2d43708f-a06c-58e9-b415-ce5a8dfd282b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Metrics = calculated
+		mode: import
+		source = { 0 }
+

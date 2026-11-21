@@ -1,0 +1,85 @@
+/// Holidays per country and date (gld_dim_holiday). Linked to sales only through Marketing Activity.
+table Holiday
+	lineageTag: 0aac0c9f-c37e-5d05-b6fb-48e7209d4ea9
+
+	column 'Holiday Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f662c776-26b8-5a30-9fb9-f755fb13c9e7
+		summarizeBy: none
+		sourceColumn: holiday_sk
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Holiday ID'
+		dataType: string
+		isHidden
+		lineageTag: 272a904a-6336-558a-b9e7-2481299f943f
+		summarizeBy: none
+		sourceColumn: holiday_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Holiday Country Code'
+		dataType: string
+		lineageTag: 250a8d1c-d040-50a6-8537-c4205205e103
+		summarizeBy: none
+		sourceColumn: country_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nationwide
+		dataType: boolean
+		lineageTag: 1d011938-dbd6-5b37-8637-316b7f357260
+		summarizeBy: none
+		sourceColumn: is_nationwide
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Holiday Date'
+		dataType: dateTime
+		formatString: dd mmm
+		lineageTag: 8da353ab-afeb-5abe-b890-6b737120d122
+		summarizeBy: none
+		sourceColumn: holiday_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Holiday
+		dataType: string
+		lineageTag: ba534c74-ce8c-5122-b8dc-a46fef067237
+		summarizeBy: none
+		sourceColumn: holiday_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Local Name'
+		dataType: string
+		lineageTag: f83cc3fc-e5de-5938-a3d3-2da50f239119
+		summarizeBy: none
+		sourceColumn: local_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Holiday Types'
+		dataType: string
+		lineageTag: 153de2ab-268c-5f2f-a174-5308d2782ec2
+		summarizeBy: none
+		sourceColumn: holiday_types
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Holiday = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_dim_holiday.parquet")),
+				    Selected = Table.SelectColumns(Source, {"holiday_sk", "holiday_id", "country_code", "is_nationwide", "holiday_date", "holiday_name", "local_name", "holiday_types"})
+				in
+				    Selected
+
+	annotation PBI_ResultType = Table
+

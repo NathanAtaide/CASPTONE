@@ -1,0 +1,57 @@
+/// Months with complete sales data, used by the Month slicer. Not related to other tables: every KPI reads the selected month from here. The most recent complete month is labelled 'Latest month' so the default selection follows new data.
+table 'Month Selector'
+	lineageTag: 746608ef-967b-50fe-9c52-c6606b902277
+
+	column Month
+		dataType: string
+		lineageTag: cd70dccc-a5de-5ba4-98d3-bb281158b64c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 70414082-cce8-551e-b70d-0331de0c2988
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Sort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Start'
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: 50773c6a-f432-5b50-93fd-917e6293bf1e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Start]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Month Selector' = calculated
+		mode: import
+		source =
+				VAR _lastSaleKey = CALCULATE ( MAX ( Sales[Order Date Key] ), ALL () )
+				VAR _lastSale = DATE ( INT ( _lastSaleKey / 10000 ), MOD ( INT ( _lastSaleKey / 100 ), 100 ), MOD ( _lastSaleKey, 100 ) )
+				VAR _lastSaleMonth = DATE ( YEAR ( _lastSale ), MONTH ( _lastSale ), 1 )
+				VAR _latestComplete = IF ( _lastSale >= EOMONTH ( _lastSale, 0 ), _lastSaleMonth, EDATE ( _lastSaleMonth, -1 ) )
+				VAR _months =
+				    FILTER (
+				        SUMMARIZE ( 'Date', 'Date'[Month Start], 'Date'[Year Month Number], 'Date'[Year Month] ),
+				        'Date'[Month Start] <= _latestComplete
+				            && CALCULATE ( COUNTROWS ( Sales ) ) > 0
+				    )
+				RETURN
+				    SELECTCOLUMNS (
+				        _months,
+				        "Month", IF ( 'Date'[Month Start] = _latestComplete, "Latest month", 'Date'[Year Month] ),
+				        "Month Sort", 'Date'[Year Month Number],
+				        "Month Start", 'Date'[Month Start]
+				    )
+
