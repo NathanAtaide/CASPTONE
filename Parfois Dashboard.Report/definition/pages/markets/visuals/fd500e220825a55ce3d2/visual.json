@@ -3,14 +3,14 @@
   "name": "fd500e220825a55ce3d2",
   "position": {
     "x": 852,
-    "y": 302,
+    "y": 90,
     "z": 13000,
-    "height": 196,
+    "height": 204,
     "width": 412,
     "tabOrder": 13000
   },
   "visual": {
-    "visualType": "donutChart",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
@@ -23,12 +23,31 @@
                       "Entity": "Origin"
                     }
                   },
-                  "Property": "Platform"
+                  "Property": "Origin"
                 }
               },
-              "queryRef": "Origin.Platform",
-              "nativeQueryRef": "Platform",
+              "queryRef": "Origin.Origin",
+              "nativeQueryRef": "Origin",
               "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue vs Last Year %"
+                }
+              },
+              "queryRef": "Metrics.Revenue vs Last Year %",
+              "nativeQueryRef": "Revenue vs Last Year %",
+              "displayName": "vs last year"
             }
           ]
         },
@@ -47,7 +66,22 @@
               },
               "queryRef": "Metrics.Revenue",
               "nativeQueryRef": "Revenue",
-              "displayName": "Revenue"
+              "displayName": "Selected period"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue PY"
+                }
+              },
+              "queryRef": "Metrics.Revenue PY",
+              "nativeQueryRef": "Revenue PY",
+              "displayName": "Same period last year"
             }
           ]
         }
@@ -71,6 +105,70 @@
       }
     },
     "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1C1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Revenue"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C9B8A3'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Revenue PY"
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
       "legend": [
         {
           "properties": {
@@ -84,7 +182,7 @@
             "position": {
               "expr": {
                 "Literal": {
-                  "Value": "'Right'"
+                  "Value": "'TopRight'"
                 }
               }
             }
@@ -106,7 +204,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Parfois Online revenue by platform'"
+                  "Value": "'Revenue by origin — this period vs last year'"
                 }
               }
             },
@@ -229,63 +327,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "ownEcommerceOnly",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Origin"
-              }
-            },
-            "Property": "Origin Type"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "o",
-              "Entity": "Origin",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "o"
-                          }
-                        },
-                        "Property": "Origin Type"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "'Own e-commerce'"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User"
-      }
-    ]
   }
 }

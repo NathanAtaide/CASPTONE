@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "3be1d7c642300bdcca2f",
   "position": {
-    "x": 764,
+    "x": 790,
     "y": 16,
     "z": 8000,
     "height": 58,
-    "width": 160,
+    "width": 150,
     "tabOrder": 8000
   },
   "visual": {
@@ -23,18 +23,46 @@
                       "Entity": "Month Selector"
                     }
                   },
+                  "Property": "Year"
+                }
+              },
+              "queryRef": "Month Selector.Year",
+              "nativeQueryRef": "Year",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Month Selector"
+                    }
+                  },
                   "Property": "Month"
                 }
               },
               "queryRef": "Month Selector.Month",
               "nativeQueryRef": "Month",
-              "active": true
+              "active": false
             }
           ]
         }
       },
       "sortDefinition": {
         "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Month Selector"
+                  }
+                },
+                "Property": "Year"
+              }
+            },
+            "direction": "Descending"
+          },
           {
             "field": {
               "Column": {
@@ -98,7 +126,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Month'"
+                  "Value": "'Period'"
                 }
               }
             },
@@ -169,7 +197,7 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "s",
+                    "Name": "m",
                     "Entity": "Month Selector",
                     "Type": 0
                   }
@@ -183,10 +211,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "s"
+                                  "Source": "m"
                                 }
                               },
-                              "Property": "Month"
+                              "Property": "Year"
                             }
                           }
                         ],
@@ -194,10 +222,60 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'Latest month'"
+                                "Value": "2025L"
                               }
                             }
                           ]
+                        ]
+                      }
+                    },
+                    "Annotations": {
+                      "filterExpressionMetadata": {
+                        "expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "Month Selector"
+                                }
+                              },
+                              "Property": "Year"
+                            }
+                          }
+                        ],
+                        "decomposedIdentities": {
+                          "values": [
+                            [
+                              {
+                                "0": [
+                                  {
+                                    "Literal": {
+                                      "Value": "2025L"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          ],
+                          "columns": [
+                            {
+                              "value": {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Month Selector"
+                                    }
+                                  },
+                                  "Property": "Year"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "valueMap": [
+                          {
+                            "0": "2025"
+                          }
                         ]
                       }
                     }

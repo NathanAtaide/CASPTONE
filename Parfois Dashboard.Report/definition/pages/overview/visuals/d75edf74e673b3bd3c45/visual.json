@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.3.0/schema.json",
   "name": "d75edf74e673b3bd3c45",
   "position": {
-    "x": 613.67,
+    "x": 492.67,
     "y": 214,
     "z": 22000,
-    "width": 121,
+    "width": 242,
     "height": 48,
     "tabOrder": 22000
   },
@@ -23,12 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Orders Forecast Accuracy"
+                  "Property": "Orders Tile Detail"
                 }
               },
-              "queryRef": "Metrics.Orders Forecast Accuracy",
-              "nativeQueryRef": "Orders Forecast Accuracy",
-              "displayName": "forecast accuracy"
+              "queryRef": "Metrics.Orders Tile Detail",
+              "nativeQueryRef": "Orders Tile Detail"
             }
           ]
         }
@@ -62,6 +61,20 @@
                   }
                 }
               }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
+                }
+              }
             }
           }
         }
@@ -72,7 +85,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -112,7 +125,51 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Label Tile Detail"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
                 }
               }
             }

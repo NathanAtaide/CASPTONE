@@ -3,10 +3,10 @@
   "name": "b57111825a0cb2c2db89",
   "position": {
     "x": 755.34,
-    "y": 166,
+    "y": 94,
     "z": 21000,
-    "width": 121,
-    "height": 68,
+    "width": 242,
+    "height": 74,
     "tabOrder": 21000
   },
   "visual": {
@@ -23,12 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Cancellation Rate MoM Label"
+                  "Property": "Cancellation Rate"
                 }
               },
-              "queryRef": "Metrics.Cancellation Rate MoM Label",
-              "nativeQueryRef": "Cancellation Rate MoM Label",
-              "displayName": "vs previous month"
+              "queryRef": "Metrics.Cancellation Rate",
+              "nativeQueryRef": "Cancellation Rate"
             }
           ]
         }
@@ -41,14 +40,14 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "24D"
                 }
               }
             },
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'DIN'"
                 }
               }
             },
@@ -56,13 +55,8 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Cancellation Rate MoM Colour"
+                    "Literal": {
+                      "Value": "'#1C1C1C'"
                     }
                   }
                 }
@@ -77,7 +71,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -117,7 +111,46 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'CANCELLATION RATE'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
                 }
               }
             }

@@ -5,298 +5,6 @@ cultureInfo en-US
 			  "Version": "2.0.0",
 			  "Language": "en-US",
 			  "Entities": {
-			    "metrics.average_order_value_forecast_next_month": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Average Order Value Forecast Next Month"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "next-month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Revenue": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        },
-			        {
-			          "Selected month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        },
-			        {
-			          "vs prev. month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        },
-			        {
-			          "Revenue vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.orders": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Orders": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.orders_forecast_next_month": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders Forecast Next Month"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "next-month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.units_sold_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.orders_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_forecast_next_month": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue Forecast Next Month"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "next-month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_forecast_accuracy": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue Forecast Accuracy"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "forecast accuracy": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        },
-			        {
-			          "accuracy (month)": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.orders_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.average_order_value_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Average Order Value MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
 			    "metrics.revenue_trend": {
 			      "Definition": {
 			        "Binding": {
@@ -359,17 +67,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.units_sold_forecast_accuracy": {
+			    "metrics.revenue": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold Forecast Accuracy"
+			          "ConceptualProperty": "Revenue"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "forecast accuracy": {
+			          "Revenue": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -379,7 +87,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "accuracy (month)": {
+			          "Selected period": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -390,17 +98,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.orders_forecast_accuracy": {
+			    "metrics.revenue_vs_previous_": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders Forecast Accuracy"
+			          "ConceptualProperty": "Revenue vs Previous %"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "forecast accuracy": {
+			          "vs previous period": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -410,7 +118,7 @@ cultureInfo en-US
 			          }
 			        },
 			        {
-			          "accuracy (month)": {
+			          "vs previous": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -421,59 +129,48 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.units_sold_forecast_next_month": {
+			    "metrics.revenue_vs_last_year_": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold Forecast Next Month"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "next-month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.average_order_value_forecast_accuracy": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Average Order Value Forecast Accuracy"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "forecast accuracy": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.average_order_value_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Average Order Value YoY %"
+			          "ConceptualProperty": "Revenue vs Last Year %"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
 			          "vs last year": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Revenue vs last year": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.orders": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Orders"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Orders": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -495,48 +192,6 @@ cultureInfo en-US
 			      "Terms": [
 			        {
 			          "Units sold": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.units_sold_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.units_sold_forecast_accuracy_6m": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold Forecast Accuracy 6M"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "accuracy (6 months)": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -765,17 +420,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.revenue_forecast_accuracy_6m": {
+			    "metrics.return_rate": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue Forecast Accuracy 6M"
+			          "ConceptualProperty": "Return Rate"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "accuracy (6 months)": {
+			          "Return rate": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -786,17 +441,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.orders_forecast": {
+			    "metrics.discount_rate": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders Forecast"
+			          "ConceptualProperty": "Discount Rate"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "month forecast": {
+			          "Discount rate": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -807,80 +462,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.orders_forecast_accuracy_6m": {
+			    "metrics.units_by_movement": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Orders Forecast Accuracy 6M"
+			          "ConceptualProperty": "Units by Movement"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "accuracy (6 months)": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_forecast": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue Forecast"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.units_sold_forecast": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units Sold Forecast"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "month forecast": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.cancellation_rate_yoy_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Cancellation Rate YoY Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
+			          "Units": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -954,384 +546,6 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.gross_sales_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Gross Sales YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.discount_rate_yoy_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Discount Rate YoY Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.discount_rate_mom_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Discount Rate MoM Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.units_by_movement": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Units by Movement"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Units": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.return_rate_mom_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Return Rate MoM Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.return_rate_yoy_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Return Rate YoY Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.return_rate": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Return Rate"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Return rate": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.discount_rate": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Discount Rate"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Discount rate": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.cancellation_rate_mom_label": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Cancellation Rate MoM Label"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.gross_sales_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Gross Sales MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.holiday_days": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Holiday Days"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "holiday days": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.paid_media_spend_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Paid Media Spend MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.roas_mom_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "ROAS MoM %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs previous month": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.roas_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "ROAS YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.paid_media_spend_yoy_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Paid Media Spend YoY %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.revenue_on_holiday_days": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue on Holiday Days"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Revenue": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.holiday_uplift_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Holiday Uplift %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs normal day": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.campaign_uplift_": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Campaign Uplift %"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "vs a normal day": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
 			    "metrics.event_days": {
 			      "Definition": {
 			        "Binding": {
@@ -1395,17 +609,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.sales_under_campaign__mom_label": {
+			    "metrics.revenue_on_holiday_days": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Sales Under Campaign % MoM Label"
+			          "ConceptualProperty": "Revenue on Holiday Days"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "vs previous month": {
+			          "Revenue": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -1416,38 +630,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.sales_under_campaign__yoy_label": {
+			    "metrics.holiday_uplift_": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Sales Under Campaign % YoY Label"
+			          "ConceptualProperty": "Holiday Uplift %"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "vs last year": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "metrics.events_running": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Events Running"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "events running": {
+			          "vs normal day": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -1521,17 +714,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.revenue_py": {
+			    "metrics.campaign_uplift_": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Revenue PY"
+			          "ConceptualProperty": "Campaign Uplift %"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Same month last year": {
+			          "vs a normal day": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -1584,6 +777,27 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
+			    "metrics.revenue_py": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Revenue PY"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Same period last year": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
 			    "date.month_start": {
 			      "Definition": {
 			        "Binding": {
@@ -1626,17 +840,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "date.day": {
+			    "date.date": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Date",
-			          "ConceptualProperty": "Day"
+			          "ConceptualProperty": "Date"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Day of month": {
+			          "Day": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -1658,6 +872,27 @@ cultureInfo en-US
 			      "Terms": [
 			        {
 			          "Category": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "event.event": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Event",
+			          "ConceptualProperty": "Event"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Event": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -1721,27 +956,6 @@ cultureInfo en-US
 			      "Terms": [
 			        {
 			          "Holiday": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "event.event": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Event",
-			          "ConceptualProperty": "Event"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Event": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

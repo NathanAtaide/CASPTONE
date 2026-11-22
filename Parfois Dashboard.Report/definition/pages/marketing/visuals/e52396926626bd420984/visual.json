@@ -1,39 +1,19 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.3.0/schema.json",
   "name": "e52396926626bd420984",
   "position": {
-    "x": 224,
-    "y": 252,
+    "x": 1139.01,
+    "y": 166,
     "z": 27000,
-    "height": 236,
-    "width": 1040,
+    "width": 121,
+    "height": 68,
     "tabOrder": 27000
   },
   "visual": {
-    "visualType": "lineClusteredColumnComboChart",
+    "visualType": "card",
     "query": {
       "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Date"
-                    }
-                  },
-                  "Property": "Day"
-                }
-              },
-              "queryRef": "Date.Day",
-              "nativeQueryRef": "Day",
-              "active": true,
-              "displayName": "Day of month"
-            }
-          ]
-        },
-        "Tooltips": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -43,164 +23,80 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Events on Day"
+                  "Property": "Holiday Days"
                 }
               },
-              "queryRef": "Metrics.Events on Day",
-              "nativeQueryRef": "Events on Day",
-              "displayName": "Events"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Holidays on Day"
-                }
-              },
-              "queryRef": "Metrics.Holidays on Day",
-              "nativeQueryRef": "Holidays on Day",
-              "displayName": "Holidays"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue"
-                }
-              },
-              "queryRef": "Metrics.Revenue",
-              "nativeQueryRef": "Revenue",
-              "displayName": "Revenue"
-            }
-          ]
-        },
-        "Y2": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Paid Media Spend"
-                }
-              },
-              "queryRef": "Metrics.Paid Media Spend",
-              "nativeQueryRef": "Paid Media Spend",
-              "displayName": "Paid media"
+              "queryRef": "Metrics.Holiday Days",
+              "nativeQueryRef": "Holiday Days"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Date"
-                  }
-                },
-                "Property": "Day"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ]
       }
     },
     "objects": {
-      "dataPoint": [
+      "labels": [
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Day Colour"
-                    }
-                  }
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
                 }
               }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
+            },
+            "color": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#7D2E3B'"
+                      "Value": "'#1C1C1C'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "Metrics.Paid Media Spend"
           }
         }
       ],
-      "legend": [
+      "categoryLabels": [
         {
           "properties": {
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
-            "position": {
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "'TopRight'"
+                  "Value": "8D"
                 }
               }
-            }
-          }
-        }
-      ],
-      "categoryAxis": [
-        {
-          "properties": {
-            "axisType": {
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorical'"
+                  "Value": "'Segoe UI'"
                 }
               }
             }
@@ -222,66 +118,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Daily revenue and paid media'"
+                  "Value": "'holiday days'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1C1C1C'"
-                    }
-                  }
-                }
-              }
-            },
-            "fontFamily": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Segoe UI Semibold'"
-                }
-              }
-            },
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'left'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "subTitle": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Bars: taupe = event day  ·  rose = nationwide holiday  ·  black = regular day'"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "10D"
+                  "Value": "8D"
                 }
               }
             },
@@ -306,7 +150,7 @@
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'center'"
                 }
               }
             }
@@ -319,7 +163,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -350,7 +194,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -383,6 +227,53 @@
         }
       ],
       "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
         {
           "properties": {
             "show": {

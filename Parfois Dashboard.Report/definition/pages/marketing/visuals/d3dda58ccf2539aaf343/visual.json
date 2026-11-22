@@ -3,10 +3,10 @@
   "name": "d3dda58ccf2539aaf343",
   "position": {
     "x": 1018.01,
-    "y": 166,
+    "y": 94,
     "z": 25000,
-    "width": 121,
-    "height": 68,
+    "width": 242,
+    "height": 74,
     "tabOrder": 25000
   },
   "visual": {
@@ -23,12 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Events Running"
+                  "Property": "Event Days"
                 }
               },
-              "queryRef": "Metrics.Events Running",
-              "nativeQueryRef": "Events Running",
-              "displayName": "events running"
+              "queryRef": "Metrics.Event Days",
+              "nativeQueryRef": "Event Days"
             }
           ]
         }
@@ -41,14 +40,14 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "24D"
                 }
               }
             },
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'DIN'"
                 }
               }
             },
@@ -72,7 +71,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -112,7 +111,46 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'EVENT DAYS'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
                 }
               }
             }

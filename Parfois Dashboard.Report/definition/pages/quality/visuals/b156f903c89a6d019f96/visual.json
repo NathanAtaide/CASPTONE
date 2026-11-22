@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b156f903c89a6d019f96",
   "position": {
-    "x": 748,
+    "x": 224,
     "y": 486,
     "z": 30000,
     "height": 222,
@@ -10,26 +10,30 @@
     "tabOrder": 30000
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Product"
+                      "Entity": "Date"
                     }
                   },
-                  "Property": "Category"
+                  "Property": "Year Month"
                 }
               },
-              "queryRef": "Product.Category",
-              "nativeQueryRef": "Category",
-              "displayName": "Category"
-            },
+              "queryRef": "Date.Year Month",
+              "nativeQueryRef": "Year Month",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
             {
               "field": {
                 "Measure": {
@@ -38,41 +42,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue"
+                  "Property": "Return Rate (Trend)"
                 }
               },
-              "queryRef": "Metrics.Revenue",
-              "nativeQueryRef": "Revenue",
-              "displayName": "Revenue"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Units Sold"
-                }
-              },
-              "queryRef": "Metrics.Units Sold",
-              "nativeQueryRef": "Units Sold",
-              "displayName": "Units sold"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Return Rate"
-                }
-              },
-              "queryRef": "Metrics.Return Rate",
-              "nativeQueryRef": "Return Rate",
+              "queryRef": "Metrics.Return Rate (Trend)",
+              "nativeQueryRef": "Return Rate (Trend)",
               "displayName": "Return rate"
             },
             {
@@ -83,11 +57,26 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Discount Rate"
+                  "Property": "Cancellation Rate (Trend)"
                 }
               },
-              "queryRef": "Metrics.Discount Rate",
-              "nativeQueryRef": "Discount Rate",
+              "queryRef": "Metrics.Cancellation Rate (Trend)",
+              "nativeQueryRef": "Cancellation Rate (Trend)",
+              "displayName": "Cancellation rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Discount Rate (Trend)"
+                }
+              },
+              "queryRef": "Metrics.Discount Rate (Trend)",
+              "nativeQueryRef": "Discount Rate (Trend)",
               "displayName": "Discount rate"
             }
           ]
@@ -97,19 +86,110 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Metrics"
+                    "Entity": "Date"
                   }
                 },
-                "Property": "Revenue"
+                "Property": "Year Month"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }
+    },
+    "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1C1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Return Rate (Trend)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D9A39A'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Cancellation Rate (Trend)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A58D74'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Discount Rate (Trend)"
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'TopRight'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "visualContainerObjects": {
       "title": [
@@ -125,7 +205,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Quality by product category'"
+                  "Value": "'Return, cancellation and discount rates — last 12 months'"
                 }
               }
             },

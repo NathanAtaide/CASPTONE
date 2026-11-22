@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e56b8a305c4b503056c7",
   "position": {
-    "x": 224,
-    "y": 90,
+    "x": 1106,
+    "y": 16,
     "z": 11000,
-    "height": 618,
-    "width": 620,
+    "height": 58,
+    "width": 158,
     "tabOrder": 11000
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
@@ -20,208 +20,55 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Market"
+                      "Entity": "Origin"
                     }
                   },
-                  "Property": "Country"
+                  "Property": "Origin"
                 }
               },
-              "queryRef": "Market.Country",
-              "nativeQueryRef": "Country",
-              "displayName": "Country"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Market"
-                    }
-                  },
-                  "Property": "Region"
-                }
-              },
-              "queryRef": "Market.Region",
-              "nativeQueryRef": "Region",
-              "displayName": "Region"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue"
-                }
-              },
-              "queryRef": "Metrics.Revenue",
-              "nativeQueryRef": "Revenue",
-              "displayName": "Revenue"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue Share"
-                }
-              },
-              "queryRef": "Metrics.Revenue Share",
-              "nativeQueryRef": "Revenue Share",
-              "displayName": "Share"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue MoM %"
-                }
-              },
-              "queryRef": "Metrics.Revenue MoM %",
-              "nativeQueryRef": "Revenue MoM %",
-              "displayName": "vs prev. month"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue YoY %"
-                }
-              },
-              "queryRef": "Metrics.Revenue YoY %",
-              "nativeQueryRef": "Revenue YoY %",
-              "displayName": "vs last year"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Average Order Value"
-                }
-              },
-              "queryRef": "Metrics.Average Order Value",
-              "nativeQueryRef": "Average Order Value",
-              "displayName": "AOV"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Return Rate"
-                }
-              },
-              "queryRef": "Metrics.Return Rate",
-              "nativeQueryRef": "Return Rate",
-              "displayName": "Return rate"
+              "queryRef": "Origin.Origin",
+              "nativeQueryRef": "Origin",
+              "active": true
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Metrics"
-                  }
-                },
-                "Property": "Revenue"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
     },
     "objects": {
-      "values": [
+      "data": [
         {
           "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Revenue MoM Colour"
-                    }
-                  }
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
                 }
               }
             }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Metrics.Revenue MoM %"
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Revenue YoY Colour"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Metrics.Revenue YoY %"
           }
         }
-      ]
-    },
-    "visualContainerObjects": {
-      "title": [
+      ],
+      "selection": [
+        {
+          "properties": {
+            "strictSingleSelect": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "selectAllCheckboxEnabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "header": [
         {
           "properties": {
             "show": {
@@ -234,17 +81,41 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Market performance'"
+                  "Value": "'Origin'"
                 }
               }
             },
-            "fontSize": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "9D"
                 }
               }
             },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "items": [
+        {
+          "properties": {
             "fontColor": {
               "solid": {
                 "color": {
@@ -256,17 +127,32 @@
                 }
               }
             },
-            "fontFamily": {
+            "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "10D"
                 }
               }
             },
-            "alignment": {
+            "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'Segoe UI'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -328,7 +214,7 @@
             "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "8D"
                 }
               }
             },
@@ -354,7 +240,25 @@
             }
           }
         }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
+    },
+    "syncGroup": {
+      "groupName": "origin",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

@@ -2,57 +2,49 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ce684a6003c96a902752",
   "position": {
-    "x": 852,
+    "x": 224,
     "y": 90,
     "z": 12000,
-    "height": 204,
-    "width": 412,
+    "height": 618,
+    "width": 620,
     "tabOrder": 12000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Origin"
+                      "Entity": "Market"
                     }
                   },
-                  "Property": "Origin"
+                  "Property": "Country"
                 }
               },
-              "queryRef": "Origin.Origin",
-              "nativeQueryRef": "Origin",
-              "active": true
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
+              "queryRef": "Market.Country",
+              "nativeQueryRef": "Country",
+              "displayName": "Country"
+            },
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Metrics"
+                      "Entity": "Market"
                     }
                   },
-                  "Property": "Revenue YoY %"
+                  "Property": "Region"
                 }
               },
-              "queryRef": "Metrics.Revenue YoY %",
-              "nativeQueryRef": "Revenue YoY %",
-              "displayName": "vs last year"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "queryRef": "Market.Region",
+              "nativeQueryRef": "Region",
+              "displayName": "Region"
+            },
             {
               "field": {
                 "Measure": {
@@ -66,7 +58,7 @@
               },
               "queryRef": "Metrics.Revenue",
               "nativeQueryRef": "Revenue",
-              "displayName": "Selected month"
+              "displayName": "Revenue"
             },
             {
               "field": {
@@ -76,12 +68,72 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue PY"
+                  "Property": "Revenue Share"
                 }
               },
-              "queryRef": "Metrics.Revenue PY",
-              "nativeQueryRef": "Revenue PY",
-              "displayName": "Same month last year"
+              "queryRef": "Metrics.Revenue Share",
+              "nativeQueryRef": "Revenue Share",
+              "displayName": "Share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue vs Previous %"
+                }
+              },
+              "queryRef": "Metrics.Revenue vs Previous %",
+              "nativeQueryRef": "Revenue vs Previous %",
+              "displayName": "vs previous"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue vs Last Year %"
+                }
+              },
+              "queryRef": "Metrics.Revenue vs Last Year %",
+              "nativeQueryRef": "Revenue vs Last Year %",
+              "displayName": "vs last year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Average Order Value"
+                }
+              },
+              "queryRef": "Metrics.Average Order Value",
+              "nativeQueryRef": "Average Order Value",
+              "displayName": "AOV"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Return Rate"
+                }
+              },
+              "queryRef": "Metrics.Return Rate",
+              "nativeQueryRef": "Return Rate",
+              "displayName": "Return rate"
             }
           ]
         }
@@ -105,15 +157,20 @@
       }
     },
     "objects": {
-      "dataPoint": [
+      "values": [
         {
           "properties": {
-            "fill": {
+            "fontColor": {
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#1C1C1C'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Metrics"
+                        }
+                      },
+                      "Property": "Revenue Change A Colour"
                     }
                   }
                 }
@@ -121,17 +178,29 @@
             }
           },
           "selector": {
-            "metadata": "Metrics.Revenue"
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Metrics.Revenue vs Previous %"
           }
         },
         {
           "properties": {
-            "fill": {
+            "fontColor": {
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#C9B8A3'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Metrics"
+                        }
+                      },
+                      "Property": "Revenue vs Last Year Colour"
                     }
                   }
                 }
@@ -139,53 +208,14 @@
             }
           },
           "selector": {
-            "metadata": "Metrics.Revenue PY"
-          }
-        }
-      ],
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
                 }
               }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "legend": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "position": {
-              "expr": {
-                "Literal": {
-                  "Value": "'TopRight'"
-                }
-              }
-            }
+            ],
+            "metadata": "Metrics.Revenue vs Last Year %"
           }
         }
       ]
@@ -204,7 +234,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Revenue by origin — this month vs last year'"
+                  "Value": "'Market performance'"
                 }
               }
             },

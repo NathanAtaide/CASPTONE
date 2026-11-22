@@ -26,6 +26,8 @@ ref table Event
 ref table Holiday
 ref table 'Month Selector'
 ref table Metrics
+ref table 'Period View'
+ref table 'Budget Assumptions'
 
 ref cultureInfo en-US
 

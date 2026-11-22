@@ -23,12 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Units Sold MoM %"
+                  "Property": "Units Sold Change A"
                 }
               },
-              "queryRef": "Metrics.Units Sold MoM %",
-              "nativeQueryRef": "Units Sold MoM %",
-              "displayName": "vs previous month"
+              "queryRef": "Metrics.Units Sold Change A",
+              "nativeQueryRef": "Units Sold Change A"
             }
           ]
         }
@@ -62,7 +61,7 @@
                           "Entity": "Metrics"
                         }
                       },
-                      "Property": "Units Sold MoM Colour"
+                      "Property": "Units Sold Change A Colour"
                     }
                   }
                 }
@@ -77,7 +76,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -117,7 +116,51 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Label Change A"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
                 }
               }
             }

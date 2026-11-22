@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "0cbda178d41c1649896c",
   "position": {
-    "x": 224,
-    "y": 486,
+    "x": 748,
+    "y": 252,
     "z": 29000,
     "height": 222,
     "width": 516,
     "tabOrder": 29000
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Date"
+                      "Entity": "Movement Type"
                     }
                   },
-                  "Property": "Year Month"
+                  "Property": "Movement Type"
                 }
               },
-              "queryRef": "Date.Year Month",
-              "nativeQueryRef": "Year Month",
+              "queryRef": "Movement Type.Movement Type",
+              "nativeQueryRef": "Movement Type",
               "active": true
             }
           ]
@@ -42,42 +42,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Return Rate (Trend)"
+                  "Property": "Units by Movement"
                 }
               },
-              "queryRef": "Metrics.Return Rate (Trend)",
-              "nativeQueryRef": "Return Rate (Trend)",
-              "displayName": "Return rate"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Cancellation Rate (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Cancellation Rate (Trend)",
-              "nativeQueryRef": "Cancellation Rate (Trend)",
-              "displayName": "Cancellation rate"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Discount Rate (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Discount Rate (Trend)",
-              "nativeQueryRef": "Discount Rate (Trend)",
-              "displayName": "Discount rate"
+              "queryRef": "Metrics.Units by Movement",
+              "nativeQueryRef": "Units by Movement",
+              "displayName": "Units"
             }
           ]
         }
@@ -89,10 +59,10 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Date"
+                    "Entity": "Movement Type"
                   }
                 },
-                "Property": "Year Month"
+                "Property": "Movement Type"
               }
             },
             "direction": "Ascending"
@@ -109,55 +79,16 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#1C1C1C'"
+                      "Value": "'#C9B8A3'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "Metrics.Return Rate (Trend)"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#D9A39A'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Cancellation Rate (Trend)"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#A58D74'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Discount Rate (Trend)"
           }
         }
       ],
-      "legend": [
+      "labels": [
         {
           "properties": {
             "show": {
@@ -167,23 +98,41 @@
                 }
               }
             },
-            "position": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1C1C1C'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "'TopRight'"
+                  "Value": "1000D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
                 }
               }
             }
           }
         }
       ],
-      "categoryAxis": [
+      "valueAxis": [
         {
           "properties": {
-            "axisType": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorical'"
+                  "Value": "false"
                 }
               }
             }
@@ -205,7 +154,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Return, cancellation and discount rates — last 12 months'"
+                  "Value": "'Units sold, returned and cancelled'"
                 }
               }
             },

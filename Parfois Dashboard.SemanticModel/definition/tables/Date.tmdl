@@ -13,8 +13,6 @@ table Date
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column 'Date Key'
 		dataType: int64
 		isHidden
@@ -79,8 +77,6 @@ table Date
 		sourceColumn: week_start_date
 
 		annotation SummarizationSetBy = Automatic
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Month Number'
 		dataType: int64
@@ -149,8 +145,6 @@ table Date
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column 'Month End'
 		dataType: dateTime
 		formatString: dd mmm yyyy
@@ -159,8 +153,6 @@ table Date
 		sourceColumn: month_end_date
 
 		annotation SummarizationSetBy = Automatic
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Days in Month'
 		dataType: int64

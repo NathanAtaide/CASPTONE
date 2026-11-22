@@ -34,6 +34,16 @@ table 'Month Selector'
 
 		annotation SummarizationSetBy = Automatic
 
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f57ad005-3cb7-566b-80fe-c422127c7668
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Month Selector' = calculated
 		mode: import
 		source =
@@ -50,6 +60,7 @@ table 'Month Selector'
 				RETURN
 				    SELECTCOLUMNS (
 				        _months,
+				        "Year", YEAR ( 'Date'[Month Start] ),
 				        "Month", IF ( 'Date'[Month Start] = _latestComplete, "Latest month", 'Date'[Year Month] ),
 				        "Month Sort", 'Date'[Year Month Number],
 				        "Month Start", 'Date'[Month Start]

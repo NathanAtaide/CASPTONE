@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ae0349a46029bdd0c7fc",
   "position": {
-    "x": 1104,
+    "x": 948,
     "y": 16,
     "z": 10000,
     "height": 58,
-    "width": 160,
+    "width": 150,
     "tabOrder": 10000
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Origin"
+                      "Entity": "Market"
                     }
                   },
-                  "Property": "Origin"
+                  "Property": "Country"
                 }
               },
-              "queryRef": "Origin.Origin",
-              "nativeQueryRef": "Origin",
+              "queryRef": "Market.Country",
+              "nativeQueryRef": "Country",
               "active": true
             }
           ]
@@ -81,7 +81,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Origin'"
+                  "Value": "'Country'"
                 }
               }
             },
@@ -256,7 +256,7 @@
       ]
     },
     "syncGroup": {
-      "groupName": "origin",
+      "groupName": "country",
       "fieldChanges": true,
       "filterChanges": true
     },

@@ -1,0 +1,61 @@
+/// Revenue budget premises per year (planned growth over the previous year). Edit the DATATABLE to change the budget; [Revenue Budget] reads it.
+table 'Budget Assumptions'
+	lineageTag: 22ec178f-a04e-5cc8-a5a2-b73e2cd4bb3e
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: e50ae212-44ab-5280-b147-9e203400bf39
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Growth over the previous year planned in the budget.
+	column 'Planned Growth'
+		dataType: double
+		formatString: 0%
+		lineageTag: e91b35b2-ff77-50ec-be32-3dba9f4e2f05
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Planned Growth]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Growth reported by the business. Used to rebuild the previous year when it is not in the data (2023).
+	column 'Reported Growth'
+		dataType: double
+		formatString: 0%
+		lineageTag: 321837ce-2f76-5b98-8db1-3ea3d40e284a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Reported Growth]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Note
+		dataType: string
+		lineageTag: 55ec3218-97a1-5b60-ab3a-ff70e2a43696
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Note]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Budget Assumptions' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Year", INTEGER,
+				    "Planned Growth", DOUBLE,
+				    "Reported Growth", DOUBLE,
+				    "Note", STRING,
+				    {
+				        { 2023, BLANK (), 0.31, "Reported online growth 2022 -> 2023: +31%." },
+				        { 2024, 0.25, 0.64, "Planned +25% after +31% in 2023; reported +64% (39 pp above plan)." },
+				        { 2025, 0.40, 0.48, "Planned +40% after +64% in 2024; reported +48%." },
+				        { 2026, 0.35, BLANK (), "Planned +35% on 2025 revenue." }
+				    }
+				)
+

@@ -5,7 +5,7 @@
     "x": 755.34,
     "y": 214,
     "z": 27000,
-    "width": 121,
+    "width": 242,
     "height": 48,
     "tabOrder": 27000
   },
@@ -23,12 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Units Sold Forecast Next Month"
+                  "Property": "Units Sold Tile Detail"
                 }
               },
-              "queryRef": "Metrics.Units Sold Forecast Next Month",
-              "nativeQueryRef": "Units Sold Forecast Next Month",
-              "displayName": "next-month forecast"
+              "queryRef": "Metrics.Units Sold Tile Detail",
+              "nativeQueryRef": "Units Sold Tile Detail"
             }
           ]
         }
@@ -86,7 +85,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -126,7 +125,51 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Label Tile Detail"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
                 }
               }
             }

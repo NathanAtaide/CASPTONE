@@ -3,14 +3,14 @@
   "name": "27684da89e4cca2fc96f",
   "position": {
     "x": 852,
-    "y": 506,
+    "y": 302,
     "z": 14000,
-    "height": 202,
+    "height": 196,
     "width": 412,
     "tabOrder": 14000
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "donutChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,34 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Date"
-                    }
-                  },
-                  "Property": "Month Start"
-                }
-              },
-              "queryRef": "Date.Month Start",
-              "nativeQueryRef": "Month Start",
-              "active": true,
-              "displayName": "Month"
-            }
-          ]
-        },
-        "Series": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
                       "Entity": "Origin"
                     }
                   },
-                  "Property": "Origin"
+                  "Property": "Platform"
                 }
               },
-              "queryRef": "Origin.Origin",
-              "nativeQueryRef": "Origin"
+              "queryRef": "Origin.Platform",
+              "nativeQueryRef": "Platform",
+              "active": true
             }
           ]
         },
@@ -61,11 +42,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue (Trend)"
+                  "Property": "Revenue"
                 }
               },
-              "queryRef": "Metrics.Revenue (Trend)",
-              "nativeQueryRef": "Revenue (Trend)",
+              "queryRef": "Metrics.Revenue",
+              "nativeQueryRef": "Revenue",
               "displayName": "Revenue"
             }
           ]
@@ -75,16 +56,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Date"
+                    "Entity": "Metrics"
                   }
                 },
-                "Property": "Month Start"
+                "Property": "Revenue"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -103,7 +84,7 @@
             "position": {
               "expr": {
                 "Literal": {
-                  "Value": "'TopRight'"
+                  "Value": "'Right'"
                 }
               }
             }
@@ -125,7 +106,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Marketplaces & franchise — last 12 months'"
+                  "Value": "'Parfois Online revenue by platform'"
                 }
               }
             },
@@ -252,7 +233,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "partnersOnly",
+        "name": "ownEcommerceOnly",
         "field": {
           "Column": {
             "Expression": {
@@ -293,14 +274,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'Marketplace'"
-                        }
-                      }
-                    ],
-                    [
-                      {
-                        "Literal": {
-                          "Value": "'Franchise'"
+                          "Value": "'Own e-commerce'"
                         }
                       }
                     ]

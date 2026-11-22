@@ -1,53 +1,49 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "2b4d0e3238b615522a60",
+  "name": "400eccddcedab2eec5aa",
   "position": {
-    "x": 748,
-    "y": 498,
-    "z": 37000,
-    "height": 210,
-    "width": 516,
-    "tabOrder": 37000
+    "x": 880,
+    "y": 500,
+    "z": 31000,
+    "height": 208,
+    "width": 384,
+    "tabOrder": 31000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Market"
+                      "Entity": "Holiday"
                     }
                   },
-                  "Property": "Country"
+                  "Property": "Holiday Date"
                 }
               },
-              "queryRef": "Market.Country",
-              "nativeQueryRef": "Country",
-              "active": true
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
+              "queryRef": "Holiday.Holiday Date",
+              "nativeQueryRef": "Holiday Date",
+              "displayName": "Date"
+            },
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Metrics"
+                      "Entity": "Holiday"
                     }
                   },
-                  "Property": "Revenue MoM %"
+                  "Property": "Holiday Country Code"
                 }
               },
-              "queryRef": "Metrics.Revenue MoM %",
-              "nativeQueryRef": "Revenue MoM %",
-              "displayName": "vs previous month"
+              "queryRef": "Holiday.Holiday Country Code",
+              "nativeQueryRef": "Holiday Country Code",
+              "displayName": "Country"
             },
             {
               "field": {
@@ -57,46 +53,42 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue YoY %"
+                  "Property": "Revenue on Holiday Days"
                 }
               },
-              "queryRef": "Metrics.Revenue YoY %",
-              "nativeQueryRef": "Revenue YoY %",
-              "displayName": "vs last year"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Orders"
-                }
-              },
-              "queryRef": "Metrics.Orders",
-              "nativeQueryRef": "Orders",
-              "displayName": "Orders"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue"
-                }
-              },
-              "queryRef": "Metrics.Revenue",
-              "nativeQueryRef": "Revenue",
+              "queryRef": "Metrics.Revenue on Holiday Days",
+              "nativeQueryRef": "Revenue on Holiday Days",
               "displayName": "Revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Holiday Uplift %"
+                }
+              },
+              "queryRef": "Metrics.Holiday Uplift %",
+              "nativeQueryRef": "Holiday Uplift %",
+              "displayName": "vs normal day"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Holiday"
+                    }
+                  },
+                  "Property": "Holiday"
+                }
+              },
+              "queryRef": "Holiday.Holiday",
+              "nativeQueryRef": "Holiday",
+              "displayName": "Holiday"
             }
           ]
         }
@@ -111,7 +103,7 @@
                     "Entity": "Metrics"
                   }
                 },
-                "Property": "Revenue"
+                "Property": "Revenue on Holiday Days"
               }
             },
             "direction": "Descending"
@@ -120,40 +112,10 @@
       }
     },
     "objects": {
-      "dataPoint": [
+      "total": [
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#A58D74'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
+            "totals": {
               "expr": {
                 "Literal": {
                   "Value": "false"
@@ -178,7 +140,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Revenue by market country'"
+                  "Value": "'Nationwide holidays in the period'"
                 }
               }
             },

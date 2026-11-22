@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "d06ba083f17e7d47caf7",
   "position": {
-    "x": 224,
-    "y": 280,
+    "x": 748,
+    "y": 498,
     "z": 35000,
-    "height": 206,
-    "width": 1040,
+    "height": 210,
+    "width": 516,
     "tabOrder": 35000
   },
   "visual": {
-    "visualType": "lineClusteredColumnComboChart",
+    "visualType": "clusteredBarChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,15 +20,64 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Date"
+                      "Entity": "Market"
                     }
                   },
-                  "Property": "Year Month"
+                  "Property": "Country"
                 }
               },
-              "queryRef": "Date.Year Month",
-              "nativeQueryRef": "Year Month",
+              "queryRef": "Market.Country",
+              "nativeQueryRef": "Country",
               "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue vs Previous %"
+                }
+              },
+              "queryRef": "Metrics.Revenue vs Previous %",
+              "nativeQueryRef": "Revenue vs Previous %",
+              "displayName": "vs previous period"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue vs Last Year %"
+                }
+              },
+              "queryRef": "Metrics.Revenue vs Last Year %",
+              "nativeQueryRef": "Revenue vs Last Year %",
+              "displayName": "vs last year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Orders"
+                }
+              },
+              "queryRef": "Metrics.Orders",
+              "nativeQueryRef": "Orders",
+              "displayName": "Orders"
             }
           ]
         },
@@ -42,31 +91,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue (Trend)"
+                  "Property": "Revenue"
                 }
               },
-              "queryRef": "Metrics.Revenue (Trend)",
-              "nativeQueryRef": "Revenue (Trend)",
+              "queryRef": "Metrics.Revenue",
+              "nativeQueryRef": "Revenue",
               "displayName": "Revenue"
-            }
-          ]
-        },
-        "Y2": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue LY (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Revenue LY (Trend)",
-              "nativeQueryRef": "Revenue LY (Trend)",
-              "displayName": "Revenue last year"
             }
           ]
         }
@@ -75,16 +105,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Date"
+                    "Entity": "Metrics"
                   }
                 },
-                "Property": "Year Month"
+                "Property": "Revenue"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -98,67 +128,16 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#1C1C1C'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Revenue (Trend)"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
                       "Value": "'#A58D74'"
                     }
                   }
                 }
               }
             }
-          },
-          "selector": {
-            "metadata": "Metrics.Revenue LY (Trend)"
           }
         }
       ],
-      "lineStyles": [
-        {
-          "properties": {
-            "lineStyle": {
-              "expr": {
-                "Literal": {
-                  "Value": "'solid'"
-                }
-              }
-            },
-            "strokeWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "3D"
-                }
-              }
-            },
-            "showMarker": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Revenue LY (Trend)"
-          }
-        }
-      ],
-      "legend": [
+      "labels": [
         {
           "properties": {
             "show": {
@@ -168,23 +147,23 @@
                 }
               }
             },
-            "position": {
+            "labelPosition": {
               "expr": {
                 "Literal": {
-                  "Value": "'TopRight'"
+                  "Value": "'OutsideEnd'"
                 }
               }
             }
           }
         }
       ],
-      "categoryAxis": [
+      "valueAxis": [
         {
           "properties": {
-            "axisType": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorical'"
+                  "Value": "false"
                 }
               }
             }
@@ -206,7 +185,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Revenue — last 12 months vs the same months a year before'"
+                  "Value": "'Revenue by market country'"
                 }
               }
             },

@@ -1,0 +1,191 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1716.7022871584807,
+            "y": 47.458470521192
+          },
+          "nodeIndex": "Metrics",
+          "nodeLineageTag": "dd8eefe6-11f9-5759-be29-6589caeb3338",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1180.1825681511827,
+            "y": 79.916265716793788
+          },
+          "nodeIndex": "Campaign Context",
+          "nodeLineageTag": "8b212379-6a9a-5202-ad10-28297f6d0ed6",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 803.4705100423572,
+            "y": 702.06272220990456
+          },
+          "nodeIndex": "Customer",
+          "nodeLineageTag": "7f09c7e3-0182-5cf5-840d-7b25c6479dd2",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 491.31988037826159,
+            "y": 595.3014606167585
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "12f4de99-9193-57af-889f-749cc99568f0",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 19.218867799293946,
+            "y": 508.31683607439459
+          },
+          "nodeIndex": "Event",
+          "nodeLineageTag": "26ebceb7-ecf5-57f1-b254-d554c8ac9d7e",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 21.088522908988807,
+            "y": 0
+          },
+          "nodeIndex": "Holiday",
+          "nodeLineageTag": "0aac0c9f-c37e-5d05-b6fb-48e7209d4ea9",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 458.25802117848559,
+            "y": 38.984021134010547
+          },
+          "nodeIndex": "Market",
+          "nodeLineageTag": "4efa27c6-5f60-54af-a951-068a44fa01d8",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 274.23870295766636,
+            "y": 300.88467922509591
+          },
+          "nodeIndex": "Marketing Activity",
+          "nodeLineageTag": "738cb3c2-aebb-5835-8df2-6682f1be4883",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1712.8445369914564,
+            "y": 384.17580582646747
+          },
+          "nodeIndex": "Month Selector",
+          "nodeLineageTag": "746608ef-967b-50fe-9c52-c6606b902277",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 807.785286285576,
+            "y": 0
+          },
+          "nodeIndex": "Movement Type",
+          "nodeLineageTag": "e80508ae-bb9a-5137-90be-1875812a5b97",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1393.4538143992725,
+            "y": 405.98414379179519
+          },
+          "nodeIndex": "Origin",
+          "nodeLineageTag": "184f0ab6-22b4-5c96-89c3-a8c2fb1fda87",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1080.8576276795734,
+            "y": 610.57627543173317
+          },
+          "nodeIndex": "Product",
+          "nodeLineageTag": "e81eee5c-3bf3-5282-bb60-2242b7c2b2d4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 804.84308849414572,
+            "y": 286.63368509893189
+          },
+          "nodeIndex": "Sales",
+          "nodeLineageTag": "fed36d07-da24-54eb-8eb0-e331ccdaa8e9",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 79.553182037699813,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

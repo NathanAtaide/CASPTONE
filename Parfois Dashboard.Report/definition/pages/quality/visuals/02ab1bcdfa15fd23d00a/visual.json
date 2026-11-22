@@ -1,19 +1,19 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "fd7aba7bc54a00542c02",
+  "name": "02ab1bcdfa15fd23d00a",
   "position": {
-    "x": 224,
-    "y": 498,
-    "z": 36000,
-    "height": 210,
+    "x": 748,
+    "y": 486,
+    "z": 31000,
+    "height": 222,
     "width": 516,
-    "tabOrder": 36000
+    "tabOrder": 31000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -28,12 +28,23 @@
               },
               "queryRef": "Product.Category",
               "nativeQueryRef": "Category",
-              "active": true
-            }
-          ]
-        },
-        "Tooltips": {
-          "projections": [
+              "displayName": "Category"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue"
+                }
+              },
+              "queryRef": "Metrics.Revenue",
+              "nativeQueryRef": "Revenue",
+              "displayName": "Revenue"
+            },
             {
               "field": {
                 "Measure": {
@@ -57,17 +68,13 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue YoY %"
+                  "Property": "Return Rate"
                 }
               },
-              "queryRef": "Metrics.Revenue YoY %",
-              "nativeQueryRef": "Revenue YoY %",
-              "displayName": "Revenue vs last year"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
+              "queryRef": "Metrics.Return Rate",
+              "nativeQueryRef": "Return Rate",
+              "displayName": "Return rate"
+            },
             {
               "field": {
                 "Measure": {
@@ -76,12 +83,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue"
+                  "Property": "Discount Rate"
                 }
               },
-              "queryRef": "Metrics.Revenue",
-              "nativeQueryRef": "Revenue",
-              "displayName": "Revenue"
+              "queryRef": "Metrics.Discount Rate",
+              "nativeQueryRef": "Discount Rate",
+              "displayName": "Discount rate"
             }
           ]
         }
@@ -104,51 +111,6 @@
         ]
       }
     },
-    "objects": {
-      "dataPoint": [
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1C1C1C'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
     "visualContainerObjects": {
       "title": [
         {
@@ -163,7 +125,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top-selling product categories'"
+                  "Value": "'Quality by product category'"
                 }
               }
             },

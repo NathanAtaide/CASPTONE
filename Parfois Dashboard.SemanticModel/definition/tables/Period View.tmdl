@@ -1,0 +1,37 @@
+/// Month / Year toggle of the header. Not related to other tables: Month shows the selected month, Year shows the year to date up to it.
+table 'Period View'
+	lineageTag: 32f9cc8d-daf0-5716-bc93-487818a1a20e
+
+	column 'Period View'
+		dataType: string
+		lineageTag: dcf2c9e5-466a-52bf-b7e9-94170e3d339d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period View]
+		sortByColumn: 'Period View Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Period View Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8eada3c3-8d86-558e-9779-e1a493f862bc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period View Order]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Period View' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Period View", STRING,
+				    "Period View Order", INTEGER,
+				    {
+				        { "Month", 1 },
+				        { "Year", 2 }
+				    }
+				)
+

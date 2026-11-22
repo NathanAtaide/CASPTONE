@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "3e9d3e2966f8e17dc87b",
   "position": {
-    "x": 880,
+    "x": 532,
     "y": 500,
     "z": 30000,
     "height": 208,
-    "width": 384,
+    "width": 340,
     "tabOrder": 30000
   },
   "visual": {
@@ -20,30 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Holiday"
+                      "Entity": "Event"
                     }
                   },
-                  "Property": "Holiday Date"
+                  "Property": "Event"
                 }
               },
-              "queryRef": "Holiday.Holiday Date",
-              "nativeQueryRef": "Holiday Date",
-              "displayName": "Date"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Holiday"
-                    }
-                  },
-                  "Property": "Holiday Country Code"
-                }
-              },
-              "queryRef": "Holiday.Holiday Country Code",
-              "nativeQueryRef": "Holiday Country Code",
-              "displayName": "Country"
+              "queryRef": "Event.Event",
+              "nativeQueryRef": "Event",
+              "displayName": "Event"
             },
             {
               "field": {
@@ -53,11 +38,26 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue on Holiday Days"
+                  "Property": "Event Days"
                 }
               },
-              "queryRef": "Metrics.Revenue on Holiday Days",
-              "nativeQueryRef": "Revenue on Holiday Days",
+              "queryRef": "Metrics.Event Days",
+              "nativeQueryRef": "Event Days",
+              "displayName": "Days"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Revenue on Event Days"
+                }
+              },
+              "queryRef": "Metrics.Revenue on Event Days",
+              "nativeQueryRef": "Revenue on Event Days",
               "displayName": "Revenue"
             },
             {
@@ -68,27 +68,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Holiday Uplift %"
+                  "Property": "Event Uplift %"
                 }
               },
-              "queryRef": "Metrics.Holiday Uplift %",
-              "nativeQueryRef": "Holiday Uplift %",
+              "queryRef": "Metrics.Event Uplift %",
+              "nativeQueryRef": "Event Uplift %",
               "displayName": "vs normal day"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Holiday"
-                    }
-                  },
-                  "Property": "Holiday"
-                }
-              },
-              "queryRef": "Holiday.Holiday",
-              "nativeQueryRef": "Holiday",
-              "displayName": "Holiday"
             }
           ]
         }
@@ -103,7 +88,7 @@
                     "Entity": "Metrics"
                   }
                 },
-                "Property": "Revenue on Holiday Days"
+                "Property": "Revenue on Event Days"
               }
             },
             "direction": "Descending"
@@ -140,7 +125,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Nationwide holidays in the month'"
+                  "Value": "'Events in the period'"
                 }
               }
             },

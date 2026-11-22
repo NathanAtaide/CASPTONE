@@ -3,14 +3,14 @@
   "name": "4ea647f40f6a744e6d95",
   "position": {
     "x": 224,
-    "y": 500,
+    "y": 252,
     "z": 28000,
-    "height": 208,
-    "width": 300,
+    "height": 236,
+    "width": 1040,
     "tabOrder": 28000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "lineClusteredColumnComboChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,19 +20,54 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Campaign Context"
+                      "Entity": "Date"
                     }
                   },
-                  "Property": "Campaign Context"
+                  "Property": "Date"
                 }
               },
-              "queryRef": "Campaign Context.Campaign Context",
-              "nativeQueryRef": "Campaign Context",
-              "active": true
+              "queryRef": "Date.Date",
+              "nativeQueryRef": "Date",
+              "active": true,
+              "displayName": "Day"
             }
           ]
         },
         "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Events on Day"
+                }
+              },
+              "queryRef": "Metrics.Events on Day",
+              "nativeQueryRef": "Events on Day",
+              "displayName": "Events"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Holidays on Day"
+                }
+              },
+              "queryRef": "Metrics.Holidays on Day",
+              "nativeQueryRef": "Holidays on Day",
+              "displayName": "Holidays"
+            }
+          ]
+        },
+        "Y": {
           "projections": [
             {
               "field": {
@@ -51,7 +86,7 @@
             }
           ]
         },
-        "Y": {
+        "Y2": {
           "projections": [
             {
               "field": {
@@ -61,12 +96,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Campaign Uplift %"
+                  "Property": "Paid Media Spend"
                 }
               },
-              "queryRef": "Metrics.Campaign Uplift %",
-              "nativeQueryRef": "Campaign Uplift %",
-              "displayName": "vs a normal day"
+              "queryRef": "Metrics.Paid Media Spend",
+              "nativeQueryRef": "Paid Media Spend",
+              "displayName": "Paid media"
             }
           ]
         }
@@ -75,16 +110,16 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Metrics"
+                    "Entity": "Date"
                   }
                 },
-                "Property": "Campaign Uplift %"
+                "Property": "Date"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }
@@ -97,17 +132,49 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#A58D74'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Metrics"
+                        }
+                      },
+                      "Property": "Day Colour"
                     }
                   }
                 }
               }
             }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7D2E3B'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Paid Media Spend"
           }
         }
       ],
-      "labels": [
+      "legend": [
         {
           "properties": {
             "show": {
@@ -116,30 +183,11 @@
                   "Value": "true"
                 }
               }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
+            },
+            "position": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "categoryAxis": [
-        {
-          "properties": {
-            "maxMarginFactor": {
-              "expr": {
-                "Literal": {
-                  "Value": "50L"
+                  "Value": "'TopRight'"
                 }
               }
             }
@@ -161,7 +209,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Revenue uplift by campaign context'"
+                  "Value": "'Daily revenue and paid media'"
                 }
               }
             },
@@ -213,7 +261,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'vs a normal day of the same markets'"
+                  "Value": "'Bars: taupe = event day  ·  rose = nationwide holiday  ·  black = regular day'"
                 }
               }
             },

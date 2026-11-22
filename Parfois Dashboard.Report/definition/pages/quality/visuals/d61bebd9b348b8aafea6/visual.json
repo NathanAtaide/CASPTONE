@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "d61bebd9b348b8aafea6",
   "position": {
-    "x": 934,
+    "x": 790,
     "y": 16,
     "z": 9000,
     "height": 58,
-    "width": 160,
+    "width": 150,
     "tabOrder": 9000
   },
   "visual": {
@@ -20,18 +20,63 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Market"
+                      "Entity": "Month Selector"
                     }
                   },
-                  "Property": "Country"
+                  "Property": "Year"
                 }
               },
-              "queryRef": "Market.Country",
-              "nativeQueryRef": "Country",
+              "queryRef": "Month Selector.Year",
+              "nativeQueryRef": "Year",
               "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Month Selector"
+                    }
+                  },
+                  "Property": "Month"
+                }
+              },
+              "queryRef": "Month Selector.Month",
+              "nativeQueryRef": "Month",
+              "active": false
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Month Selector"
+                  }
+                },
+                "Property": "Year"
+              }
+            },
+            "direction": "Descending"
+          },
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Month Selector"
+                  }
+                },
+                "Property": "Month"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -54,14 +99,14 @@
             "strictSingleSelect": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
             "selectAllCheckboxEnabled": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -81,7 +126,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Country'"
+                  "Value": "'Period'"
                 }
               }
             },
@@ -139,6 +184,103 @@
                 "Literal": {
                   "Value": "'Segoe UI'"
                 }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "filter": {
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "m",
+                    "Entity": "Month Selector",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "m"
+                                }
+                              },
+                              "Property": "Year"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "2025L"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "Annotations": {
+                      "filterExpressionMetadata": {
+                        "expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "Month Selector"
+                                }
+                              },
+                              "Property": "Year"
+                            }
+                          }
+                        ],
+                        "decomposedIdentities": {
+                          "values": [
+                            [
+                              {
+                                "0": [
+                                  {
+                                    "Literal": {
+                                      "Value": "2025L"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          ],
+                          "columns": [
+                            {
+                              "value": {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Month Selector"
+                                    }
+                                  },
+                                  "Property": "Year"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "valueMap": [
+                          {
+                            "0": "2025"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -256,7 +398,7 @@
       ]
     },
     "syncGroup": {
-      "groupName": "country",
+      "groupName": "month",
       "fieldChanges": true,
       "filterChanges": true
     },

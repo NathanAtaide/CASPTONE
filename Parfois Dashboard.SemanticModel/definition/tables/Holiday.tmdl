@@ -46,8 +46,6 @@ table Holiday
 
 		annotation SummarizationSetBy = Automatic
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column Holiday
 		dataType: string
 		lineageTag: ba534c74-ce8c-5122-b8dc-a46fef067237

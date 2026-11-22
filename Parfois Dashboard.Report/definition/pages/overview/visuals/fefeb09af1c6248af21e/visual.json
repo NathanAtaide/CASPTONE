@@ -3,10 +3,10 @@
   "name": "fefeb09af1c6248af21e",
   "position": {
     "x": 1018.01,
-    "y": 94,
+    "y": 166,
     "z": 30000,
-    "width": 242,
-    "height": 74,
+    "width": 121,
+    "height": 48,
     "tabOrder": 30000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Average Order Value"
+                  "Property": "Average Order Value Change A"
                 }
               },
-              "queryRef": "Metrics.Average Order Value",
-              "nativeQueryRef": "Average Order Value"
+              "queryRef": "Metrics.Average Order Value Change A",
+              "nativeQueryRef": "Average Order Value Change A"
             }
           ]
         }
@@ -40,14 +40,14 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "12D"
                 }
               }
             },
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'DIN'"
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             },
@@ -55,24 +55,15 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#1C1C1C'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Metrics"
+                        }
+                      },
+                      "Property": "Average Order Value Change A Colour"
                     }
                   }
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            },
-            "labelPrecision": {
-              "expr": {
-                "Literal": {
-                  "Value": "2L"
                 }
               }
             }
@@ -131,15 +122,20 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'AVERAGE ORDER VALUE'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Label Change A"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "10D"
+                  "Value": "8D"
                 }
               }
             },
@@ -157,14 +153,14 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             },
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'center'"
                 }
               }
             }

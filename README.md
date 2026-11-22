@@ -159,7 +159,10 @@ CAPS/
 ├── src/lakehouse/            # pacote Python compartilhado (DuckDB, ingestão, staging, exportação)
 ├── dbt/                      # projeto dbt: macros + models/bronze|silver|gold
 ├── notebooks/                # notebooks do Jupyter
-└── data/exports/             # Parquets exportados para o Power BI (fora do Docker)
+├── data/exports/             # Parquets exportados para o Power BI (fora do Docker)
+├── Parfois Dashboard.pbip    # dashboard Power BI (modelo em .SemanticModel/, relatório em .Report/) — seção 8
+├── Open Parfois Dashboard.cmd  # abre o dashboard apontando para os Parquets desta cópia do repositório
+└── open_dashboard.ps1        # script chamado pelo .cmd: reescreve o parâmetro GoldFolder e abre o .pbip
 ```
 
 | Quero... | Vá para |
@@ -251,13 +254,16 @@ Lê os Parquets de `data/exports/powerbi/` e segue o contrato de
 
 | Item | Detalhe |
 |---|---|
-| Páginas | Overview, Forecast, Sales quality, Marketing calendar e Markets & channels. Navegação pela barra lateral; filtros Month, Country e Origin sincronizados entre as páginas. |
-| Mês de referência | Tabela desconectada `Month Selector`. Todas as medidas mostram o mês escolhido e o comparam com o mês anterior e com o mesmo mês do ano anterior. A opção "Latest month" (padrão) acompanha o último mês completo a cada carga. |
-| Modelo | As 11 tabelas do star schema (Sales, Marketing Activity, Date, Market, Origin, Movement Type, Product, Customer, Campaign Context, Event, Holiday), mais `Month Selector` e `Metrics`, que guarda todas as medidas em pastas. |
-| Pasta dos dados | Parâmetro `GoldFolder` (*Transformar dados → Gerenciar parâmetros*). |
+| Abrir | Dê dois cliques em `Open Parfois Dashboard.cmd`, não no `.pbip`. O Power Query só aceita caminhos absolutos, então o `.pbip` sozinho não acha `data\exports\powerbi` em outra máquina. O script `open_dashboard.ps1` grava no parâmetro `GoldFolder` o caminho dessa pasta na cópia do repositório em que ele está e abre o projeto. Com o Desktop aberto, ele recusa (feche antes). Em uma cópia nova não há `cache.abf`: depois de abrir, clique em *Atualizar*. |
+| Páginas | Overview, Forecast, Sales quality, Marketing calendar e Markets & channels. Navegação pela barra lateral; filtros View, Period, Country e Origin sincronizados entre as páginas. |
+| Período | Tabela desconectada `Month Selector`, com o filtro Period em hierarquia Ano → Mês. Sem escolha, o painel mostra o último mês completo; o item "Latest month" acompanha esse mês a cada carga. |
+| Visão Month / Year | Botão View (tabela desconectada `Period View`). *Month* mostra o mês escolhido e o compara com o mês anterior e com o mesmo mês do ano anterior. *Year* mostra o acumulado do ano até o mês escolhido (clique no ano, ex. "2024", para o ano inteiro) e o compara com os mesmos meses do ano anterior. Os gráficos de 12 meses não mudam. A página Forecast é sempre mensal. |
+| Budget | Tabela calculada `Budget Assumptions` (crescimento planejado por ano, editável no DATATABLE) e medida `[Revenue Budget]`: receita do ano anterior × (1 + crescimento planejado). Para 2024, cujo ano anterior não está nos dados, a base de 2023 é reconstruída pelo crescimento reportado (receita de 2024 ÷ 1,64). `[Budget Attainment]` = receita acumulada no ano ÷ budget anual; aparece no cartão Revenue da Overview. Premissas: 2024 +25% (realizado +64%), 2025 +40% (realizado +48%), 2026 +35%. |
+| Modelo | As 11 tabelas do star schema (Sales, Marketing Activity, Date, Market, Origin, Movement Type, Product, Customer, Campaign Context, Event, Holiday), mais `Month Selector`, `Period View`, `Budget Assumptions` e `Metrics`, que guarda todas as medidas em pastas. |
+| Pasta dos dados | Parâmetro `GoldFolder`, gravado pelo `open_dashboard.ps1` (ou à mão em *Transformar dados → Gerenciar parâmetros*). |
 | Previsão | As medidas `Revenue Forecast (Model)`, `Orders Forecast (Model)` e `Units Sold Forecast (Model)` (pasta `5 Forecast\Model output (replace)`) são provisórias: base sazonal ingênua (mesmo mês do ano anterior × tendência recente). Troque o corpo delas pela saída do modelo de ML; as demais medidas de previsão e de acurácia leem essas três. |
 | Mês recente | As devoluções entram até ~30 dias depois do fim do mês. Por isso a receita e a taxa de devolução do último mês são provisórias, e o subtítulo marca "(provisional)". |
-| Uplift de eventos e feriados | Compara a receita dos dias de evento ou feriado com um dia normal dos mesmos mercados no mesmo mês, para que mercados grandes e pequenos não se misturem. |
+| Uplift de eventos e feriados | Compara a receita dos dias de evento ou feriado com um dia normal dos mesmos mercados no mesmo período, para que mercados grandes e pequenos não se misturem. |
 | Mapa | Não usado: Espanha e Portugal somam ~70% da receita, vários países têm mais de um canal (ex.: Online ES e El Corte Inglés) e os mercados pequenos sumiriam no mapa. A tabela ordenada da página Markets compara melhor. |
 | Atualizar | *Página Inicial → Atualizar* depois que a DAG `gold_export_powerbi` rodar. Mantenha desligadas a importação e a detecção automática de relacionamentos (*Arquivo → Opções → Arquivo atual → Carregamento de dados*): ligadas, a atualização falha com "referência cíclica". |
 | Git | `.pbi/cache.abf` (dados importados) e `.pbi/localSettings.json` ficam fora do Git (`.gitignore`). |

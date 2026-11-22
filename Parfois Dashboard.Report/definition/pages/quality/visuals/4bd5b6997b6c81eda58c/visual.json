@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4bd5b6997b6c81eda58c",
   "position": {
-    "x": 748,
+    "x": 224,
     "y": 252,
     "z": 28000,
     "height": 222,
@@ -10,7 +10,7 @@
     "tabOrder": 28000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "waterfallChart",
     "query": {
       "queryState": {
         "Category": {
@@ -42,12 +42,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Units by Movement"
+                  "Property": "Revenue"
                 }
               },
-              "queryRef": "Metrics.Units by Movement",
-              "nativeQueryRef": "Units by Movement",
-              "displayName": "Units"
+              "queryRef": "Metrics.Revenue",
+              "nativeQueryRef": "Revenue",
+              "displayName": "Revenue"
             }
           ]
         }
@@ -71,17 +71,52 @@
       }
     },
     "objects": {
-      "dataPoint": [
+      "sentimentColors": [
         {
           "properties": {
-            "fill": {
+            "increaseFill": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#C9B8A3'"
+                      "Value": "'#1C1C1C'"
                     }
                   }
+                }
+              }
+            },
+            "decreaseFill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D9A39A'"
+                    }
+                  }
+                }
+              }
+            },
+            "totalFill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A58D74'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -98,17 +133,6 @@
                 }
               }
             },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#1C1C1C'"
-                    }
-                  }
-                }
-              }
-            },
             "labelDisplayUnits": {
               "expr": {
                 "Literal": {
@@ -119,20 +143,7 @@
             "labelPrecision": {
               "expr": {
                 "Literal": {
-                  "Value": "1L"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
+                  "Value": "0L"
                 }
               }
             }
@@ -154,7 +165,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Units sold, returned and cancelled'"
+                  "Value": "'From gross sales to revenue'"
                 }
               }
             },
@@ -180,6 +191,58 @@
               "expr": {
                 "Literal": {
                   "Value": "'Segoe UI Semibold'"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'left'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Returns keep arriving for ~30 days after month end: the latest month is provisional'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
                 }
               }
             },

@@ -27,7 +27,7 @@
                     }
                   },
                   {
-                    "value": "values come from a seasonal-naive placeholder (same month last year × recent trend). Replace Metrics › 5 Forecast › Model output with the ML forecast.",
+                    "value": "values come from a seasonal-naive placeholder (same month last year × recent trend). Replace Metrics › 5 Forecast › Model output with the ML forecast. This page is always monthly.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "9pt",
