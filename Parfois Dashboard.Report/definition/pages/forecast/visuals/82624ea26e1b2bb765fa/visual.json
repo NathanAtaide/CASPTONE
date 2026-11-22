@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.3.0/schema.json",
   "name": "82624ea26e1b2bb765fa",
   "position": {
-    "x": 689.11,
+    "x": 579.33,
     "y": 202,
     "z": 20000,
-    "width": 109.78,
-    "height": 54,
+    "width": 164.66,
+    "height": 47,
     "tabOrder": 20000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Orders Forecast Accuracy"
+                  "Property": "Champion Model"
                 }
               },
-              "queryRef": "Metrics.Orders Forecast Accuracy",
-              "nativeQueryRef": "Orders Forecast Accuracy"
+              "queryRef": "Metrics.Champion Model",
+              "nativeQueryRef": "Champion Model"
             }
           ]
         }
@@ -118,7 +118,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'accuracy (month)'"
+                  "Value": "'champion model'"
                 }
               }
             },
@@ -288,5 +288,64 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "targetUnits",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Forecast Target"
+              }
+            },
+            "Property": "Target Key"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "Forecast Target",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "t"
+                          }
+                        },
+                        "Property": "Target Key"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'units'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true
+      }
+    ]
   }
 }

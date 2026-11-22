@@ -42,7 +42,9 @@ relacionamentos, tabela de data, colunas ocultas, medidas DAX e simulação SCD2
 - carregue um arquivo por tabela com o conector **Parquet** (`Parquet.Document(File.Contents(...))`),
   com a pasta num parâmetro (`PastaGold`). Não use *Obter dados → Pasta* com *Combinar arquivos*: ele
   empilharia todas as tabelas numa só;
-- carregue só os 11 arquivos `gld_fact_*` e `gld_dim_*`;
+- carregue os 11 arquivos `gld_fact_*` e `gld_dim_*` e, para a página de previsão, `gld_forecast_champion`,
+  `gld_forecast_model_metrics`, `gld_forecast_backtest_monthly` e `gld_forecast_next_month` (o
+  `Parfois Dashboard.pbip` da raiz já faz isso; ver a seção 8 do README principal);
 - o Power BI Desktop roda no Windows: leve esta pasta até ele (cópia, pasta de rede ou
   OneDrive/SharePoint).
 

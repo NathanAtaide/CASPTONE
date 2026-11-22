@@ -3,10 +3,10 @@
   "name": "6ff043c120d49c0e1f9c",
   "position": {
     "x": 579.33,
-    "y": 202,
+    "y": 130,
     "z": 19000,
-    "width": 109.78,
-    "height": 54,
+    "width": 329.33,
+    "height": 74,
     "tabOrder": 19000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Orders Forecast"
+                  "Property": "Next Month Forecast"
                 }
               },
-              "queryRef": "Metrics.Orders Forecast",
-              "nativeQueryRef": "Orders Forecast"
+              "queryRef": "Metrics.Next Month Forecast",
+              "nativeQueryRef": "Next Month Forecast"
             }
           ]
         }
@@ -40,14 +40,14 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "24D"
                 }
               }
             },
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'DIN'"
                 }
               }
             },
@@ -132,14 +132,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'month forecast'"
+                  "Value": "'NET UNITS · NEXT-MONTH FORECAST'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "10D"
                 }
               }
             },
@@ -157,14 +157,14 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             },
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'center'"
+                  "Value": "'left'"
                 }
               }
             }
@@ -302,5 +302,64 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "targetUnits",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Forecast Target"
+              }
+            },
+            "Property": "Target Key"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "Forecast Target",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "t"
+                          }
+                        },
+                        "Property": "Target Key"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'units'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true
+      }
+    ]
   }
 }

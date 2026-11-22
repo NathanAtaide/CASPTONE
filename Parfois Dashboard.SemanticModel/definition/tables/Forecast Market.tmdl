@@ -1,0 +1,38 @@
+/// Markets of the forecast tables: the ES + PT total and each market. Filters Forecast Backtest and Forecast Next Month.
+table 'Forecast Market'
+	lineageTag: 3da7c9a3-e855-5494-85ee-7efb21953e19
+
+	column Market
+		dataType: string
+		lineageTag: 8db548bf-4bc0-58ab-82b5-73c75ec95af7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Market]
+		sortByColumn: 'Market Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Market Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d53bd52a-5738-5581-ad6f-7f595828d98b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Market Order]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Forecast Market' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Market", STRING,
+				    "Market Order", INTEGER,
+				    {
+				        { "ES + PT", 1 },
+				        { "Online ES", 2 },
+				        { "Online PT", 3 }
+				    }
+				)
+

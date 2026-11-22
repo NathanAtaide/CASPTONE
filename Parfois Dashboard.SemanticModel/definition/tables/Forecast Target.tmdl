@@ -1,0 +1,269 @@
+/// One row per forecast target (orders, net units, gross sales of Online ES + PT) with its champion model (gld_forecast_champion).
+table 'Forecast Target'
+	lineageTag: 8e707059-f24c-51ce-8c4d-4b70404baeea
+
+	column 'Target Key'
+		dataType: string
+		isHidden
+		lineageTag: 380c99c6-21b7-55f9-82e5-f872009fee6f
+		summarizeBy: none
+		sourceColumn: target
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Orders (with a SALE line), net units (SALE + CANCELLED) or gross sales EUR without VAT (SALE + CANCELLED) of Online ES + PT.
+	column Target
+		dataType: string
+		lineageTag: b473d23b-a332-5919-a914-cdf04096895d
+		summarizeBy: none
+		sourceColumn: target_name
+		sortByColumn: 'Target Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Target Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2af35446-5b76-50e0-a0eb-2aa80c070b86
+		summarizeBy: none
+		sourceColumn: target_order
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Target Definition'
+		dataType: string
+		lineageTag: 94c145c3-9397-5f2d-bcbe-424f9a783ccf
+		summarizeBy: none
+		sourceColumn: target_label
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Key'
+		dataType: string
+		isHidden
+		lineageTag: 71ee4468-9905-5e8b-80b9-5a48b3dd18a6
+		summarizeBy: none
+		sourceColumn: model_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Model'
+		dataType: string
+		lineageTag: 2ba9d5bd-a090-52c1-aba3-34591fa895ba
+		summarizeBy: none
+		sourceColumn: model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Family'
+		dataType: string
+		lineageTag: f0a989ea-af73-528a-884c-3d3c3efe1518
+		summarizeBy: none
+		sourceColumn: family
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Algorithm'
+		dataType: string
+		lineageTag: a3d12bdd-cc36-5c40-98a8-aeeed2dd85bc
+		summarizeBy: none
+		sourceColumn: algorithm
+
+		annotation SummarizationSetBy = Automatic
+
+	/// C = uses the paid media of the forecast month.
+	column 'Champion Scenario'
+		dataType: string
+		lineageTag: 33d070c8-134e-5d71-9f1d-7daecb431e1b
+		summarizeBy: none
+		sourceColumn: scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Uses Paid Media'
+		dataType: boolean
+		lineageTag: 61afb656-9f25-5652-92f8-b8001e30d2f8
+		summarizeBy: none
+		sourceColumn: uses_paid_media
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monthly WAPE of ES + PT on the backtest window.
+	column 'Champion WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: fc92dfe4-5c54-583d-ab9c-78d45e36a2c4
+		summarizeBy: none
+		sourceColumn: wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Bias'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: bc1f6d69-1f9b-5c70-aff2-64b657d8ac18
+		summarizeBy: none
+		sourceColumn: bias_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Champion Daily WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 1ed5a1ae-ffc5-5aae-8037-f75c363ab960
+		summarizeBy: none
+		sourceColumn: wape_daily
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Baseline 3 WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 72494546-51e1-543f-9e7f-57ba1955a38d
+		summarizeBy: none
+		sourceColumn: baseline_wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WAPE vs Baseline 3 (pp)'
+		dataType: double
+		formatString: 0.0
+		lineageTag: c1bee60e-9d46-572e-b94a-43c85f6eb9a3
+		summarizeBy: none
+		sourceColumn: wape_vs_baseline_pp
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Beats Baseline'
+		dataType: boolean
+		lineageTag: e6ecfcd7-a3eb-566e-9171-556c404b0fd3
+		summarizeBy: none
+		sourceColumn: beats_baseline
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Runner-up Key'
+		dataType: string
+		lineageTag: 71349cbf-34a0-5881-9b9d-64e12efef36b
+		summarizeBy: none
+		sourceColumn: runner_up_model_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Runner-up WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: cd8a4ae1-2d62-521f-9cb8-292dbb3f540d
+		summarizeBy: none
+		sourceColumn: runner_up_wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Best ML/DL Model'
+		dataType: string
+		lineageTag: 4cb40e9e-9b17-52e1-acb7-127f8222cdf5
+		summarizeBy: none
+		sourceColumn: best_ml_dl_model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Best ML/DL WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 5fc968b2-86cb-522f-9044-d429747ab57d
+		summarizeBy: none
+		sourceColumn: best_ml_dl_wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	/// MLflow registry name; alias champion.
+	column 'Registered Model'
+		dataType: string
+		lineageTag: 0c36712f-241d-5eec-a00a-80d8c9c2d07e
+		summarizeBy: none
+		sourceColumn: registered_model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Registered Version'
+		dataType: int64
+		formatString: 0
+		lineageTag: 06d9aca3-c334-541f-9fa8-ce452fd32f57
+		summarizeBy: none
+		sourceColumn: registered_model_version
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MLflow Run ID'
+		dataType: string
+		isHidden
+		lineageTag: 4cb8315d-8ca9-5738-8e1b-fa72309ddb61
+		summarizeBy: none
+		sourceColumn: mlflow_run_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Backtest Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: cca3534b-985f-5d13-80f0-4c615fd4795c
+		summarizeBy: none
+		sourceColumn: backtest_start
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Backtest End'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 5a2c9a62-1dd9-5485-8e90-29466d31531f
+		summarizeBy: none
+		sourceColumn: backtest_end
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data End'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 6b2ffb30-9e7b-54e0-9ea1-26713003e754
+		summarizeBy: none
+		sourceColumn: data_end
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Selection Rule'
+		dataType: string
+		lineageTag: 6a60c577-bb5d-5e69-b4c4-8985ff5b5d64
+		summarizeBy: none
+		sourceColumn: selection_rule
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Selected At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: 268d9479-1c47-5c34-bbea-e9ee4a568b67
+		summarizeBy: none
+		sourceColumn: selected_at
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Forecast Target' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_forecast_champion.parquet")),
+				    Selected = Table.SelectColumns(Source, {"target", "target_label", "model_key", "model_name", "family", "algorithm", "scenario", "uses_paid_media", "wape_monthly", "bias_monthly", "wape_daily", "baseline_wape_monthly", "wape_vs_baseline_pp", "beats_baseline", "runner_up_model_key", "runner_up_wape_monthly", "best_ml_dl_model_name", "best_ml_dl_wape_monthly", "registered_model_name", "registered_model_version", "mlflow_run_id", "backtest_start", "backtest_end", "data_end", "selection_rule", "selected_at"}),
+				    Named = Table.AddColumn(Selected, "target_name", each
+				        if [target] = "orders" then "Orders"
+				        else if [target] = "units" then "Net units"
+				        else if [target] = "sales" then "Gross sales"
+				        else [target_label], type text),
+				    Ordered = Table.AddColumn(Named, "target_order", each
+				        if [target] = "orders" then 1 else if [target] = "units" then 2 else if [target] = "sales" then 3 else 9,
+				        Int64.Type)
+				in
+				    Ordered
+
+	annotation PBI_ResultType = Table
+

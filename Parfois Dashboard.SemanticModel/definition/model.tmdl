@@ -7,7 +7,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["GoldFolder","Sales","Marketing Activity","Date","Market","Origin","Movement Type","Product","Customer","Campaign Context","Event","Holiday"]
+annotation PBI_QueryOrder = ["GoldFolder","Sales","Marketing Activity","Date","Market","Origin","Movement Type","Product","Customer","Campaign Context","Event","Holiday","Forecast Target","Forecast Model","Forecast Backtest","Forecast Next Month"]
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
@@ -28,6 +28,11 @@ ref table 'Month Selector'
 ref table Metrics
 ref table 'Period View'
 ref table 'Budget Assumptions'
+ref table 'Forecast Target'
+ref table 'Forecast Model'
+ref table 'Forecast Backtest'
+ref table 'Forecast Next Month'
+ref table 'Forecast Market'
 
 ref cultureInfo en-US
 

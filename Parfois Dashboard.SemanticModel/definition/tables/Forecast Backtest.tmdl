@@ -1,0 +1,141 @@
+/// Monthly backtest of every model (gld_forecast_backtest_monthly): forecast with cutoff M-2 vs actual, per market and ES + PT.
+table 'Forecast Backtest'
+	lineageTag: 41752a80-999b-598c-9f42-b1e0c049595c
+
+	column 'Model ID'
+		dataType: string
+		isHidden
+		lineageTag: 477a0c23-7746-50a8-8732-28f7ae840ed5
+		summarizeBy: none
+		sourceColumn: model_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Target Key'
+		dataType: string
+		isHidden
+		lineageTag: f03f28c5-e28e-5dcf-9879-c4ade53e5312
+		summarizeBy: none
+		sourceColumn: target
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Model Key'
+		dataType: string
+		isHidden
+		lineageTag: 6e0b7244-eef0-51be-bd27-b0201bc6b9e6
+		summarizeBy: none
+		sourceColumn: model_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Market
+		dataType: string
+		isHidden
+		lineageTag: ffe61d25-b251-52a6-99fe-26c8355159f8
+		summarizeBy: none
+		sourceColumn: market
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Total'
+		dataType: boolean
+		isHidden
+		lineageTag: c3886632-9b6f-5bd6-a88a-1c04b9dadb05
+		summarizeBy: none
+		sourceColumn: is_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1b07d87f-3931-5b5a-8d6b-4aff660d902d
+		summarizeBy: none
+		sourceColumn: month_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Forecast
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: e4d40022-62da-501b-815c-7e4e67792e58
+		summarizeBy: none
+		sourceColumn: forecast
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed Min'
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 93c78af6-c86f-57c3-85c4-9455ebccbffa
+		summarizeBy: none
+		sourceColumn: forecast_seed_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed Max'
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 5a92636d-c12b-594c-914b-d8a9234b4bf6
+		summarizeBy: none
+		sourceColumn: forecast_seed_max
+
+		annotation SummarizationSetBy = Automatic
+
+	column Actual
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: ebb8e954-0b49-59c2-9e8d-dbb2edd63966
+		summarizeBy: none
+		sourceColumn: actual
+
+		annotation SummarizationSetBy = Automatic
+
+	column Error
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 8d0a9aac-9fc3-5ff5-8a87-96779cf4d1bd
+		summarizeBy: none
+		sourceColumn: error
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Abs Error'
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: f1c54666-03c9-537e-a1be-50af1817c2de
+		summarizeBy: none
+		sourceColumn: abs_error
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Error %'
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: b760545a-3ca4-537b-af68-1f4a5ba234b2
+		summarizeBy: none
+		sourceColumn: error_pct
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Forecast Backtest' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_forecast_backtest_monthly.parquet")),
+				    Selected = Table.SelectColumns(Source, {"target", "model_key", "market", "is_total", "month_date_key", "forecast", "forecast_seed_min", "forecast_seed_max", "actual", "error", "abs_error", "error_pct"}),
+				    Keyed = Table.AddColumn(Selected, "model_id", each [target] & "|" & [model_key], type text)
+				in
+				    Keyed
+
+	annotation PBI_ResultType = Table
+

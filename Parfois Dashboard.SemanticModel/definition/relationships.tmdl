@@ -42,3 +42,31 @@ relationship 1daad085-ecd4-5e7a-b0bd-4ddddff9a650
 	fromColumn: 'Marketing Activity'.'Holiday Key'
 	toColumn: Holiday.'Holiday Key'
 
+relationship 0b67b366-ac12-5f62-b243-55c2baa00fbf
+	fromColumn: 'Forecast Model'.'Target Key'
+	toColumn: 'Forecast Target'.'Target Key'
+
+relationship 95208d94-0ec2-568e-a905-31d5e73add6d
+	fromColumn: 'Forecast Backtest'.'Model ID'
+	toColumn: 'Forecast Model'.'Model ID'
+
+relationship dbcf6177-37a2-5da9-954f-0373327b5c9e
+	fromColumn: 'Forecast Backtest'.'Month Key'
+	toColumn: Date.'Date Key'
+
+relationship 2f844e50-8bca-5d17-97f9-46b013bb180d
+	fromColumn: 'Forecast Backtest'.Market
+	toColumn: 'Forecast Market'.Market
+
+relationship cf196673-d8d7-5f12-b7e4-b1917869a77d
+	fromColumn: 'Forecast Next Month'.'Target Key'
+	toColumn: 'Forecast Target'.'Target Key'
+
+relationship 5122160c-556f-5dc8-92b0-5448dcae096d
+	fromColumn: 'Forecast Next Month'.'Month Key'
+	toColumn: Date.'Date Key'
+
+relationship 375efcaf-e429-5d9d-9692-395152ead630
+	fromColumn: 'Forecast Next Month'.Market
+	toColumn: 'Forecast Market'.Market
+

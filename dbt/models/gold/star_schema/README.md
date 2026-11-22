@@ -146,6 +146,13 @@ coluna continua sendo o nome da coluna no Parquet:
 | `gld_dim_event` | `Event` (nome do evento e tipo legíveis) |
 | `gld_dim_holiday` | `Holiday` |
 
+Fora do star schema, o dashboard também carrega as tabelas de previsão gravadas por Python
+(`src/lakehouse/forecasting/`): `gld_forecast_champion` → `Forecast Target`,
+`gld_forecast_model_metrics` → `Forecast Model`, `gld_forecast_backtest_monthly` →
+`Forecast Backtest` e `gld_forecast_next_month` → `Forecast Next Month`. Elas se ligam a `Date` pela
+chave do mês (`month_date_key`) e a uma tabela calculada `Forecast Market` (ES + PT, Online ES,
+Online PT) pela coluna `market`; não se ligam a `Market`.
+
 ### 1. Origem dos dados
 
 | Item | Definição |

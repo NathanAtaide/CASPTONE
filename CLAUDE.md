@@ -435,7 +435,8 @@ com essa configuração. O modelo no Power BI ainda não foi montado nem testado
 imagem do Airflow foi reconstruída com o `/opt/ml-venv`, e as DAGs `ml_forecast_selection` (23 tasks,
 ~20 min; reproduz os números dos notebooks de `ml_models/`), `ml_forecast_next_month` (janeiro de
 2026, orçamento de € 438.070) e `gold_export_powerbi` rodaram com sucesso; as tabelas `gld_forecast_*`
-estão em `./data/exports/powerbi/`, ainda sem visual no Power BI.
+estão em `./data/exports/powerbi/`. A página Forecast do `Parfois Dashboard.pbip` lê quatro delas
+(campeão, métricas, backtest mensal e mês seguinte); ver a seção 8 do `README.md`.
 
 ## 9. O que informar ao pedir uma pipeline
 

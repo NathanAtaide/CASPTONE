@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "3be1d7c642300bdcca2f",
   "position": {
-    "x": 790,
+    "x": 1106,
     "y": 16,
     "z": 8000,
     "height": 58,
-    "width": 150,
+    "width": 158,
     "tabOrder": 8000
   },
   "visual": {
@@ -20,63 +20,18 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Month Selector"
+                      "Entity": "Forecast Market"
                     }
                   },
-                  "Property": "Year"
+                  "Property": "Market"
                 }
               },
-              "queryRef": "Month Selector.Year",
-              "nativeQueryRef": "Year",
+              "queryRef": "Forecast Market.Market",
+              "nativeQueryRef": "Market",
               "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Month Selector"
-                    }
-                  },
-                  "Property": "Month"
-                }
-              },
-              "queryRef": "Month Selector.Month",
-              "nativeQueryRef": "Month",
-              "active": false
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Month Selector"
-                  }
-                },
-                "Property": "Year"
-              }
-            },
-            "direction": "Descending"
-          },
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Month Selector"
-                  }
-                },
-                "Property": "Month"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
     },
     "objects": {
@@ -126,7 +81,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Period'"
+                  "Value": "'Market'"
                 }
               }
             },
@@ -197,8 +152,8 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "m",
-                    "Entity": "Month Selector",
+                    "Name": "f",
+                    "Entity": "Forecast Market",
                     "Type": 0
                   }
                 ],
@@ -211,10 +166,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "m"
+                                  "Source": "f"
                                 }
                               },
-                              "Property": "Year"
+                              "Property": "Market"
                             }
                           }
                         ],
@@ -222,60 +177,10 @@
                           [
                             {
                               "Literal": {
-                                "Value": "2025L"
+                                "Value": "'ES + PT'"
                               }
                             }
                           ]
-                        ]
-                      }
-                    },
-                    "Annotations": {
-                      "filterExpressionMetadata": {
-                        "expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Entity": "Month Selector"
-                                }
-                              },
-                              "Property": "Year"
-                            }
-                          }
-                        ],
-                        "decomposedIdentities": {
-                          "values": [
-                            [
-                              {
-                                "0": [
-                                  {
-                                    "Literal": {
-                                      "Value": "2025L"
-                                    }
-                                  }
-                                ]
-                              }
-                            ]
-                          ],
-                          "columns": [
-                            {
-                              "value": {
-                                "Column": {
-                                  "Expression": {
-                                    "SourceRef": {
-                                      "Entity": "Month Selector"
-                                    }
-                                  },
-                                  "Property": "Year"
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        "valueMap": [
-                          {
-                            "0": "2025"
-                          }
                         ]
                       }
                     }
@@ -398,7 +303,7 @@
       ]
     },
     "syncGroup": {
-      "groupName": "month",
+      "groupName": "forecastMarket",
       "fieldChanges": true,
       "filterChanges": true
     },

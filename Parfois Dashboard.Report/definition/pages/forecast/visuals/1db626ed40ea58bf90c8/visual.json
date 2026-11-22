@@ -1,199 +1,102 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.3.0/schema.json",
   "name": "1db626ed40ea58bf90c8",
   "position": {
-    "x": 224,
-    "y": 496,
+    "x": 928.66,
+    "y": 249,
     "z": 30000,
-    "height": 212,
-    "width": 1040,
+    "width": 164.66,
+    "height": 47,
     "tabOrder": 30000
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Date"
-                    }
-                  },
-                  "Property": "Year Month"
-                }
-              },
-              "queryRef": "Date.Year Month",
-              "nativeQueryRef": "Year Month",
-              "displayName": "Month"
-            },
-            {
-              "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Revenue (Trend)"
+                  "Property": "Next Month Seed Range"
                 }
               },
-              "queryRef": "Metrics.Revenue (Trend)",
-              "nativeQueryRef": "Revenue (Trend)",
-              "displayName": "Revenue actual"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue Forecast (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Revenue Forecast (Trend)",
-              "nativeQueryRef": "Revenue Forecast (Trend)",
-              "displayName": "Revenue forecast"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Revenue Forecast Accuracy (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Revenue Forecast Accuracy (Trend)",
-              "nativeQueryRef": "Revenue Forecast Accuracy (Trend)",
-              "displayName": "Revenue accuracy"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Orders (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Orders (Trend)",
-              "nativeQueryRef": "Orders (Trend)",
-              "displayName": "Orders actual"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Orders Forecast (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Orders Forecast (Trend)",
-              "nativeQueryRef": "Orders Forecast (Trend)",
-              "displayName": "Orders forecast"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Orders Forecast Accuracy (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Orders Forecast Accuracy (Trend)",
-              "nativeQueryRef": "Orders Forecast Accuracy (Trend)",
-              "displayName": "Orders accuracy"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Units Sold (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Units Sold (Trend)",
-              "nativeQueryRef": "Units Sold (Trend)",
-              "displayName": "Units actual"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Units Sold Forecast (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Units Sold Forecast (Trend)",
-              "nativeQueryRef": "Units Sold Forecast (Trend)",
-              "displayName": "Units forecast"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Units Sold Forecast Accuracy (Trend)"
-                }
-              },
-              "queryRef": "Metrics.Units Sold Forecast Accuracy (Trend)",
-              "nativeQueryRef": "Units Sold Forecast Accuracy (Trend)",
-              "displayName": "Units accuracy"
+              "queryRef": "Metrics.Next Month Seed Range",
+              "nativeQueryRef": "Next Month Seed Range"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Date"
-                  }
-                },
-                "Property": "Year Month"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
     },
     "objects": {
-      "total": [
+      "labels": [
         {
           "properties": {
-            "totals": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1C1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#7A746E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
                 }
               }
             }
@@ -215,14 +118,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Forecast accuracy by month (1 − absolute percentage error)'"
+                  "Value": "'range of the 5 seeds'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "8D"
                 }
               }
             },
@@ -231,7 +134,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#1C1C1C'"
+                      "Value": "'#7A746E'"
                     }
                   }
                 }
@@ -240,14 +143,14 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI Semibold'"
+                  "Value": "'Segoe UI'"
                 }
               }
             },
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'center'"
                 }
               }
             }
@@ -260,7 +163,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -291,7 +194,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -335,8 +238,114 @@
             }
           }
         }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "targetSales",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Forecast Target"
+              }
+            },
+            "Property": "Target Key"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "t",
+              "Entity": "Forecast Target",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "t"
+                          }
+                        },
+                        "Property": "Target Key"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'sales'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true
+      }
+    ]
   }
 }

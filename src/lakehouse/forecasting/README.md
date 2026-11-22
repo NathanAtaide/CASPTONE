@@ -140,6 +140,11 @@ Gravadas por Python, declaradas como fonte `gold_forecast` do dbt e exportadas p
 As tabelas da seleção guardam a última seleção de cada alvo (o histórico fica no MLflow); as do mês
 seguinte acumulam um conjunto por alvo e mês previsto (prever o mesmo mês de novo substitui).
 
+No `Parfois Dashboard.pbip`, a página **Forecast** usa `gld_forecast_champion`,
+`gld_forecast_model_metrics`, `gld_forecast_backtest_monthly` e `gld_forecast_next_month` (tabelas
+`Forecast Target`, `Forecast Model`, `Forecast Backtest` e `Forecast Next Month`) e mostra sempre o
+mês previsto mais recente. As tabelas diárias ainda não têm visual. Ver a seção 8 do README principal.
+
 ## Limitações
 
 - Os modelos de cenário C dependem do orçamento de mídia paga do mês. No backtest usam o gasto real;

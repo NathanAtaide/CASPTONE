@@ -1,0 +1,326 @@
+/// Every candidate model of every target with its backtest metrics (gld_forecast_model_metrics). Model ID = target|model_key.
+table 'Forecast Model'
+	lineageTag: 4abdd890-871b-5fbb-bf34-3dccf26d03e4
+
+	column 'Model ID'
+		dataType: string
+		isHidden
+		lineageTag: 61c01890-c590-5116-be9f-98ad2c9c9c5c
+		summarizeBy: none
+		sourceColumn: model_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Target Key'
+		dataType: string
+		isHidden
+		lineageTag: 0e67b031-d5fd-52ec-8d9a-610aee22a83e
+		summarizeBy: none
+		sourceColumn: target
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Model Key'
+		dataType: string
+		isHidden
+		lineageTag: 42dd897b-e09e-5e87-980c-5a946703b48f
+		summarizeBy: none
+		sourceColumn: model_key
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Model name; the champion is marked with a star.
+	column Model
+		dataType: string
+		lineageTag: 18961d45-9eda-54ff-a5a7-0ac72ff3a043
+		summarizeBy: none
+		sourceColumn: model_label
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Model Name'
+		dataType: string
+		lineageTag: e1c5423c-d3a9-5546-bde1-b81de914a741
+		summarizeBy: none
+		sourceColumn: model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Family
+		dataType: string
+		lineageTag: 2fb02b9a-58a8-5e5a-b8b1-a6b7451b486d
+		summarizeBy: none
+		sourceColumn: family
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Baseline, ML or DL.
+	column Type
+		dataType: string
+		lineageTag: 6cc8fcd6-4421-5420-9ed4-bb605c10e57f
+		summarizeBy: none
+		sourceColumn: family_short
+
+		annotation SummarizationSetBy = Automatic
+
+	column Algorithm
+		dataType: string
+		lineageTag: aff7d06a-ac48-5048-8546-055b87a44620
+		summarizeBy: none
+		sourceColumn: algorithm
+
+		annotation SummarizationSetBy = Automatic
+
+	column Scenario
+		dataType: string
+		lineageTag: c644730f-f79c-59a9-9059-f7ce622a20dd
+		summarizeBy: none
+		sourceColumn: scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Uses Paid Media'
+		dataType: boolean
+		lineageTag: 82b8f6f8-89f2-592d-aa95-85b9f0ecfdcb
+		summarizeBy: none
+		sourceColumn: uses_paid_media
+
+		annotation SummarizationSetBy = Automatic
+
+	/// market (ES and PT apart), total (ES + PT) or category_group.
+	column Level
+		dataType: string
+		lineageTag: 7be23a09-4918-594e-8a2c-127c86163739
+		summarizeBy: none
+		sourceColumn: level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Champion
+		dataType: boolean
+		lineageTag: 1d655dc6-16c4-54f2-a60e-923353165350
+		summarizeBy: none
+		sourceColumn: is_champion
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Baseline 3 (monthly), the reference of every study.
+	column 'Baseline Reference'
+		dataType: boolean
+		lineageTag: 917aeccd-9b43-5e20-86d2-7dd485089f26
+		summarizeBy: none
+		sourceColumn: is_baseline_reference
+
+		annotation SummarizationSetBy = Automatic
+
+	column Rank
+		dataType: int64
+		formatString: 0
+		lineageTag: 1bb6ffcf-dfa5-5d6d-a18b-367906efc896
+		summarizeBy: none
+		sourceColumn: rank_wape
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tied With Best'
+		dataType: boolean
+		lineageTag: b8452909-3dbe-5da6-b365-2f8e73e52df3
+		summarizeBy: none
+		sourceColumn: within_tie_of_best
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monthly WAPE of ES + PT on the backtest window.
+	column WAPE
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 2382276b-e245-5509-988f-48abd8fe56a6
+		summarizeBy: none
+		sourceColumn: wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column Bias
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 55a5d16f-389f-587e-95be-e96ad066d1cf
+		summarizeBy: none
+		sourceColumn: bias_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column RMSE
+		dataType: double
+		formatString: #,0
+		lineageTag: 80ec8b18-4a70-5b70-af89-45dbb9745e75
+		summarizeBy: none
+		sourceColumn: rmse_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column R2
+		dataType: double
+		formatString: 0.00
+		lineageTag: cbd46c66-57b2-5924-bdf5-f2e103329069
+		summarizeBy: none
+		sourceColumn: r2_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Daily WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 18f1c83c-2cab-5730-bba9-8486dd0fa0dd
+		summarizeBy: none
+		sourceColumn: wape_daily
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WAPE ES'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 4985da3f-2dff-5d0f-9730-a510a7a4a433
+		summarizeBy: none
+		sourceColumn: wape_monthly_es
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Bias ES'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 192ae0c1-cc7e-5c69-903b-4e0398405070
+		summarizeBy: none
+		sourceColumn: bias_monthly_es
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WAPE PT'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: e5936ad0-080c-540a-bd26-b2e4079f1c9d
+		summarizeBy: none
+		sourceColumn: wape_monthly_pt
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Bias PT'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 4e5c1399-9c2e-5072-bb7f-41adc7062278
+		summarizeBy: none
+		sourceColumn: bias_monthly_pt
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed WAPE Mean'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 8d3bc5e7-62f0-5146-a25b-53f2fa9b4dfb
+		summarizeBy: none
+		sourceColumn: wape_seed_mean
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed WAPE Min'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: e4da0fa6-997e-5fbc-bbd7-33e2b3d823ed
+		summarizeBy: none
+		sourceColumn: wape_seed_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed WAPE Max'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: cf67dbb1-37ea-5dbd-bec9-c7d088c149d4
+		summarizeBy: none
+		sourceColumn: wape_seed_max
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Baseline 3 WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: de015368-2002-5a07-b05c-07d370c6a268
+		summarizeBy: none
+		sourceColumn: baseline_wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'WAPE vs Baseline 3 (pp)'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 81adf12e-e9d8-5011-823f-e7a821364597
+		summarizeBy: none
+		sourceColumn: wape_vs_baseline_pp
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Beats Baseline'
+		dataType: boolean
+		lineageTag: 59f8921f-3b9b-56a1-a9bc-b488698c0278
+		summarizeBy: none
+		sourceColumn: beats_baseline
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Training Seconds'
+		dataType: double
+		formatString: #,0
+		lineageTag: a64df9ce-7523-54a1-9076-4203663557d3
+		summarizeBy: none
+		sourceColumn: training_seconds
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MLflow Experiment'
+		dataType: string
+		lineageTag: 3afced9b-94a5-5f14-bf84-0a1deb2f22e2
+		summarizeBy: none
+		sourceColumn: mlflow_experiment
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MLflow Run ID'
+		dataType: string
+		isHidden
+		lineageTag: 54257f8f-90b0-533e-b791-5dfc9f3db123
+		summarizeBy: none
+		sourceColumn: mlflow_run_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Backtest Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 2254a8a1-bf87-59b3-9f99-6b1cdd616129
+		summarizeBy: none
+		sourceColumn: backtest_start
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Backtest End'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: f1ce1857-7b6c-5f39-9c58-6398ecc26cae
+		summarizeBy: none
+		sourceColumn: backtest_end
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Forecast Model' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_forecast_model_metrics.parquet")),
+				    Selected = Table.SelectColumns(Source, {"target", "model_key", "model_name", "family", "algorithm", "scenario", "uses_paid_media", "level", "is_champion", "is_baseline_reference", "rank_wape", "within_tie_of_best", "wape_monthly", "bias_monthly", "rmse_monthly", "r2_monthly", "wape_daily", "wape_monthly_es", "bias_monthly_es", "wape_monthly_pt", "bias_monthly_pt", "wape_seed_mean", "wape_seed_min", "wape_seed_max", "baseline_wape_monthly", "wape_vs_baseline_pp", "beats_baseline", "training_seconds", "mlflow_experiment", "mlflow_run_id", "backtest_start", "backtest_end"}),
+				    Keyed = Table.AddColumn(Selected, "model_id", each [target] & "|" & [model_key], type text),
+				    Labeled = Table.AddColumn(Keyed, "model_label", each (if [is_champion] then "★ " else "") & [model_name], type text),
+				    Typed = Table.AddColumn(Labeled, "family_short", each
+				        if [family] = "Machine Learning" then "ML" else if [family] = "Deep Learning" then "DL" else [family], type text)
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

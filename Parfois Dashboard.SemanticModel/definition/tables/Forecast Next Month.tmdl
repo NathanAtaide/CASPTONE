@@ -1,0 +1,204 @@
+/// Champion forecast of the month after the data (gld_forecast_next_month), per market and ES + PT; one set per target and forecast month.
+table 'Forecast Next Month'
+	lineageTag: 9db87139-a2f3-5f32-912e-a8613f109fdf
+
+	column 'Target Key'
+		dataType: string
+		isHidden
+		lineageTag: 9d7109ad-9552-5cf8-bea4-ae59a48ce6ed
+		summarizeBy: none
+		sourceColumn: target
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Forecast Month'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 00c7618a-59cc-5df8-aa55-6727a2fd67de
+		summarizeBy: none
+		sourceColumn: forecast_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4bf451cf-d42d-5fad-9410-4a84f73c0399
+		summarizeBy: none
+		sourceColumn: month_date_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Market
+		dataType: string
+		isHidden
+		lineageTag: 34386023-3b6a-5509-aed2-f23792469384
+		summarizeBy: none
+		sourceColumn: market
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Total'
+		dataType: boolean
+		isHidden
+		lineageTag: 1c18a2b1-0f01-5323-85d9-f8f013b5ea2f
+		summarizeBy: none
+		sourceColumn: is_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column Forecast
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 17b7fa0c-a9f8-5e87-b104-7fae198de121
+		summarizeBy: none
+		sourceColumn: forecast
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed Min'
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 2b331442-071e-5ebe-85b2-28f881e76565
+		summarizeBy: none
+		sourceColumn: forecast_seed_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seed Max'
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: ca76082c-d3d1-5c1d-8952-f228565da714
+		summarizeBy: none
+		sourceColumn: forecast_seed_max
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Model Key'
+		dataType: string
+		isHidden
+		lineageTag: 65bc9b04-41d3-5192-bbfa-d6a71290e9f0
+		summarizeBy: none
+		sourceColumn: model_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Model
+		dataType: string
+		lineageTag: 2b3a24e4-8da7-5b0e-ad0b-013abe9c0559
+		summarizeBy: none
+		sourceColumn: model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Family
+		dataType: string
+		lineageTag: fd2071b2-c1a6-5b0e-99d7-35dbeeb6e546
+		summarizeBy: none
+		sourceColumn: family
+
+		annotation SummarizationSetBy = Automatic
+
+	column Scenario
+		dataType: string
+		lineageTag: 22be48ea-633d-5cbe-88f9-fe4d9fb9ea1b
+		summarizeBy: none
+		sourceColumn: scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Uses Paid Media'
+		dataType: boolean
+		lineageTag: 8d66e169-0da7-52fd-af82-b4ed168a2656
+		summarizeBy: none
+		sourceColumn: uses_paid_media
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Paid media budget given to the forecast DAG (scenario C models), split by market.
+	column 'Paid Media Budget'
+		dataType: double
+		formatString: \€#,0;-\€#,0;\€#,0
+		lineageTag: c7a20d9f-1ab1-576c-9793-ba2e22d362f5
+		summarizeBy: none
+		sourceColumn: paid_media_budget_eur
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Registered Model'
+		dataType: string
+		lineageTag: d227cf24-0b6b-57a6-b28c-6ece19145f3c
+		summarizeBy: none
+		sourceColumn: registered_model_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Registered Version'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6b345349-d097-5d16-b30e-db58d2ac321e
+		summarizeBy: none
+		sourceColumn: registered_model_version
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Backtest WAPE'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: f4d6ad90-f2ef-5311-be2f-11aaed18fe04
+		summarizeBy: none
+		sourceColumn: backtest_wape_monthly
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Last day of data used to train (M-2).
+	column 'Cutoff Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 69c09a76-91ae-589d-a0ba-52447191e6ba
+		summarizeBy: none
+		sourceColumn: cutoff_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data End'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 4e3150b1-1935-5a53-b72b-a1533ddf5034
+		summarizeBy: none
+		sourceColumn: data_end
+
+		annotation SummarizationSetBy = Automatic
+
+	column Notes
+		dataType: string
+		lineageTag: 80c0d07f-ccd6-56dd-8110-3a15ac440a84
+		summarizeBy: none
+		sourceColumn: notes
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Generated At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: c2375cfc-c8ca-5e16-a4e6-4867a240ed57
+		summarizeBy: none
+		sourceColumn: generated_at
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Forecast Next Month' = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(GoldFolder & "gld_forecast_next_month.parquet")),
+				    Selected = Table.SelectColumns(Source, {"target", "forecast_month", "month_date_key", "market", "is_total", "forecast", "forecast_seed_min", "forecast_seed_max", "model_key", "model_name", "family", "scenario", "uses_paid_media", "paid_media_budget_eur", "registered_model_name", "registered_model_version", "backtest_wape_monthly", "cutoff_date", "data_end", "notes", "generated_at"})
+				in
+				    Selected
+
+	annotation PBI_ResultType = Table
+

@@ -30,12 +30,15 @@ table Metrics
 		displayFolder: 0 Period
 		lineageTag: 7c261d55-747a-535d-be2c-35fefae98d5d
 
-	/// Header subtitle of the Forecast page (always monthly).
+	/// Header subtitle of the Forecast page.
 	measure 'Forecast Subtitle' =
-			VAR _month = [Selected Month Start]
+			VAR _month = [Next Forecast Month]
+			VAR _dataEnd = CALCULATE ( MAX ( 'Forecast Next Month'[Data End] ), REMOVEFILTERS ( 'Forecast Next Month' ) )
+			VAR _cutoff = CALCULATE ( MAX ( 'Forecast Next Month'[Cutoff Date] ), REMOVEFILTERS ( 'Forecast Next Month' ), 'Forecast Next Month'[Forecast Month] = _month )
 			RETURN
-			    "Forecast for " & FORMAT ( EDATE ( _month, 1 ), "mmmm yyyy", "en-US" )
-			        & "   ·   accuracy: " & FORMAT ( _month, "mmm yyyy", "en-US" ) & " and the last 6 months"
+			    "Forecast for " & FORMAT ( _month, "mmmm yyyy", "en-US" ) & " · " & [Forecast Market Selected]
+			        & "   ·   data through " & FORMAT ( _dataEnd, "d mmm yyyy", "en-US" )
+			        & ", trained to " & FORMAT ( _cutoff, "d mmm yyyy", "en-US" ) & " (M-2)"
 		displayFolder: 0 Period
 		lineageTag: 12254837-3a44-5d5c-91a2-f2337dd86d0e
 
@@ -608,24 +611,6 @@ table Metrics
 		displayFolder: 4 Trends
 		lineageTag: 7d3eb661-e12c-5928-ad29-4dc70d2dc8ec
 
-	/// Monthly orders of the 12 months up to the selected month.
-	measure 'Orders (Trend)' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [_Orders], KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
-		formatString: #,0
-		displayFolder: 4 Trends
-		lineageTag: 4ce432e7-1e47-5966-afda-061ffa58f643
-
-	/// Monthly units of the 12 months up to the selected month.
-	measure 'Units Sold (Trend)' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [_Units Sold], KEEPFILTERS ( 'Date'[Month Start] > EDATE ( _month, -12 ) && 'Date'[Month Start] <= _month ) )
-		formatString: #,0
-		displayFolder: 4 Trends
-		lineageTag: a272ba6a-76ad-5acc-a8a1-1383aca49a8c
-
 	/// Revenue of the same month one year earlier, for each month of the trend.
 	measure 'Revenue LY (Trend)' =
 			VAR _month = [Selected Month Start]
@@ -663,324 +648,6 @@ table Metrics
 		formatString: 0.0%
 		displayFolder: 4 Trends
 		lineageTag: 0cd0f6b3-f6ca-5aa6-ba82-de940995b5a1
-
-	/// PLACEHOLDER forecast of revenue for the month in context. Replace with the ML model output; every other forecast measure reads this one.
-	measure 'Revenue Forecast (Model)' =
-			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
-			-- model output for the month in the filter context, for example:
-			--     SUM ( 'Sales Forecast'[revenue_forecast] )
-			-- Current logic (seasonal naive with trend): same month last year x growth of the last
-			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
-			-- Uses only data before the month.
-			VAR _month = MAX ( 'Date'[Month Start] )
-			VAR _sameMonthLastYear =
-			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
-			VAR _last3Months =
-			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
-			VAR _sameMonthsLastYear =
-			    CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
-			VAR _hasFullHistory =
-			    NOT ISBLANK ( CALCULATE ( [_Net Sales], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
-			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
-			RETURN
-			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
-		formatString: \€#,0;-\€#,0;\€#,0
-		displayFolder: 5 Forecast\Model output (replace)
-		lineageTag: fa6348ad-da82-519a-aa8f-7a3dea60c56e
-
-	/// Forecast of revenue for the selected month (compare with the actual value).
-	measure 'Revenue Forecast' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Revenue Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
-		formatString: \€#,0;-\€#,0;\€#,0
-		displayFolder: 5 Forecast
-		lineageTag: e2746478-7aef-5a77-a850-9a0f3bea5447
-
-	/// Forecast of revenue for the month after the selected one.
-	measure 'Revenue Forecast Next Month' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Revenue Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
-		formatString: \€#,0;-\€#,0;\€#,0
-		displayFolder: 5 Forecast
-		lineageTag: 81f39090-4052-5a9e-92ff-6d13395b56e6
-
-	/// 1 - absolute percentage error of the revenue forecast in the selected month.
-	measure 'Revenue Forecast Accuracy' =
-			VAR _actual = [Revenue]
-			VAR _forecast = [Revenue Forecast]
-			RETURN
-			    IF (
-			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: c714e082-9da2-54c4-afcb-b10ed4cac469
-
-	/// 1 - MAPE of the revenue forecast over the 6 months up to the selected month.
-	measure 'Revenue Forecast Accuracy 6M' =
-			VAR _month = [Selected Month Start]
-			VAR _months =
-			    CALCULATETABLE (
-			        VALUES ( 'Date'[Month Start] ),
-			        REMOVEFILTERS ( 'Date' ),
-			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
-			    )
-			VAR _points =
-			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Net Sales] ), "@forecast", CALCULATE ( [Revenue Forecast (Model)] ) )
-			VAR _mape =
-			    AVERAGEX (
-			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
-			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
-			    )
-			RETURN
-			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: b1233366-9455-596a-b7ad-438b8d133b0f
-
-	/// Forecast of revenue for the 12 months up to the selected month plus the next month.
-	measure 'Revenue Forecast (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			RETURN
-			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Revenue Forecast (Model)] )
-		formatString: \€#,0;-\€#,0;\€#,0
-		displayFolder: 4 Trends
-		lineageTag: 096e8774-79c2-5f95-a50a-584a2c9b2894
-
-	measure 'Revenue Forecast Accuracy (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			VAR _actual = [_Net Sales]
-			VAR _forecast = [Revenue Forecast (Model)]
-			RETURN
-			    IF (
-			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
-			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 4 Trends
-		lineageTag: 331ee3c4-fa04-5183-ad93-7eb090a806be
-
-	/// PLACEHOLDER forecast of orders for the month in context. Replace with the ML model output; every other forecast measure reads this one.
-	measure 'Orders Forecast (Model)' =
-			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
-			-- model output for the month in the filter context, for example:
-			--     SUM ( 'Sales Forecast'[orders_forecast] )
-			-- Current logic (seasonal naive with trend): same month last year x growth of the last
-			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
-			-- Uses only data before the month.
-			VAR _month = MAX ( 'Date'[Month Start] )
-			VAR _sameMonthLastYear =
-			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
-			VAR _last3Months =
-			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
-			VAR _sameMonthsLastYear =
-			    CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
-			VAR _hasFullHistory =
-			    NOT ISBLANK ( CALCULATE ( [_Orders], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
-			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
-			RETURN
-			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
-		formatString: #,0
-		displayFolder: 5 Forecast\Model output (replace)
-		lineageTag: 496ec3c5-0ae1-5a01-af75-2db5ba24d40b
-
-	/// Forecast of orders for the selected month (compare with the actual value).
-	measure 'Orders Forecast' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Orders Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
-		formatString: #,0
-		displayFolder: 5 Forecast
-		lineageTag: 0deea694-6251-544e-92ad-a2a387ab89c7
-
-	/// Forecast of orders for the month after the selected one.
-	measure 'Orders Forecast Next Month' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Orders Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
-		formatString: #,0
-		displayFolder: 5 Forecast
-		lineageTag: 1d65c7a0-1959-55e8-a8e9-3912c253b680
-
-	/// 1 - absolute percentage error of the orders forecast in the selected month.
-	measure 'Orders Forecast Accuracy' =
-			VAR _actual = [Orders]
-			VAR _forecast = [Orders Forecast]
-			RETURN
-			    IF (
-			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: d99b7d38-be36-581f-b720-c8357bfba295
-
-	/// 1 - MAPE of the orders forecast over the 6 months up to the selected month.
-	measure 'Orders Forecast Accuracy 6M' =
-			VAR _month = [Selected Month Start]
-			VAR _months =
-			    CALCULATETABLE (
-			        VALUES ( 'Date'[Month Start] ),
-			        REMOVEFILTERS ( 'Date' ),
-			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
-			    )
-			VAR _points =
-			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Orders] ), "@forecast", CALCULATE ( [Orders Forecast (Model)] ) )
-			VAR _mape =
-			    AVERAGEX (
-			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
-			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
-			    )
-			RETURN
-			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: 86b4169a-ac78-5538-aeb6-46f02795bbc3
-
-	/// Forecast of orders for the 12 months up to the selected month plus the next month.
-	measure 'Orders Forecast (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			RETURN
-			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Orders Forecast (Model)] )
-		formatString: #,0
-		displayFolder: 4 Trends
-		lineageTag: 1fe86408-943a-5de2-8a1a-746cbce6f520
-
-	measure 'Orders Forecast Accuracy (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			VAR _actual = [_Orders]
-			VAR _forecast = [Orders Forecast (Model)]
-			RETURN
-			    IF (
-			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
-			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 4 Trends
-		lineageTag: a68324a0-2f9f-57dc-be3b-57c28793e8ed
-
-	/// PLACEHOLDER forecast of units sold for the month in context. Replace with the ML model output; every other forecast measure reads this one.
-	measure 'Units Sold Forecast (Model)' =
-			-- PLACEHOLDER until the ML forecast Parquet exists. Replace this whole expression with the
-			-- model output for the month in the filter context, for example:
-			--     SUM ( 'Sales Forecast'[units_forecast] )
-			-- Current logic (seasonal naive with trend): same month last year x growth of the last
-			-- 3 months versus the same 3 months one year earlier (no trend while that history is missing).
-			-- Uses only data before the month.
-			VAR _month = MAX ( 'Date'[Month Start] )
-			VAR _sameMonthLastYear =
-			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -12 ) )
-			VAR _last3Months =
-			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -3 ) && 'Date'[Month Start] < _month )
-			VAR _sameMonthsLastYear =
-			    CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] >= EDATE ( _month, -15 ) && 'Date'[Month Start] < EDATE ( _month, -12 ) )
-			VAR _hasFullHistory =
-			    NOT ISBLANK ( CALCULATE ( [_Units Sold], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, -15 ) ) )
-			VAR _trend = IF ( _hasFullHistory, DIVIDE ( _last3Months, _sameMonthsLastYear ), 1 )
-			RETURN
-			    IF ( NOT ISBLANK ( _sameMonthLastYear ) && NOT ISBLANK ( _trend ), _sameMonthLastYear * _trend )
-		formatString: #,0
-		displayFolder: 5 Forecast\Model output (replace)
-		lineageTag: e22e2c29-7db9-51be-bb08-7a428bd09774
-
-	/// Forecast of units sold for the selected month (compare with the actual value).
-	measure 'Units Sold Forecast' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Units Sold Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = _month )
-		formatString: #,0
-		displayFolder: 5 Forecast
-		lineageTag: e0396981-2561-5790-b794-0e0efb4c67ad
-
-	/// Forecast of units sold for the month after the selected one.
-	measure 'Units Sold Forecast Next Month' =
-			VAR _month = [Selected Month Start]
-			RETURN
-			    CALCULATE ( [Units Sold Forecast (Model)], REMOVEFILTERS ( 'Date' ), 'Date'[Month Start] = EDATE ( _month, 1 ) )
-		formatString: #,0
-		displayFolder: 5 Forecast
-		lineageTag: 13afece1-ba10-5572-b544-f54761223074
-
-	/// 1 - absolute percentage error of the units sold forecast in the selected month.
-	measure 'Units Sold Forecast Accuracy' =
-			VAR _actual = [Units Sold]
-			VAR _forecast = [Units Sold Forecast]
-			RETURN
-			    IF (
-			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: e5aa494c-1bcc-526c-a3dc-49e68a5a2866
-
-	/// 1 - MAPE of the units sold forecast over the 6 months up to the selected month.
-	measure 'Units Sold Forecast Accuracy 6M' =
-			VAR _month = [Selected Month Start]
-			VAR _months =
-			    CALCULATETABLE (
-			        VALUES ( 'Date'[Month Start] ),
-			        REMOVEFILTERS ( 'Date' ),
-			        'Date'[Month Start] > EDATE ( _month, -6 ) && 'Date'[Month Start] <= _month
-			    )
-			VAR _points =
-			    ADDCOLUMNS ( _months, "@actual", CALCULATE ( [_Units Sold] ), "@forecast", CALCULATE ( [Units Sold Forecast (Model)] ) )
-			VAR _mape =
-			    AVERAGEX (
-			        FILTER ( _points, NOT ISBLANK ( [@actual] ) && NOT ISBLANK ( [@forecast] ) && [@actual] <> 0 ),
-			        ABS ( [@actual] - [@forecast] ) / ABS ( [@actual] )
-			    )
-			RETURN
-			    IF ( NOT ISBLANK ( _mape ), MAX ( 0, 1 - _mape ) )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: 7892fc6d-1a68-5cf3-ab72-daa8b725f8e7
-
-	/// Forecast of units sold for the 12 months up to the selected month plus the next month.
-	measure 'Units Sold Forecast (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			RETURN
-			    IF ( _single && _axis > EDATE ( _month, -12 ) && _axis <= EDATE ( _month, 1 ), [Units Sold Forecast (Model)] )
-		formatString: #,0
-		displayFolder: 4 Trends
-		lineageTag: 0f5ae0a8-5627-5356-b462-35dfeaba90dd
-
-	measure 'Units Sold Forecast Accuracy (Trend)' =
-			VAR _month = [Selected Month Start]
-			VAR _axis = MAX ( 'Date'[Month Start] )
-			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
-			VAR _actual = [_Units Sold]
-			VAR _forecast = [Units Sold Forecast (Model)]
-			RETURN
-			    IF (
-			        _single && _axis > EDATE ( _month, -12 ) && _axis <= _month
-			            && NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
-			        MAX ( 0, 1 - ABS ( _actual - _forecast ) / ABS ( _actual ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 4 Trends
-		lineageTag: 1d8820bd-090e-5c24-8b37-3ce22a16363b
-
-	/// Revenue forecast / orders forecast for the month after the selected one.
-	measure 'Average Order Value Forecast Next Month' = DIVIDE ( [Revenue Forecast Next Month], [Orders Forecast Next Month] )
-		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
-		displayFolder: 5 Forecast
-		lineageTag: a0960b08-4235-5f56-af39-7f049c9760f4
 
 	/// TRUE when the selected month ended less than 30 days before the last sales date: returns are still being booked, so revenue and return rate are provisional.
 	measure 'Is Provisional' =
@@ -1141,7 +808,7 @@ table Metrics
 		lineageTag: c5af92f2-2d96-5df8-8164-e29c5abb4707
 
 	/// Caption of the last row of the Orders, Units sold and AOV tiles.
-	measure 'Label Tile Detail' = IF ( [Is Annual View], "monthly average", "next-month forecast" )
+	measure 'Label Tile Detail' = IF ( [Is Annual View], "monthly average", "year to date" )
 		displayFolder: 7 Labels and colours
 		lineageTag: 34120dd2-2449-57ff-87a1-ed7d91d42efe
 
@@ -1871,33 +1538,299 @@ table Metrics
 		displayFolder: 7 Labels and colours
 		lineageTag: 059f4b8d-dfcf-56fa-a9a7-596d64a0ed15
 
-	/// Revenue tile: next-month forecast (Month view) or the annual budget (Year view).
-	measure 'Revenue Tile Detail' = IF ( [Is Annual View], [Revenue Budget], [Revenue Forecast Next Month] )
+	/// Revenue tile: year to date (Month view) or the annual budget (Year view).
+	measure 'Revenue Tile Detail' = IF ( [Is Annual View], [Revenue Budget], [Revenue YTD] )
 		formatString: \€#,0;-\€#,0;\€#,0
 		displayFolder: 7 Labels and colours
 		lineageTag: c0bc8063-5a65-528c-84b0-f4e89131d902
 
-	measure 'Revenue Tile Detail Label' = IF ( [Is Annual View], YEAR ( [Selected Month Start] ) & " budget", "next-month forecast" )
+	measure 'Revenue Tile Detail Label' = IF ( [Is Annual View], YEAR ( [Selected Month Start] ) & " budget", "year to date" )
 		displayFolder: 7 Labels and colours
 		lineageTag: deb06599-55b6-513e-99ad-6ccc9e03730a
 
-	/// Orders tile: next-month forecast (Month view) or the monthly average (Year view).
-	measure 'Orders Tile Detail' = IF ( [Is Annual View], [Orders Monthly Average], [Orders Forecast Next Month] )
+	/// Orders tile: year to date (Month view) or the monthly average (Year view).
+	measure 'Orders Tile Detail' = IF ( [Is Annual View], [Orders Monthly Average], [Orders YTD] )
 		formatString: #,0
 		displayFolder: 7 Labels and colours
 		lineageTag: 9c6a4c40-f5cd-5d84-b561-a11f8ab25642
 
-	/// Units Sold tile: next-month forecast (Month view) or the monthly average (Year view).
-	measure 'Units Sold Tile Detail' = IF ( [Is Annual View], [Units Sold Monthly Average], [Units Sold Forecast Next Month] )
+	/// Units Sold tile: year to date (Month view) or the monthly average (Year view).
+	measure 'Units Sold Tile Detail' = IF ( [Is Annual View], [Units Sold Monthly Average], [Units Sold YTD] )
 		formatString: #,0
 		displayFolder: 7 Labels and colours
 		lineageTag: 603d4719-0a40-5280-bb74-5e351033f4e2
 
-	/// Average Order Value tile: next-month forecast (Month view) or the monthly average (Year view).
-	measure 'Average Order Value Tile Detail' = IF ( [Is Annual View], [Average Order Value Monthly Average], [Average Order Value Forecast Next Month] )
+	/// Average Order Value tile: year to date (Month view) or the monthly average (Year view).
+	measure 'Average Order Value Tile Detail' = IF ( [Is Annual View], [Average Order Value Monthly Average], [Average Order Value YTD] )
 		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
 		displayFolder: 7 Labels and colours
 		lineageTag: 6e40571a-f32f-522f-8ab5-57273ed15c7a
+
+	/// Market shown on the Forecast page: the Market slicer, or ES + PT (total) when nothing is selected.
+	measure 'Forecast Market Selected' = SELECTEDVALUE ( 'Forecast Market'[Market], "ES + PT" )
+		isHidden
+		displayFolder: 5 Forecast
+		lineageTag: 74b7ac05-4331-5568-a55e-f9c2e9b7b90d
+
+	/// Latest month forecast by the champion models (gld_forecast_next_month).
+	measure 'Next Forecast Month' =
+			CALCULATE (
+			    MAX ( 'Forecast Next Month'[Forecast Month] ),
+			    REMOVEFILTERS ( 'Forecast Next Month' ),
+			    REMOVEFILTERS ( 'Date' )
+			)
+		formatString: mmm yyyy
+		displayFolder: 5 Forecast
+		lineageTag: 70f244d9-87f5-5cf1-bc1a-13417225fd93
+
+	/// Champion forecast for the latest forecast month, market of the page. Orders, net units or gross sales (EUR) depending on the target.
+	measure 'Next Month Forecast' =
+			VAR _market = [Forecast Market Selected]
+			VAR _month = [Next Forecast Month]
+			RETURN
+			    CALCULATE (
+			        SUM ( 'Forecast Next Month'[Forecast] ),
+			        'Forecast Market'[Market] = _market,
+			        'Forecast Next Month'[Forecast Month] = _month
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: 4c919ad6-ec69-5148-9fe0-a4b1693f53e5
+
+	/// Next Month Forecast with euro format (gross sales).
+	measure 'Next Month Forecast €' = [Next Month Forecast]
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast
+		lineageTag: 79b83850-c953-509c-b5a7-a2b674cd90d9
+
+	/// Lowest and highest forecast of the 5 seeds of a neural-network champion.
+	measure 'Next Month Seed Range' =
+			VAR _market = [Forecast Market Selected]
+			VAR _month = [Next Forecast Month]
+			VAR _min = CALCULATE ( SUM ( 'Forecast Next Month'[Seed Min] ), 'Forecast Market'[Market] = _market, 'Forecast Next Month'[Forecast Month] = _month )
+			VAR _max = CALCULATE ( SUM ( 'Forecast Next Month'[Seed Max] ), 'Forecast Market'[Market] = _market, 'Forecast Next Month'[Forecast Month] = _month )
+			VAR _isMoney = SELECTEDVALUE ( 'Forecast Target'[Target Key] ) = "sales"
+			RETURN
+			    IF (
+			        ISBLANK ( _min ) || ISBLANK ( _max ),
+			        "no seeds",
+			        IF (
+			            _isMoney,
+			            "€" & FORMAT ( _min / 1000000, "0.00", "en-US" ) & "M – €" & FORMAT ( _max / 1000000, "0.00", "en-US" ) & "M",
+			            FORMAT ( _min / 1000, "#,0.0", "en-US" ) & "K – " & FORMAT ( _max / 1000, "#,0.0", "en-US" ) & "K"
+			        )
+			    )
+		displayFolder: 5 Forecast
+		lineageTag: 7bfa7554-91d4-5b3f-b3ea-d17899293478
+
+	/// Model with the lowest monthly WAPE (ES + PT) on the backtest window.
+	measure 'Champion Model' = SELECTEDVALUE ( 'Forecast Target'[Champion Model] )
+		displayFolder: 5 Forecast
+		lineageTag: 6c3275c6-939b-5b5c-bf40-462b3cd094d2
+
+	/// Monthly WAPE of the champion on the backtest window, market of the page.
+	measure 'Champion WAPE' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SWITCH (
+			            _market,
+			            "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
+			            "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
+			            MAX ( 'Forecast Model'[WAPE] )
+			        ),
+			        'Forecast Model'[Champion] = TRUE ()
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 1131e5c9-d997-5f68-a3ab-8d952e824484
+
+	/// Monthly WAPE of the Baseline 3 (monthly), the reference of every study.
+	measure 'Baseline 3 WAPE' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SWITCH (
+			            _market,
+			            "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
+			            "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
+			            MAX ( 'Forecast Model'[WAPE] )
+			        ),
+			        'Forecast Model'[Baseline Reference] = TRUE ()
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 5db8f2a6-2f57-509b-8ac0-e225e3c31bef
+
+	/// 1 - monthly WAPE of the champion on the backtest window.
+	measure 'Champion Accuracy' =
+			VAR _wape = [Champion WAPE]
+			RETURN
+			    IF ( NOT ISBLANK ( _wape ), 1 - _wape )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: 1e4a016e-74d4-5396-9640-e0a5401c9c28
+
+	/// Monthly WAPE of the champion minus that of the Baseline 3 (negative = better).
+	measure 'Champion vs Baseline 3' =
+			VAR _champion = [Champion WAPE]
+			VAR _baseline = [Baseline 3 WAPE]
+			VAR _delta = ( _champion - _baseline ) * 100
+			RETURN
+			    IF (
+			        ISBLANK ( _champion ) || ISBLANK ( _baseline ),
+			        "n/a",
+			        IF ( _delta <= 0, "▼ ", "▲ " ) & FORMAT ( ABS ( _delta ), "0.0", "en-US" ) & " pp WAPE"
+			    )
+		displayFolder: 5 Forecast
+		lineageTag: dccad681-727c-5d62-beeb-e682332601fc
+
+	measure 'Champion vs Baseline 3 Colour' =
+			VAR _delta = [Champion WAPE] - [Baseline 3 WAPE]
+			RETURN
+			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta <= 0, "#4E7D5B", "#B04A3E" )
+		displayFolder: 7 Labels and colours
+		lineageTag: f9dd95d2-ee81-5e4f-afd1-656b4ad60f45
+
+	/// Monthly WAPE of the model in the market of the page (blank for models that only forecast the ES + PT total).
+	measure 'Model WAPE' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    SWITCH (
+			        _market,
+			        "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
+			        "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
+			        MAX ( 'Forecast Model'[WAPE] )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast\Models
+		lineageTag: 3db8d4dc-1850-589c-b1bb-907ae3dd18aa
+
+	/// Model WAPE minus Baseline 3 WAPE, in percentage points (negative = better).
+	measure 'Model vs Baseline 3' =
+			VAR _wape = [Model WAPE]
+			VAR _baseline = CALCULATE ( [Model WAPE], REMOVEFILTERS ( 'Forecast Model' ), 'Forecast Model'[Baseline Reference] = TRUE (),
+			    VALUES ( 'Forecast Model'[Target Key] ) )
+			RETURN
+			    IF ( NOT ISBLANK ( _wape ) && NOT ISBLANK ( _baseline ), ( _wape - _baseline ) * 100 )
+		formatString: +0.0;−0.0;0.0
+		displayFolder: 5 Forecast\Models
+		lineageTag: f55f169a-4f12-57e6-b309-c896a0fdf8ca
+
+	/// Leaderboard text colour: champion in black, Baseline 3 reference in taupe, others grey.
+	measure 'Model Row Colour' =
+			SWITCH (
+			    TRUE (),
+			    SELECTEDVALUE ( 'Forecast Model'[Champion] ), "#1C1C1C",
+			    SELECTEDVALUE ( 'Forecast Model'[Baseline Reference] ), "#A58D74",
+			    "#8C8781"
+			)
+		displayFolder: 7 Labels and colours
+		lineageTag: 9a6d5c78-73ac-53a1-84ea-0212597297e3
+
+	/// Actual value of the backtest months (the same for every model; read from the Baseline 3 rows).
+	measure 'Backtest Actual' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SUM ( 'Forecast Backtest'[Actual] ),
+			        'Forecast Market'[Market] = _market,
+			        'Forecast Model'[Baseline Reference] = TRUE ()
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast\Backtest
+		lineageTag: 0d771dce-0ba8-5776-923d-8f8deaf96f4f
+
+	/// Forecast of the champion for each backtest month (cutoff M-2).
+	measure 'Backtest Champion Forecast' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SUM ( 'Forecast Backtest'[Forecast] ),
+			        'Forecast Market'[Market] = _market,
+			        'Forecast Model'[Champion] = TRUE ()
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast\Backtest
+		lineageTag: d478935e-3fb2-514d-9658-de0b4e736690
+
+	/// Forecast of the Baseline 3 (monthly) for each backtest month.
+	measure 'Backtest Baseline 3 Forecast' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SUM ( 'Forecast Backtest'[Forecast] ),
+			        'Forecast Market'[Market] = _market,
+			        'Forecast Model'[Baseline Reference] = TRUE ()
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast\Backtest
+		lineageTag: 5e15510a-6177-5b21-a54e-e728726e5eed
+
+	/// Champion line of the chart: backtest months, then the next-month forecast.
+	measure 'Champion Forecast (Chart)' =
+			VAR _backtest = [Backtest Champion Forecast]
+			RETURN
+			    IF ( NOT ISBLANK ( _backtest ), _backtest, [Next Month Forecast] )
+		formatString: #,0
+		displayFolder: 5 Forecast\Backtest
+		lineageTag: 361932c0-9dba-53d0-b613-3b8bd2655d90
+
+	/// Assumptions of the forecast, shown in the strip of the Forecast page.
+	measure 'Forecast Assumptions' =
+			VAR _month = [Next Forecast Month]
+			VAR _start = CALCULATE ( MIN ( 'Forecast Target'[Backtest Start] ), REMOVEFILTERS ( 'Forecast Target' ) )
+			VAR _end = CALCULATE ( MAX ( 'Forecast Target'[Backtest End] ), REMOVEFILTERS ( 'Forecast Target' ) )
+			VAR _budget =
+			    CALCULATE (
+			        MAX ( 'Forecast Next Month'[Paid Media Budget] ),
+			        REMOVEFILTERS ( 'Forecast Next Month' ), REMOVEFILTERS ( 'Forecast Target' ),
+			        'Forecast Next Month'[Forecast Month] = _month, 'Forecast Next Month'[Is Total] = TRUE ()
+			    )
+			VAR _notes =
+			    CALCULATE (
+			        MAX ( 'Forecast Next Month'[Notes] ),
+			        REMOVEFILTERS ( 'Forecast Next Month' ), REMOVEFILTERS ( 'Forecast Target' ),
+			        'Forecast Next Month'[Forecast Month] = _month
+			    )
+			VAR _calendar =
+			    IF ( CONTAINSSTRING ( _notes, "repeated" ), "  ·  event calendar of the same month last year repeated", "" )
+			RETURN
+			    "Champion = lowest monthly WAPE (ES + PT) on " & FORMAT ( _start, "mmm", "en-US" ) & "–" & FORMAT ( _end, "mmm yyyy", "en-US" )
+			        & "  ·  paid media budget for " & FORMAT ( _month, "mmm yyyy", "en-US" ) & ": €" & FORMAT ( _budget, "#,0", "en-US" )
+			        & " (scenario C models)" & _calendar
+		displayFolder: 5 Forecast
+		lineageTag: a7c8ce57-140e-5741-9b7d-12d7243fbae8
+
+	/// Orders from January up to the selected month.
+	measure 'Orders YTD' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE (
+			        [_Orders],
+			        KEEPFILTERS ( 'Date'[Month Start] >= DATE ( YEAR ( _month ), 1, 1 ) && 'Date'[Month Start] <= _month )
+			    )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: 83ec77a5-2234-522c-bca4-b347d6a31d57
+
+	/// Units sold from January up to the selected month.
+	measure 'Units Sold YTD' =
+			VAR _month = [Selected Month Start]
+			RETURN
+			    CALCULATE (
+			        [_Units Sold],
+			        KEEPFILTERS ( 'Date'[Month Start] >= DATE ( YEAR ( _month ), 1, 1 ) && 'Date'[Month Start] <= _month )
+			    )
+		formatString: #,0
+		displayFolder: 1 Sales
+		lineageTag: 28a6ee75-88d6-5186-9278-59d06495060b
+
+	/// Revenue / orders from January up to the selected month.
+	measure 'Average Order Value YTD' = DIVIDE ( [Revenue YTD], [Orders YTD] )
+		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
+		displayFolder: 1 Sales
+		lineageTag: 420f4cc9-0d8e-52e4-bdc4-6e20652f3f9e
 
 	column Value
 		dataType: int64
