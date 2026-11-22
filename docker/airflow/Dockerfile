@@ -3,6 +3,8 @@
 #   * DuckDB (processing engine) + its httpfs/mysql extensions pre-installed
 #   * dbt-core + dbt-duckdb in an ISOLATED virtualenv (/opt/dbt-venv) so dbt's
 #     dependencies can never conflict with Airflow's
+#   * the forecasting stack (torch CPU, scikit-learn, xgboost, mlflow client,
+#     holidays) in another isolated virtualenv (/opt/ml-venv), for the same reason
 #   * the platform secret loader (vault -> environment variables)
 # Used by: airflow-init, api-server, scheduler, dag-processor, triggerer and
 # lake-init (bucket bootstrap).
@@ -40,8 +42,9 @@ RUN sed -i 's/\r$//' \
         /opt/platform/duckdb \
         /opt/platform/exports \
         /opt/dbt-venv \
-    && chown -R airflow:0 /opt/platform /opt/dbt-venv \
-    && chmod -R g+rwX /opt/platform /opt/dbt-venv \
+        /opt/ml-venv \
+    && chown -R airflow:0 /opt/platform /opt/dbt-venv /opt/ml-venv \
+    && chmod -R g+rwX /opt/platform /opt/dbt-venv /opt/ml-venv \
     && echo 'source /usr/local/bin/platform-env.sh' >> /home/airflow/.bashrc
 
 USER airflow
@@ -57,6 +60,13 @@ RUN python -m venv /opt/dbt-venv \
     && PIP_USER=false /opt/dbt-venv/bin/pip install --no-cache-dir -r /tmp/requirements-dbt.txt \
     && chmod -R g+rwX /opt/dbt-venv
 
+# Forecasting libraries (ML/DL models + MLflow client) in their own virtualenv.
+# The forecasting DAGs run `/opt/ml-venv/bin/python -m lakehouse.forecasting ...`.
+COPY airflow/requirements-ml.txt /tmp/requirements-ml.txt
+RUN python -m venv /opt/ml-venv \
+    && PIP_USER=false /opt/ml-venv/bin/pip install --no-cache-dir -r /tmp/requirements-ml.txt \
+    && chmod -R g+rwX /opt/ml-venv
+
 # Download the DuckDB extensions at build time (~/.duckdb/extensions) so the
 # containers never need internet access to load them. Airflow and the dbt
 # virtualenv pin the same DuckDB version, therefore they share this cache.
@@ -65,9 +75,12 @@ RUN python -c "import duckdb; con = duckdb.connect(); [con.install_extension(nam
 # BASH_ENV: every non-interactive bash inside the container loads the secrets.
 # PYTHONPATH: makes the shared `lakehouse` package (./src) and the helper
 # modules that live next to the DAGs (caps_assets.py) importable everywhere.
+# ML_PYTHON: interpreter of the forecasting virtualenv (used by the ml_forecast_* DAGs).
 ENV BASH_ENV=/usr/local/bin/platform-env.sh \
     PYTHONPATH=/opt/platform/src:/opt/airflow/dags \
-    DBT_BIN=/opt/dbt-venv/bin/dbt
+    DBT_BIN=/opt/dbt-venv/bin/dbt \
+    ML_PYTHON=/opt/ml-venv/bin/python \
+    GIT_PYTHON_REFRESH=quiet
 
 # Same init process as the base image, but going through the secret loader first.
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/local/bin/platform-entrypoint.sh"]

@@ -14,6 +14,7 @@ Base: imagem oficial `apache/airflow:<AIRFLOW_VERSION>-python<PYTHON_VERSION>`.
 | `Dockerfile` | Estende a imagem oficial com DuckDB, dbt (em virtualenv separado) e o carregador de segredos. |
 | `requirements.txt` | Pacotes instalados **junto do Airflow** (usados pelas tasks): `duckdb`, `pytz`, `boto3`... |
 | `requirements-dbt.txt` | Pacotes do virtualenv **isolado** do dbt (`/opt/dbt-venv`): `dbt-core`, `dbt-duckdb`. |
+| `requirements-ml.txt` | Pacotes do virtualenv **isolado** de previsão (`/opt/ml-venv`): `torch` (CPU), `scikit-learn`, `xgboost-cpu`, `holidays`, `mlflow-skinny`, `duckdb`, `pandas`. Versões iguais às dos notebooks de `ml_models/` e do servidor MLflow. |
 | `entrypoint.sh` | Espera o cofre, exporta os segredos, cria a conexão `mysql_source` e chama o *entrypoint* oficial. |
 | `airflow-db-uri.py` | Imprime a URI do banco de metadados lendo a senha do cofre (usado por `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`). |
 | `airflow-init.sh` | Inicialização única: migra o banco, cria/sincroniza o usuário admin e cria os *pools*. |
@@ -22,6 +23,11 @@ Base: imagem oficial `apache/airflow:<AIRFLOW_VERSION>-python<PYTHON_VERSION>`.
 
 - **dbt em virtualenv separado.** `dbt-core` e Airflow têm dependências que conflitam com
   frequência. O dbt fica em `/opt/dbt-venv` e é chamado pelo caminho `/opt/dbt-venv/bin/dbt`.
+- **Modelos de ML/DL em outro virtualenv.** `torch`, `scikit-learn`, `xgboost` e o cliente MLflow
+  ficam em `/opt/ml-venv` (variável `ML_PYTHON`), longe das dependências do Airflow. As DAGs
+  `ml_forecast_*` chamam `$ML_PYTHON -m lakehouse.forecasting <passo>` com `BashOperator`, como o dbt.
+  O PyTorch é a versão só CPU (a de GPU teria vários GB). Isso soma cerca de 1,8 GB à imagem.
+  `MLFLOW_TRACKING_URI` (`http://mlflow:5000`) vem do `docker-compose.yml`.
 - **Extensões do DuckDB baixadas no build** (`httpfs`, `mysql`): os containers não dependem de
   internet para carregá-las. Airflow e dbt usam a mesma versão do DuckDB e compartilham o cache.
 - **Segredos do Airflow via `*_CMD`.** A senha do banco, a Fernet key e as chaves de assinatura
@@ -52,7 +58,8 @@ Base: imagem oficial `apache/airflow:<AIRFLOW_VERSION>-python<PYTHON_VERSION>`.
 
 ## Como adicionar uma biblioteca Python às tasks
 
-1. Adicione em `requirements.txt` (ou em `requirements-dbt.txt` se for um pacote dbt).
+1. Adicione em `requirements.txt` (ou em `requirements-dbt.txt` se for um pacote dbt, ou em
+   `requirements-ml.txt` se for usado pelos modelos de previsão).
 2. `docker compose build airflow-init && docker compose up -d`
 
 ## Comandos úteis

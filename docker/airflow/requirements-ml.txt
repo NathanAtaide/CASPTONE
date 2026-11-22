@@ -1,0 +1,36 @@
+# Packages installed in the isolated forecasting virtualenv (/opt/ml-venv).
+# The forecasting DAGs (ml_forecast_selection, ml_forecast_next_month) call
+# /opt/ml-venv/bin/python -m lakehouse.forecasting ... through BashOperator, the
+# same way dbt is called from /opt/dbt-venv. Keeping these libraries out of the
+# Airflow environment means torch/scikit-learn/xgboost/mlflow can never break
+# Airflow's own dependencies.
+#
+# Versions follow the notebooks of the ML/DL studies (ml_models/) so the
+# pipeline reproduces their numbers, and the MLflow client follows the server.
+
+# CPU-only PyTorch wheels (the GPU build is several GB and there is no GPU).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0+cpu
+
+# Data access: same DuckDB as the rest of the platform (shared extension cache).
+duckdb==1.5.6
+pandas==3.0.6
+numpy==2.5.4
+pyarrow==25.0.1
+pytz
+boto3
+PyYAML
+
+# Models of the studies.
+scikit-learn==1.9.1
+# CPU-only build of XGBoost (the default wheel pulls the CUDA/NCCL libraries).
+xgboost-cpu==3.4.1
+# National holidays of Spain and Portugal. Keep it pinned: the number of
+# holidays (a model input) depends on the package version.
+holidays==0.108
+
+# Tracking and registry client. "skinny" = client only (no server/UI deps);
+# keep it on the same version as the tracking server (MLFLOW_VERSION in .env).
+mlflow-skinny==3.17.0
+# Charts logged as MLflow artifacts.
+matplotlib==3.11.2

@@ -26,6 +26,7 @@ Arquitetura medalhão rodando em Docker Compose. Os dados ficam em Parquet num d
 | MinIO | API S3 | Data lake: buckets `staging`, `bronze`, `silver`, `gold`, `mlflow`. |
 | PostgreSQL | 17 | Apenas metadados do Airflow e do MLflow. Nunca dados de negócio. |
 | JupyterLab + MLflow | MLflow 3.17.0 | Exploração, treino e versionamento de modelos. |
+| Previsão (ML/DL) | torch 2.15 CPU · scikit-learn 1.9.1 · xgboost 3.4.1 | Pacote `lakehouse.forecasting` no virtualenv `/opt/ml-venv` da imagem do Airflow (`$ML_PYTHON`), separado do Airflow como o dbt. |
 | Cofre | SOPS + age | Segredos descriptografados em `/run/secrets/env/<NOME>` e exportados como variáveis de ambiente. |
 
 Origem dos dados: um MySQL em nuvem, **somente leitura**, e APIs externas.
@@ -39,6 +40,7 @@ Origem dos dados: um MySQL em nuvem, **somente leitura**, e APIs externas.
 | bronze (MySQL) | `s3://bronze/mysql/<dataset>/ingestion_date=AAAA-MM-DD/<tabela>-<load_id>-<lote>.parquet` | DAG `bronze_mysql_ingestion` | Tabela bruta + colunas de linhagem, um arquivo por lote. |
 | silver | `s3://silver/<modelo>.parquet` | dbt | Dado limpo, tipado, sem duplicidade. Um modelo por entidade. |
 | gold | `s3://gold/<modelo>.parquet` | dbt | Agregações e visões de negócio. |
+| gold (previsão) | `s3://gold/gld_forecast_*.parquet` | DAGs `ml_forecast_selection` / `ml_forecast_next_month` (Python) | Backtest, métricas e campeão dos modelos de previsão; previsão do mês seguinte. Fonte dbt `gold_forecast`. |
 | exportação | `./data/exports/powerbi/<modelo>.parquet` (host) | DAG `gold_export_powerbi` | Cópia da gold para o Power BI. |
 
 Fatos que os modelos precisam respeitar:
@@ -60,6 +62,8 @@ Fatos que os modelos precisam respeitar:
   d'água em uma consulta). A configuração está em `airflow/dags/config/mysql_tables.yml`, com
   `discover: true`: toda tabela do banco vira um dataset, salvo as unificadas.
 - `s3://bronze/_test/` é a área da DAG `bronze_mysql_ingestion_test`; não é fonte de dados.
+- `s3://gold/_forecast/` é a área de trabalho das DAGs `ml_forecast_*` (entradas, resultados de cada
+  modelo, estado); não é fonte de dados nem vai para o Power BI.
 - `s3://gold/_simulation/` é a área da DAG `gold_scd2_simulation` (mudanças SCD2 simuladas nas
   dimensões do *star schema*, `dbt/models/gold/star_schema/`); não é fonte de dados nem vai para o
   Power BI.
@@ -79,6 +83,7 @@ Esta é a decisão mais importante. A maior parte dos pedidos **não** precisa d
 | Nova API ou arquivo externo | nova DAG no padrão staging → bronze (seção 4) + fonte no dbt | Sim. |
 | Levar um dado ao Power BI | criar o modelo gold; a exportação é automática. O modelo do Power BI (tabelas, relacionamentos, medidas) está em `dbt/models/gold/star_schema/README.md` | Não. |
 | Processamento que SQL não resolve (parsing complexo, aplicar um modelo de ML, chamada externa por linha) | task Python que lê uma camada e grava Parquet na seguinte com DuckDB | Sim. |
+| Novo modelo de previsão de pedidos/unidades/faturamento, ou mudar um candidato | `src/lakehouse/forecasting/models/` + `catalog.py` (suba `CATALOG_VERSION`); a `ml_forecast_selection` cria as tasks a partir do catálogo | Não. |
 | Rodar um subconjunto do dbt em outro horário | DAG com `BashOperator` no padrão da `dbt_medallion.py` | Sim. |
 | Função usada por mais de uma DAG ou por notebooks | `src/lakehouse/` | — |
 
@@ -106,9 +111,10 @@ O projeto usa a API do Airflow 3. Padrões do Airflow 2 quebram no *parsing*.
 - Agendamento: *cron* (no fuso `PLATFORM_TIMEZONE`, hoje `America/Sao_Paulo`), `None` para manual,
   ou orientado a dados com Assets.
 - **Assets** encadeiam as DAGs e são declarados em `airflow/dags/caps_assets.py`:
-  `BRONZE_MYSQL` (`lake_bronze_mysql`), `BRONZE_EXAMPLE_API` (`lake_bronze_example_api`) e `GOLD`
-  (`lake_gold`). Quem produz usa `outlets=[...]`; quem consome usa `schedule=[...]` ou
-  `schedule=(A | B)`. Para o dbt reagir a uma fonte nova, crie o Asset e inclua-o no `schedule` de
+  `BRONZE_MYSQL` (`lake_bronze_mysql`), `BRONZE_EXAMPLE_API` (`lake_bronze_example_api`), `GOLD`
+  (`lake_gold`) e `GOLD_FORECAST` (`lake_gold_forecast`, tabelas de previsão gravadas por Python). Quem
+  produz usa `outlets=[...]`; quem consome usa `schedule=[...]` ou `schedule=(A | B)`. Cuidado com
+  ciclos: a `ml_forecast_selection` é disparada por `GOLD`, por isso grava `GOLD_FORECAST`, não `GOLD`. Para o dbt reagir a uma fonte nova, crie o Asset e inclua-o no `schedule` de
   `dbt_medallion.py`.
 - **Pools** (já existem): `pool="mysql_source"` em toda task que consulta o MySQL, para proteger o
   banco de produção; `pool="duckdb_warehouse"` em toda task que roda dbt, porque o arquivo DuckDB
@@ -125,9 +131,12 @@ O projeto usa a API do Airflow 3. Padrões do Airflow 2 quebram no *parsing*.
   nem os registre em log. Se a DAG precisar de um segredo novo, informe o comando
   `docker compose run --rm vault set NOME` na resposta.
 - **Bibliotecas disponíveis nas tasks:** `duckdb`, `pytz`, `boto3`, `requests`, `PyYAML`, `pandas`
-  e os providers da imagem oficial do Airflow. O cliente do MLflow e o scikit-learn só existem no
-  Jupyter. Qualquer outra dependência exige incluir em `docker/airflow/requirements.txt` e
-  reconstruir a imagem: avise isso explicitamente em vez de assumir que está instalada.
+  e os providers da imagem oficial do Airflow. torch (CPU), scikit-learn, xgboost, holidays e o
+  cliente do MLflow existem **só** no virtualenv `/opt/ml-venv`: use-os por um comando
+  `"$ML_PYTHON" -m <módulo>` num `BashOperator` (padrão de `ml_forecast_selection.py`), nunca com
+  `import` numa task comum. Qualquer outra dependência exige incluir em
+  `docker/airflow/requirements.txt` (ou `requirements-ml.txt`) e reconstruir a imagem: avise isso
+  explicitamente em vez de assumir que está instalada.
 - Arquivos: DAGs em `airflow/dags/<nome>.py`; configuração em `airflow/dags/config/`; um módulo
   auxiliar que não é DAG precisa entrar em `airflow/dags/.airflowignore`.
 - As DAGs nascem pausadas. Diga na resposta quais precisam ser ativadas.
@@ -364,6 +373,7 @@ conexões e caminhos manualmente; lógica nova e reutilizável entra aqui.
 | `export.export_gold(datasets=None, *, subdir="powerbi")`, `export.list_gold_datasets()` | Gold → Parquet no host. |
 | `naming.safe_name(run_id)`, `naming.partition_date(dt)`, `naming.utc_timestamp()` | Identificador de lote, data de partição no fuso da plataforma, carimbo UTC. |
 | `scd2.plan_change(...)`, `.apply_change(plan)`, `.rebuild_fact(plan, change)`, `.publish(...)` | Simulação de SCD2 em `gld_dim_product` / `gld_dim_customer`, gravada em `s3://gold/_simulation/`. |
+| `forecasting` (`python -m lakehouse.forecasting prepare/run-job/select/forecast/publish-forecast`) | Previsão de pedidos, unidades e faturamento (ES + PT): candidatos em `catalog.py`, backtest com corte M-2, MLflow (`caps_forecast_<alvo>`, alias `champion`), tabelas `gld_forecast_*`. Só no `/opt/ml-venv`. Ver `src/lakehouse/forecasting/README.md`. |
 
 Caminhos dentro do container do Airflow: DAGs em `/opt/airflow/dags`, pacote em
 `/opt/platform/src`, projeto dbt em `/opt/platform/dbt` (`$DBT_PROJECT_DIR`), binário do dbt em
@@ -421,7 +431,11 @@ um erro apontar para ele, corrija na origem em vez de contornar na DAG nova. Em 
 `dbt build` do *star schema* (`models/gold/star_schema`, 117 nós) e a DAG `gold_scd2_simulation`
 rodaram com sucesso no ambiente local. A `gold_export_powerbi` também, depois que `AIRFLOW_UID` no
 `.env` passou a ser o dono da pasta `./data/exports` no host (1000). Os containers foram recriados
-com essa configuração. O modelo no Power BI ainda não foi montado nem testado.
+com essa configuração. O modelo no Power BI ainda não foi montado nem testado. Em 22/11/2026 a
+imagem do Airflow foi reconstruída com o `/opt/ml-venv`, e as DAGs `ml_forecast_selection` (23 tasks,
+~20 min; reproduz os números dos notebooks de `ml_models/`), `ml_forecast_next_month` (janeiro de
+2026, orçamento de € 438.070) e `gold_export_powerbi` rodaram com sucesso; as tabelas `gld_forecast_*`
+estão em `./data/exports/powerbi/`, ainda sem visual no Power BI.
 
 ## 9. O que informar ao pedir uma pipeline
 

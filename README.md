@@ -73,9 +73,12 @@ flowchart LR
 | 3 | Prata → **Ouro** | DAG `dbt_medallion` | `s3://gold/<modelo>.parquet` |
 | 4 | Ouro → **Power BI** | DAG `gold_export_powerbi` | `./data/exports/powerbi/<modelo>.parquet` (fora do Docker) |
 | 5 | Prata/Ouro → **modelos de ML** | Jupyter + MLflow | Postgres (parâmetros/métricas) + `s3://mlflow/` (modelos) |
+| 6 | Prata → **seleção dos modelos de previsão** | DAG `ml_forecast_selection` (Baseline 3, ML e DL de `ml_models/`, backtest com corte M-2, campeão por alvo no *model registry*) | MLflow + `s3://gold/gld_forecast_*.parquet` |
+| 7 | Campeões → **previsão do mês seguinte** | DAG `ml_forecast_next_month` (recebe o orçamento de mídia paga do mês) | MLflow + `s3://gold/gld_forecast_next_month*.parquet` |
 
 As DAGs se encadeiam por *Assets*: quando a bronze é atualizada o dbt roda; quando a gold é
-atualizada a exportação roda.
+atualizada a exportação e a seleção dos modelos de previsão rodam (a seleção pula quando a silver
+não mudou); quando as tabelas de previsão mudam, a exportação roda de novo.
 
 ### Componentes
 
@@ -193,6 +196,7 @@ CAPS/
 | Segredos | SOPS + age: arquivo criptografado + volume em memória no padrão `/run/secrets` | sem redigitar senhas, nada em texto puro no disco; compatível com Docker/K8s Secrets e KMS |
 | Persistência | volumes Docker nomeados para MinIO, Postgres, DuckDB e logs | os dados sobrevivem à recriação dos containers |
 | ML | Jupyter + MLflow (backend Postgres, artefatos no MinIO) | rastreabilidade e versionamento de modelos sem perda ao recriar containers |
+| Previsão em produção | pacote `lakehouse.forecasting` rodando no virtualenv `/opt/ml-venv` da imagem do Airflow (torch CPU, scikit-learn, xgboost, cliente MLflow) | os modelos dos notebooks viram pipeline reprodutível, reavaliada quando os dados mudam, sem conflitar com as dependências do Airflow |
 | Consumo | DAG exporta a gold em Parquet para uma pasta do host | o Power BI lê arquivos locais, sem acessar o Docker |
 
 ### Pronto para nuvem

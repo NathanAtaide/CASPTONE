@@ -8,6 +8,9 @@ refreshed:
     public_holidays_to_bronze --produces--> BRONZE_PUBLIC_HOLIDAYS -+
     open_meteo_daily_to_bronze --produces--> BRONZE_OPEN_METEO_DAILY -+
     dbt_medallion           --produces-->  GOLD  ------------------> gold_export_powerbi
+                                            GOLD  ------------------> ml_forecast_selection
+    ml_forecast_selection   --produces-->  GOLD_FORECAST  ---------> gold_export_powerbi
+    ml_forecast_next_month  --produces-->  GOLD_FORECAST  ---------> gold_export_powerbi
 
 This module only declares the assets; it is imported by the DAG files and is
 listed in .airflowignore so the DAG processor does not parse it as a DAG.
@@ -30,3 +33,8 @@ BRONZE_OPEN_METEO_DAILY = Asset("lake_bronze_open_meteo_daily")
 
 # Business-ready datasets produced by dbt in the gold bucket.
 GOLD = Asset("lake_gold")
+
+# Forecasting tables written to the gold bucket by the ml_forecast_* DAGs (gld_forecast_*.parquet).
+# A separate asset on purpose: ml_forecast_selection is scheduled on GOLD, so producing GOLD
+# itself would start it again in a loop.
+GOLD_FORECAST = Asset("lake_gold_forecast")

@@ -23,6 +23,7 @@ API ──staging.write_records──► staging ──staging.promote_to_bronze
 | `staging.py` | **Staging area**: grava registros de API como Parquet e os promove para a bronze. | DAG `example_api_to_bronze` |
 | `export.py` | Exporta datasets da gold para Parquet no host. | DAG `gold_export_powerbi` |
 | `scd2.py` | **Simulação de SCD2** nas dimensões da gold (`gld_dim_product`, `gld_dim_customer`): valida a mudança pelo tipo SCD de cada coluna, fecha/abre versões, regrava a `gld_fact_sales` com as chaves buscadas de novo e guarda o histórico de cada cenário. Grava só em `s3://gold/_simulation/`. | DAG `gold_scd2_simulation` |
+| [`forecasting/`](forecasting/README.md) | **Previsão de demanda**: retreina os modelos dos estudos de `ml_models/` (Baseline 3, C.4/D.1/F.1, MLP/LSTM) com o protocolo M-2, compara no MLflow, registra o campeão de cada alvo (`caps_forecast_<alvo>@champion`), prevê o mês seguinte e grava as tabelas `gld_forecast_*` na gold. Roda no virtualenv `/opt/ml-venv` (`python -m lakehouse.forecasting <passo>`). | DAGs `ml_forecast_selection`, `ml_forecast_next_month` |
 | `bootstrap.py` | Cria os buckets e a regra de expiração da staging (`python -m lakehouse.bootstrap`). | serviço `lake-init` |
 | `naming.py` | Identificador de lote (`safe_name`) e data de partição (`partition_date`). | DAGs |
 
@@ -39,6 +40,8 @@ API ──staging.write_records──► staging ──staging.promote_to_bronze
 | silver | `s3://silver/<modelo>.parquet` | dbt |
 | gold | `s3://gold/<modelo>.parquet` | dbt |
 | simulação SCD2 | `s3://gold/_simulation/<cenário>/<lote>/<modelo>.parquet` (estado em `s3://gold/_simulation/<cenário>/_state.json`) | `scd2` (DAG `gold_scd2_simulation`) |
+| previsão (tabelas para o Power BI) | `s3://gold/gld_forecast_*.parquet` | `forecasting` (DAGs `ml_forecast_*`) |
+| previsão (área de trabalho) | `s3://gold/_forecast/selection/<lote>/...`, `s3://gold/_forecast/next_month/<lote>/...`, `s3://gold/_forecast/_state.json` | `forecasting` |
 
 Os nomes dos buckets vêm de `LAKE_BUCKET_*` (`.env`); use `LakeConfig.from_env().uri("gold", "x.parquet")`
 em vez de escrever o caminho fixo.

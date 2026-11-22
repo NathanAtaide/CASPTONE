@@ -13,7 +13,7 @@ Por isso não há arquivos `.sql` nesta pasta, só a declaração de fontes.
 
 | Arquivo | Função |
 |---|---|
-| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL), `bronze_open_meteo` (meteorologia: `hourly_weather` de exemplo e `daily_weather` por país), `bronze_nager_date` (feriados públicos, API Nager.Date) e `bronze_hebcal` (feriados de Israel, API Hebcal). As duas fontes de feriados são gravadas pela DAG `public_holidays_to_bronze` e lidas pelo modelo `slv_holidays`. |
+| `_bronze__sources.yml` | Declara as fontes `bronze_mysql` (tabelas do MySQL), `bronze_open_meteo` (meteorologia: `hourly_weather` de exemplo e `daily_weather` por país), `bronze_nager_date` (feriados públicos, API Nager.Date) e `bronze_hebcal` (feriados de Israel, API Hebcal). As duas fontes de feriados são gravadas pela DAG `public_holidays_to_bronze` e lidas pelo modelo `slv_holidays`. Declara também a fonte `gold_forecast`: as tabelas `gld_forecast_*` que as DAGs `ml_forecast_*` gravam **na gold** com Python (não com dbt), para que modelos gold possam lê-las com `source('gold_forecast', ...)`. Nenhum modelo dbt pode ter o mesmo nome dessas tabelas. |
 
 ## Como uma fonte é resolvida
 

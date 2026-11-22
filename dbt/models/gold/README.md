@@ -26,6 +26,14 @@ automaticamente o *schema* `gold` e a *tag* `gold` (configuração em `dbt_proje
 
 Seus modelos ficam diretamente nesta pasta (ou em subpastas por assunto), com o prefixo `gld_`.
 
+### Tabelas da gold que não são do dbt
+
+As tabelas `gld_forecast_*` (backtest, métricas, campeão e previsão do mês seguinte dos modelos de
+ML/DL) são gravadas em `s3://<bucket gold>/` pelas DAGs `ml_forecast_selection` e
+`ml_forecast_next_month` (pacote `lakehouse.forecasting`), não por modelos desta pasta. Estão
+declaradas como fonte `gold_forecast` em `models/bronze/_bronze__sources.yml` e vão para o Power BI
+pela mesma exportação. Não crie um modelo dbt com um desses nomes: ele sobrescreveria o arquivo.
+
 As duas tabelas `gld_ml_*` ligam `preserve_insertion_order` do DuckDB durante a própria execução
 (`pre_hook` / `post_hook`). O perfil do dbt desliga essa opção para gastar menos memória, e sem ela
 o `ORDER BY order_date` do modelo não chegaria garantido ao arquivo Parquet.

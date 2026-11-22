@@ -16,6 +16,7 @@ data/exports/
 │   ├── gld_fact_sales.parquet         # star schema (11 arquivos gld_fact_* e gld_dim_*)
 │   ├── ...
 │   ├── gld_ml_sales.parquet           # outros modelos gold (ML, meteorologia): fora do star schema
+│   ├── gld_forecast_*.parquet         # previsão: backtest, métricas e campeão de cada modelo, mês seguinte
 │   └── _manifest.json                 # data/hora (UTC) da exportação e nº de linhas por arquivo
 └── scd2_simulation/                   # gold_scd2_simulation
     └── <cenário>/
@@ -49,8 +50,10 @@ Para atualizar o relatório, basta **Atualizar** no Power BI depois que a DAG ro
 
 ## Quando a exportação acontece
 
-- Automaticamente, sempre que a `dbt_medallion` atualiza a camada gold (a DAG
-  `gold_export_powerbi` precisa estar ativa no Airflow).
+- Automaticamente, sempre que a `dbt_medallion` atualiza a camada gold ou uma DAG de previsão
+  (`ml_forecast_selection`, `ml_forecast_next_month`) grava as tabelas `gld_forecast_*` (a DAG
+  `gold_export_powerbi` precisa estar ativa no Airflow). As colunas dessas tabelas estão em
+  [`src/lakehouse/forecasting/README.md`](../../src/lakehouse/forecasting/README.md).
 - Manualmente: *Trigger* na DAG; o parâmetro `datasets` permite exportar só alguns modelos.
 
 ## Observações

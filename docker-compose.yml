@@ -86,6 +86,9 @@ x-airflow-common: &airflow-common
     DBT_ENABLE_EXAMPLES: ${DBT_ENABLE_EXAMPLES:-true}
     DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
     EXPORT_DIR: /opt/platform/exports
+    # Tracking server used by the forecasting DAGs (ml_forecast_*). The server
+    # proxies the artifact store, so tasks never need the lake keys for MLflow.
+    MLFLOW_TRACKING_URI: http://mlflow:5000
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./src:/opt/platform/src:ro

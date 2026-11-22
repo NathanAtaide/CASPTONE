@@ -80,3 +80,28 @@ sources:
     tables:
       - name: israel_holidays
         description: "One row per major or modern holiday of Israel as returned by the API (title, date, hdate, category, subcat, yomtov, title_orig, hebrew, link, memo; the nested Torah readings are dropped), plus requested_country_code, requested_year and the lineage columns."
+
+  # ---------------------------------------------------------------------------
+  # Forecasting tables written to the GOLD bucket by Python tasks (not by dbt):
+  # the ml_forecast_selection and ml_forecast_next_month DAGs run the models of
+  # ml_models/ (lakehouse.forecasting) and write s3://<gold bucket>/<name>.parquet.
+  # Declared here so gold models can read them with source('gold_forecast', ...).
+  # No dbt model may be called like these tables (it would overwrite the file).
+  # ---------------------------------------------------------------------------
+  - name: gold_forecast
+    description: "Backtest, comparison and next-month forecasts of the Baseline, ML and DL models (orders, units, gross sales of Online ES + Online PT)."
+    config:
+      external_location: "read_parquet('s3://{{ env_var('LAKE_BUCKET_GOLD', 'gold') }}/{name}.parquet')"
+    tables:
+      - name: gld_forecast_backtest_monthly
+        description: "One row per target, candidate model, month of the backtest window and market (Online ES, Online PT, ES + PT): forecast, seed range, actual and error. Written by ml_forecast_selection."
+      - name: gld_forecast_backtest_daily
+        description: "Same as gld_forecast_backtest_monthly per day, for the models that forecast days. Written by ml_forecast_selection."
+      - name: gld_forecast_model_metrics
+        description: "Leaderboard: one row per target and candidate model with WAPE, bias, RMSE and R2 (monthly and daily), rank, champion flag and comparison with Baseline 3. Written by ml_forecast_selection."
+      - name: gld_forecast_champion
+        description: "One row per target: champion model, its metrics, the Baseline 3 reference and the registered MLflow model version. Written by ml_forecast_selection."
+      - name: gld_forecast_next_month
+        description: "Monthly forecast of the next month by the champion of each target, per market and ES + PT, with the paid media budget used. Written by ml_forecast_next_month."
+      - name: gld_forecast_next_month_daily
+        description: "Daily forecast of the next month by the champion (when the champion forecasts days). Written by ml_forecast_next_month."
