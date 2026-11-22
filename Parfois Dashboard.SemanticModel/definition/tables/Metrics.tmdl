@@ -34,11 +34,9 @@ table Metrics
 	measure 'Forecast Subtitle' =
 			VAR _month = [Next Forecast Month]
 			VAR _dataEnd = CALCULATE ( MAX ( 'Forecast Next Month'[Data End] ), REMOVEFILTERS ( 'Forecast Next Month' ) )
-			VAR _cutoff = CALCULATE ( MAX ( 'Forecast Next Month'[Cutoff Date] ), REMOVEFILTERS ( 'Forecast Next Month' ), 'Forecast Next Month'[Forecast Month] = _month )
 			RETURN
 			    "Forecast for " & FORMAT ( _month, "mmmm yyyy", "en-US" ) & " · " & [Forecast Market Selected]
-			        & "   ·   data through " & FORMAT ( _dataEnd, "d mmm yyyy", "en-US" )
-			        & ", trained to " & FORMAT ( _cutoff, "d mmm yyyy", "en-US" ) & " (M-2)"
+			        & "   ·   sales data through " & FORMAT ( _dataEnd, "d mmm yyyy", "en-US" )
 		displayFolder: 0 Period
 		lineageTag: 12254837-3a44-5d5c-91a2-f2337dd86d0e
 
@@ -1572,7 +1570,7 @@ table Metrics
 		displayFolder: 5 Forecast
 		lineageTag: 74b7ac05-4331-5568-a55e-f9c2e9b7b90d
 
-	/// Latest month forecast by the champion models (gld_forecast_next_month).
+	/// Latest month forecast by the models (gld_forecast_next_month).
 	measure 'Next Forecast Month' =
 			CALCULATE (
 			    MAX ( 'Forecast Next Month'[Forecast Month] ),
@@ -1583,7 +1581,7 @@ table Metrics
 		displayFolder: 5 Forecast
 		lineageTag: 70f244d9-87f5-5cf1-bc1a-13417225fd93
 
-	/// Champion forecast for the latest forecast month, market of the page. Orders, net units or gross sales (EUR) depending on the target.
+	/// Model forecast for the latest forecast month, market of the page. Orders, net units or gross sales (EUR) depending on the target.
 	measure 'Next Month Forecast' =
 			VAR _market = [Forecast Market Selected]
 			VAR _month = [Next Forecast Month]
@@ -1603,132 +1601,7 @@ table Metrics
 		displayFolder: 5 Forecast
 		lineageTag: 79b83850-c953-509c-b5a7-a2b674cd90d9
 
-	/// Lowest and highest forecast of the 5 seeds of a neural-network champion.
-	measure 'Next Month Seed Range' =
-			VAR _market = [Forecast Market Selected]
-			VAR _month = [Next Forecast Month]
-			VAR _min = CALCULATE ( SUM ( 'Forecast Next Month'[Seed Min] ), 'Forecast Market'[Market] = _market, 'Forecast Next Month'[Forecast Month] = _month )
-			VAR _max = CALCULATE ( SUM ( 'Forecast Next Month'[Seed Max] ), 'Forecast Market'[Market] = _market, 'Forecast Next Month'[Forecast Month] = _month )
-			VAR _isMoney = SELECTEDVALUE ( 'Forecast Target'[Target Key] ) = "sales"
-			RETURN
-			    IF (
-			        ISBLANK ( _min ) || ISBLANK ( _max ),
-			        "no seeds",
-			        IF (
-			            _isMoney,
-			            "€" & FORMAT ( _min / 1000000, "0.00", "en-US" ) & "M – €" & FORMAT ( _max / 1000000, "0.00", "en-US" ) & "M",
-			            FORMAT ( _min / 1000, "#,0.0", "en-US" ) & "K – " & FORMAT ( _max / 1000, "#,0.0", "en-US" ) & "K"
-			        )
-			    )
-		displayFolder: 5 Forecast
-		lineageTag: 7bfa7554-91d4-5b3f-b3ea-d17899293478
-
-	/// Model with the lowest monthly WAPE (ES + PT) on the backtest window.
-	measure 'Champion Model' = SELECTEDVALUE ( 'Forecast Target'[Champion Model] )
-		displayFolder: 5 Forecast
-		lineageTag: 6c3275c6-939b-5b5c-bf40-462b3cd094d2
-
-	/// Monthly WAPE of the champion on the backtest window, market of the page.
-	measure 'Champion WAPE' =
-			VAR _market = [Forecast Market Selected]
-			RETURN
-			    CALCULATE (
-			        SWITCH (
-			            _market,
-			            "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
-			            "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
-			            MAX ( 'Forecast Model'[WAPE] )
-			        ),
-			        'Forecast Model'[Champion] = TRUE ()
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: 1131e5c9-d997-5f68-a3ab-8d952e824484
-
-	/// Monthly WAPE of the Baseline 3 (monthly), the reference of every study.
-	measure 'Baseline 3 WAPE' =
-			VAR _market = [Forecast Market Selected]
-			RETURN
-			    CALCULATE (
-			        SWITCH (
-			            _market,
-			            "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
-			            "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
-			            MAX ( 'Forecast Model'[WAPE] )
-			        ),
-			        'Forecast Model'[Baseline Reference] = TRUE ()
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: 5db8f2a6-2f57-509b-8ac0-e225e3c31bef
-
-	/// 1 - monthly WAPE of the champion on the backtest window.
-	measure 'Champion Accuracy' =
-			VAR _wape = [Champion WAPE]
-			RETURN
-			    IF ( NOT ISBLANK ( _wape ), 1 - _wape )
-		formatString: 0.0%
-		displayFolder: 5 Forecast
-		lineageTag: 1e4a016e-74d4-5396-9640-e0a5401c9c28
-
-	/// Monthly WAPE of the champion minus that of the Baseline 3 (negative = better).
-	measure 'Champion vs Baseline 3' =
-			VAR _champion = [Champion WAPE]
-			VAR _baseline = [Baseline 3 WAPE]
-			VAR _delta = ( _champion - _baseline ) * 100
-			RETURN
-			    IF (
-			        ISBLANK ( _champion ) || ISBLANK ( _baseline ),
-			        "n/a",
-			        IF ( _delta <= 0, "▼ ", "▲ " ) & FORMAT ( ABS ( _delta ), "0.0", "en-US" ) & " pp WAPE"
-			    )
-		displayFolder: 5 Forecast
-		lineageTag: dccad681-727c-5d62-beeb-e682332601fc
-
-	measure 'Champion vs Baseline 3 Colour' =
-			VAR _delta = [Champion WAPE] - [Baseline 3 WAPE]
-			RETURN
-			    SWITCH ( TRUE (), ISBLANK ( _delta ), "#8C8781", _delta <= 0, "#4E7D5B", "#B04A3E" )
-		displayFolder: 7 Labels and colours
-		lineageTag: f9dd95d2-ee81-5e4f-afd1-656b4ad60f45
-
-	/// Monthly WAPE of the model in the market of the page (blank for models that only forecast the ES + PT total).
-	measure 'Model WAPE' =
-			VAR _market = [Forecast Market Selected]
-			RETURN
-			    SWITCH (
-			        _market,
-			        "Online ES", MAX ( 'Forecast Model'[WAPE ES] ),
-			        "Online PT", MAX ( 'Forecast Model'[WAPE PT] ),
-			        MAX ( 'Forecast Model'[WAPE] )
-			    )
-		formatString: 0.0%
-		displayFolder: 5 Forecast\Models
-		lineageTag: 3db8d4dc-1850-589c-b1bb-907ae3dd18aa
-
-	/// Model WAPE minus Baseline 3 WAPE, in percentage points (negative = better).
-	measure 'Model vs Baseline 3' =
-			VAR _wape = [Model WAPE]
-			VAR _baseline = CALCULATE ( [Model WAPE], REMOVEFILTERS ( 'Forecast Model' ), 'Forecast Model'[Baseline Reference] = TRUE (),
-			    VALUES ( 'Forecast Model'[Target Key] ) )
-			RETURN
-			    IF ( NOT ISBLANK ( _wape ) && NOT ISBLANK ( _baseline ), ( _wape - _baseline ) * 100 )
-		formatString: +0.0;−0.0;0.0
-		displayFolder: 5 Forecast\Models
-		lineageTag: f55f169a-4f12-57e6-b309-c896a0fdf8ca
-
-	/// Leaderboard text colour: champion in black, Baseline 3 reference in taupe, others grey.
-	measure 'Model Row Colour' =
-			SWITCH (
-			    TRUE (),
-			    SELECTEDVALUE ( 'Forecast Model'[Champion] ), "#1C1C1C",
-			    SELECTEDVALUE ( 'Forecast Model'[Baseline Reference] ), "#A58D74",
-			    "#8C8781"
-			)
-		displayFolder: 7 Labels and colours
-		lineageTag: 9a6d5c78-73ac-53a1-84ea-0212597297e3
-
-	/// Actual value of the backtest months (the same for every model; read from the Baseline 3 rows).
+	/// Actual value of the backtest months in the target definition of the models (read from one model, the same for all).
 	measure 'Backtest Actual' =
 			VAR _market = [Forecast Market Selected]
 			RETURN
@@ -1738,49 +1611,12 @@ table Metrics
 			        'Forecast Model'[Baseline Reference] = TRUE ()
 			    )
 		formatString: #,0
-		displayFolder: 5 Forecast\Backtest
+		displayFolder: 5 Forecast
 		lineageTag: 0d771dce-0ba8-5776-923d-8f8deaf96f4f
-
-	/// Forecast of the champion for each backtest month (cutoff M-2).
-	measure 'Backtest Champion Forecast' =
-			VAR _market = [Forecast Market Selected]
-			RETURN
-			    CALCULATE (
-			        SUM ( 'Forecast Backtest'[Forecast] ),
-			        'Forecast Market'[Market] = _market,
-			        'Forecast Model'[Champion] = TRUE ()
-			    )
-		formatString: #,0
-		displayFolder: 5 Forecast\Backtest
-		lineageTag: d478935e-3fb2-514d-9658-de0b4e736690
-
-	/// Forecast of the Baseline 3 (monthly) for each backtest month.
-	measure 'Backtest Baseline 3 Forecast' =
-			VAR _market = [Forecast Market Selected]
-			RETURN
-			    CALCULATE (
-			        SUM ( 'Forecast Backtest'[Forecast] ),
-			        'Forecast Market'[Market] = _market,
-			        'Forecast Model'[Baseline Reference] = TRUE ()
-			    )
-		formatString: #,0
-		displayFolder: 5 Forecast\Backtest
-		lineageTag: 5e15510a-6177-5b21-a54e-e728726e5eed
-
-	/// Champion line of the chart: backtest months, then the next-month forecast.
-	measure 'Champion Forecast (Chart)' =
-			VAR _backtest = [Backtest Champion Forecast]
-			RETURN
-			    IF ( NOT ISBLANK ( _backtest ), _backtest, [Next Month Forecast] )
-		formatString: #,0
-		displayFolder: 5 Forecast\Backtest
-		lineageTag: 361932c0-9dba-53d0-b613-3b8bd2655d90
 
 	/// Assumptions of the forecast, shown in the strip of the Forecast page.
 	measure 'Forecast Assumptions' =
 			VAR _month = [Next Forecast Month]
-			VAR _start = CALCULATE ( MIN ( 'Forecast Target'[Backtest Start] ), REMOVEFILTERS ( 'Forecast Target' ) )
-			VAR _end = CALCULATE ( MAX ( 'Forecast Target'[Backtest End] ), REMOVEFILTERS ( 'Forecast Target' ) )
 			VAR _budget =
 			    CALCULATE (
 			        MAX ( 'Forecast Next Month'[Paid Media Budget] ),
@@ -1796,9 +1632,11 @@ table Metrics
 			VAR _calendar =
 			    IF ( CONTAINSSTRING ( _notes, "repeated" ), "  ·  event calendar of the same month last year repeated", "" )
 			RETURN
-			    "Champion = lowest monthly WAPE (ES + PT) on " & FORMAT ( _start, "mmm", "en-US" ) & "–" & FORMAT ( _end, "mmm yyyy", "en-US" )
-			        & "  ·  paid media budget for " & FORMAT ( _month, "mmm yyyy", "en-US" ) & ": €" & FORMAT ( _budget, "#,0", "en-US" )
-			        & " (scenario C models)" & _calendar
+			    "Each month is forecast with data up to 2 months before (M-2)"
+			        & IF ( NOT ISBLANK ( _budget ),
+			            "  ·  paid media budget assumed for " & FORMAT ( _month, "mmm yyyy", "en-US" ) & ": €" & FORMAT ( _budget, "#,0", "en-US" ),
+			            "" )
+			        & _calendar
 		displayFolder: 5 Forecast
 		lineageTag: a7c8ce57-140e-5741-9b7d-12d7243fbae8
 
@@ -1831,6 +1669,171 @@ table Metrics
 		formatString: \€#,0.00;-\€#,0.00;\€#,0.00
 		displayFolder: 1 Sales
 		lineageTag: 420f4cc9-0d8e-52e4-bdc4-6e20652f3f9e
+
+	/// Last month with both a model forecast (cutoff M-2) and the actual value.
+	measure 'Last Backtest Month' =
+			VAR _end = CALCULATE ( MAX ( 'Forecast Target'[Backtest End] ), REMOVEFILTERS ( 'Forecast Target' ) )
+			RETURN
+			    DATE ( YEAR ( _end ), MONTH ( _end ), 1 )
+		formatString: mmm yyyy
+		isHidden
+		displayFolder: 5 Forecast
+		lineageTag: a61d91e4-0c04-57ec-adc5-980672480a69
+
+	/// Model used to forecast the target (chosen by the forecasting pipeline).
+	measure 'Forecast Model Name' = SELECTEDVALUE ( 'Forecast Target'[Champion Model] )
+		displayFolder: 5 Forecast
+		lineageTag: 090a4e8a-7865-5edb-9f25-f495d94bda26
+
+	/// Forecast the model made for each backtest month, trained with data up to the end of M-2.
+	measure 'Backtest Forecast' =
+			VAR _market = [Forecast Market Selected]
+			RETURN
+			    CALCULATE (
+			        SUM ( 'Forecast Backtest'[Forecast] ),
+			        'Forecast Market'[Market] = _market,
+			        'Forecast Model'[Champion] = TRUE ()
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: 44d040b4-fd98-566b-ac94-56148c55109d
+
+	/// Forecast line of the chart: backtest months, then the next month.
+	measure 'Forecast (Chart)' =
+			VAR _backtest = [Backtest Forecast]
+			RETURN
+			    IF ( NOT ISBLANK ( _backtest ), _backtest, [Next Month Forecast] )
+		formatString: #,0
+		displayFolder: 5 Forecast
+		lineageTag: e90ed208-7a8f-5f7a-b6d4-7f5295404ac1
+
+	/// 1 - WAPE of the model over the last 3 backtest months (sum of absolute errors / sum of actuals).
+	measure 'Forecast Accuracy 3M' =
+			VAR _last = [Last Backtest Month]
+			VAR _months =
+			    CALCULATETABLE (
+			        VALUES ( 'Date'[Month Start] ),
+			        REMOVEFILTERS ( 'Date' ),
+			        'Date'[Month Start] > EDATE ( _last, -3 ) && 'Date'[Month Start] <= _last
+			    )
+			VAR _points = ADDCOLUMNS ( _months, "@actual", CALCULATE ( [Backtest Actual] ), "@forecast", CALCULATE ( [Backtest Forecast] ) )
+			VAR _actual = SUMX ( _points, [@actual] )
+			VAR _error = SUMX ( _points, ABS ( [@forecast] - [@actual] ) )
+			RETURN
+			    IF ( _actual > 0, 1 - DIVIDE ( _error, _actual ) )
+		formatString: 0.0%
+		displayFolder: 5 Forecast
+		lineageTag: a5ddbe03-e63d-5a40-9b4e-ae6b5e35782d
+
+	/// TRUE on the last 3 backtest months of a 'Date' month axis.
+	measure 'Is Forecast Table Month' =
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			VAR _last = [Last Backtest Month]
+			RETURN
+			    _single && _axis > EDATE ( _last, -3 ) && _axis <= _last
+		isHidden
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: 0297ac3c-60b9-52a8-a763-bb8815d28e40
+
+	/// Gross Sales: actual value of the last 3 backtest months.
+	measure 'Gross Sales Actual (Table)' = IF ( [Is Forecast Table Month], CALCULATE ( [Backtest Actual], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "sales" ) )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: ce32eb7a-3f11-50f5-bcb8-a441b9187269
+
+	/// Gross Sales: model forecast of the last 3 backtest months and of the next month.
+	measure 'Gross Sales Forecast (Table)' =
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        [Is Forecast Table Month], CALCULATE ( [Backtest Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "sales" ),
+			        _single && _axis = [Next Forecast Month], CALCULATE ( [Next Month Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "sales" )
+			    )
+		formatString: \€#,0;-\€#,0;\€#,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: 1a5151cf-2cbd-5e85-84f9-9841a4a4a33d
+
+	/// Gross Sales: 1 - absolute percentage error of the month.
+	measure 'Gross Sales Accuracy (Table)' =
+			VAR _actual = [Gross Sales Actual (Table)]
+			VAR _forecast = [Gross Sales Forecast (Table)]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _forecast - _actual ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: 8477007b-9c28-519f-9801-5b2f8a88b5aa
+
+	/// Orders: actual value of the last 3 backtest months.
+	measure 'Orders Actual (Table)' = IF ( [Is Forecast Table Month], CALCULATE ( [Backtest Actual], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "orders" ) )
+		formatString: #,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: a6ce86ad-c486-561a-af13-d3e8c15680d4
+
+	/// Orders: model forecast of the last 3 backtest months and of the next month.
+	measure 'Orders Forecast (Table)' =
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        [Is Forecast Table Month], CALCULATE ( [Backtest Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "orders" ),
+			        _single && _axis = [Next Forecast Month], CALCULATE ( [Next Month Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "orders" )
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: 1bda07f1-3ac0-5c1d-9513-640df70b12b2
+
+	/// Orders: 1 - absolute percentage error of the month.
+	measure 'Orders Accuracy (Table)' =
+			VAR _actual = [Orders Actual (Table)]
+			VAR _forecast = [Orders Forecast (Table)]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _forecast - _actual ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: aee18b9c-74f9-51cf-a8fa-adc6260406e1
+
+	/// Net Units: actual value of the last 3 backtest months.
+	measure 'Net Units Actual (Table)' = IF ( [Is Forecast Table Month], CALCULATE ( [Backtest Actual], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "units" ) )
+		formatString: #,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: bae9cae9-17de-550f-9c17-d300bf33df2d
+
+	/// Net Units: model forecast of the last 3 backtest months and of the next month.
+	measure 'Net Units Forecast (Table)' =
+			VAR _axis = MAX ( 'Date'[Month Start] )
+			VAR _single = MIN ( 'Date'[Month Start] ) = _axis
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        [Is Forecast Table Month], CALCULATE ( [Backtest Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "units" ),
+			        _single && _axis = [Next Forecast Month], CALCULATE ( [Next Month Forecast], REMOVEFILTERS ( 'Forecast Target' ), 'Forecast Target'[Target Key] = "units" )
+			    )
+		formatString: #,0
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: dd6cfb4c-23ee-5121-aef9-51ee23aab2e1
+
+	/// Net Units: 1 - absolute percentage error of the month.
+	measure 'Net Units Accuracy (Table)' =
+			VAR _actual = [Net Units Actual (Table)]
+			VAR _forecast = [Net Units Forecast (Table)]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _actual ) && NOT ISBLANK ( _forecast ) && _actual <> 0,
+			        MAX ( 0, 1 - ABS ( _forecast - _actual ) / ABS ( _actual ) )
+			    )
+		formatString: 0.0%
+		displayFolder: 5 Forecast\Accuracy table
+		lineageTag: 095ca568-3b57-5199-b942-d1390719c73a
 
 	column Value
 		dataType: int64

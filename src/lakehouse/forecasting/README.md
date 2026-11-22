@@ -143,7 +143,9 @@ seguinte acumulam um conjunto por alvo e mês previsto (prever o mesmo mês de n
 No `Parfois Dashboard.pbip`, a página **Forecast** usa `gld_forecast_champion`,
 `gld_forecast_model_metrics`, `gld_forecast_backtest_monthly` e `gld_forecast_next_month` (tabelas
 `Forecast Target`, `Forecast Model`, `Forecast Backtest` e `Forecast Next Month`) e mostra sempre o
-mês previsto mais recente. As tabelas diárias ainda não têm visual. Ver a seção 8 do README principal.
+mês previsto mais recente, o modelo campeão de cada alvo (só como "model") e a acurácia dele nos
+últimos 3 meses do backtest. A comparação entre candidatos e a Baseline 3 não aparecem no painel. As
+tabelas diárias ainda não têm visual. Ver a seção 8 do README principal.
 
 ## Limitações
 

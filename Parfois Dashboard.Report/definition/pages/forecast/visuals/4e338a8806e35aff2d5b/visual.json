@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.3.0/schema.json",
   "name": "4e338a8806e35aff2d5b",
   "position": {
-    "x": 579.33,
-    "y": 249,
+    "x": 928.66,
+    "y": 202,
     "z": 22000,
     "width": 164.66,
-    "height": 47,
+    "height": 48,
     "tabOrder": 22000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Next Month Seed Range"
+                  "Property": "Forecast Model Name"
                 }
               },
-              "queryRef": "Metrics.Next Month Seed Range",
-              "nativeQueryRef": "Next Month Seed Range"
+              "queryRef": "Metrics.Forecast Model Name",
+              "nativeQueryRef": "Forecast Model Name"
             }
           ]
         }
@@ -118,7 +118,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'range of the 5 seeds'"
+                  "Value": "'model'"
                 }
               }
             },

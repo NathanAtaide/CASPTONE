@@ -6,7 +6,7 @@
     "y": 202,
     "z": 12000,
     "width": 164.66,
-    "height": 47,
+    "height": 48,
     "tabOrder": 12000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Champion Model"
+                  "Property": "Forecast Model Name"
                 }
               },
-              "queryRef": "Metrics.Champion Model",
-              "nativeQueryRef": "Champion Model"
+              "queryRef": "Metrics.Forecast Model Name",
+              "nativeQueryRef": "Forecast Model Name"
             }
           ]
         }
@@ -118,7 +118,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'champion model'"
+                  "Value": "'model'"
                 }
               }
             },
@@ -292,7 +292,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "targetOrders",
+        "name": "targetSales",
         "field": {
           "Column": {
             "Expression": {
@@ -333,7 +333,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'orders'"
+                          "Value": "'sales'"
                         }
                       }
                     ]

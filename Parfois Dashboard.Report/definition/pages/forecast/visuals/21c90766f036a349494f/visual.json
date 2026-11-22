@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Next Month Forecast"
+                  "Property": "Next Month Forecast €"
                 }
               },
-              "queryRef": "Metrics.Next Month Forecast",
-              "nativeQueryRef": "Next Month Forecast"
+              "queryRef": "Metrics.Next Month Forecast €",
+              "nativeQueryRef": "Next Month Forecast €"
             }
           ]
         }
@@ -65,14 +65,14 @@
             "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "1000D"
+                  "Value": "1000000D"
                 }
               }
             },
             "labelPrecision": {
               "expr": {
                 "Literal": {
-                  "Value": "1L"
+                  "Value": "2L"
                 }
               }
             }
@@ -132,7 +132,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'ORDERS · NEXT-MONTH FORECAST'"
+                  "Value": "'GROSS SALES (EUR) · NEXT-MONTH FORECAST'"
                 }
               }
             },
@@ -306,7 +306,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "targetOrders",
+        "name": "targetSales",
         "field": {
           "Column": {
             "Expression": {
@@ -347,7 +347,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'orders'"
+                          "Value": "'sales'"
                         }
                       }
                     ]

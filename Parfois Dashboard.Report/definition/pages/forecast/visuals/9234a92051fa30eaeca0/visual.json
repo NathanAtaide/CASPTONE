@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "9234a92051fa30eaeca0",
   "position": {
-    "x": 573.33,
-    "y": 508,
+    "x": 224,
+    "y": 484,
     "z": 25000,
-    "height": 200,
-    "width": 341.33,
+    "height": 224,
+    "width": 1040,
     "tabOrder": 25000
   },
   "visual": {
@@ -20,30 +20,15 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Forecast Model"
+                      "Entity": "Date"
                     }
                   },
-                  "Property": "Model"
+                  "Property": "Year Month"
                 }
               },
-              "queryRef": "Forecast Model.Model",
-              "nativeQueryRef": "Model",
-              "displayName": "Model"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Forecast Model"
-                    }
-                  },
-                  "Property": "Type"
-                }
-              },
-              "queryRef": "Forecast Model.Type",
-              "nativeQueryRef": "Type",
-              "displayName": "Type"
+              "queryRef": "Date.Year Month",
+              "nativeQueryRef": "Year Month",
+              "displayName": "Month"
             },
             {
               "field": {
@@ -53,12 +38,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Model WAPE"
+                  "Property": "Gross Sales Actual (Table)"
                 }
               },
-              "queryRef": "Metrics.Model WAPE",
-              "nativeQueryRef": "Model WAPE",
-              "displayName": "WAPE"
+              "queryRef": "Metrics.Gross Sales Actual (Table)",
+              "nativeQueryRef": "Gross Sales Actual (Table)",
+              "displayName": "Gross sales actual"
             },
             {
               "field": {
@@ -68,12 +53,117 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Model vs Baseline 3"
+                  "Property": "Gross Sales Forecast (Table)"
                 }
               },
-              "queryRef": "Metrics.Model vs Baseline 3",
-              "nativeQueryRef": "Model vs Baseline 3",
-              "displayName": "vs B3"
+              "queryRef": "Metrics.Gross Sales Forecast (Table)",
+              "nativeQueryRef": "Gross Sales Forecast (Table)",
+              "displayName": "Gross sales forecast"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Gross Sales Accuracy (Table)"
+                }
+              },
+              "queryRef": "Metrics.Gross Sales Accuracy (Table)",
+              "nativeQueryRef": "Gross Sales Accuracy (Table)",
+              "displayName": "Gross sales accuracy"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Orders Actual (Table)"
+                }
+              },
+              "queryRef": "Metrics.Orders Actual (Table)",
+              "nativeQueryRef": "Orders Actual (Table)",
+              "displayName": "Orders actual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Orders Forecast (Table)"
+                }
+              },
+              "queryRef": "Metrics.Orders Forecast (Table)",
+              "nativeQueryRef": "Orders Forecast (Table)",
+              "displayName": "Orders forecast"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Orders Accuracy (Table)"
+                }
+              },
+              "queryRef": "Metrics.Orders Accuracy (Table)",
+              "nativeQueryRef": "Orders Accuracy (Table)",
+              "displayName": "Orders accuracy"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Net Units Actual (Table)"
+                }
+              },
+              "queryRef": "Metrics.Net Units Actual (Table)",
+              "nativeQueryRef": "Net Units Actual (Table)",
+              "displayName": "Net units actual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Net Units Forecast (Table)"
+                }
+              },
+              "queryRef": "Metrics.Net Units Forecast (Table)",
+              "nativeQueryRef": "Net Units Forecast (Table)",
+              "displayName": "Net units forecast"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Net Units Accuracy (Table)"
+                }
+              },
+              "queryRef": "Metrics.Net Units Accuracy (Table)",
+              "nativeQueryRef": "Net Units Accuracy (Table)",
+              "displayName": "Net units accuracy"
             }
           ]
         }
@@ -82,16 +172,16 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Metrics"
+                    "Entity": "Date"
                   }
                 },
-                "Property": "Model WAPE"
+                "Property": "Year Month"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -107,165 +197,6 @@
                 }
               }
             }
-          }
-        }
-      ],
-      "columnHeaders": [
-        {
-          "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "grid": [
-        {
-          "properties": {
-            "rowPadding": {
-              "expr": {
-                "Literal": {
-                  "Value": "2D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "values": [
-        {
-          "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
-                }
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Model Row Colour"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Forecast Model.Model"
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Model Row Colour"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Forecast Model.Type"
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Model Row Colour"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Metrics.Model WAPE"
-          }
-        },
-        {
-          "properties": {
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "Metrics"
-                        }
-                      },
-                      "Property": "Model Row Colour"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 1
-                }
-              }
-            ],
-            "metadata": "Metrics.Model vs Baseline 3"
           }
         }
       ]
@@ -284,7 +215,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Candidate models · Net units'"
+                  "Value": "'Forecast accuracy by month (1 − absolute percentage error)'"
                 }
               }
             },
@@ -336,7 +267,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Backtest WAPE · vs B3 in pp (− = better)'"
+                  "Value": "'Last 3 months with actual data, plus the next month'"
                 }
               }
             },
@@ -459,64 +390,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "targetUnits",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Forecast Target"
-              }
-            },
-            "Property": "Target Key"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "t",
-              "Entity": "Forecast Target",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "t"
-                          }
-                        },
-                        "Property": "Target Key"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "'units'"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User",
-        "isHiddenInViewMode": true
-      }
-    ]
   }
 }

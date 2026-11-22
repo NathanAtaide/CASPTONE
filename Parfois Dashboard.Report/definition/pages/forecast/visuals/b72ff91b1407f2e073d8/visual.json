@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b72ff91b1407f2e073d8",
   "position": {
-    "x": 573.33,
-    "y": 310,
+    "x": 922.66,
+    "y": 264,
     "z": 24000,
-    "height": 190,
+    "height": 212,
     "width": 341.33,
     "tabOrder": 24000
   },
@@ -58,27 +58,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Champion Forecast (Chart)"
+                  "Property": "Forecast (Chart)"
                 }
               },
-              "queryRef": "Metrics.Champion Forecast (Chart)",
-              "nativeQueryRef": "Champion Forecast (Chart)",
-              "displayName": "Champion"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Backtest Baseline 3 Forecast"
-                }
-              },
-              "queryRef": "Metrics.Backtest Baseline 3 Forecast",
-              "nativeQueryRef": "Backtest Baseline 3 Forecast",
-              "displayName": "Baseline 3"
+              "queryRef": "Metrics.Forecast (Chart)",
+              "nativeQueryRef": "Forecast (Chart)",
+              "displayName": "Forecast"
             }
           ]
         }
@@ -136,25 +121,7 @@
             }
           },
           "selector": {
-            "metadata": "Metrics.Champion Forecast (Chart)"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#C9B8A3'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Backtest Baseline 3 Forecast"
+            "metadata": "Metrics.Forecast (Chart)"
           }
         }
       ],
@@ -212,35 +179,7 @@
             }
           },
           "selector": {
-            "metadata": "Metrics.Champion Forecast (Chart)"
-          }
-        },
-        {
-          "properties": {
-            "lineStyle": {
-              "expr": {
-                "Literal": {
-                  "Value": "'dotted'"
-                }
-              }
-            },
-            "strokeWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "2D"
-                }
-              }
-            },
-            "showMarker": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "Metrics.Backtest Baseline 3 Forecast"
+            "metadata": "Metrics.Forecast (Chart)"
           }
         }
       ],
@@ -331,7 +270,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Backtest (cutoff M-2) + next month'"
+                  "Value": "'Monthly forecasts (cutoff M-2) and the next month'"
                 }
               }
             },

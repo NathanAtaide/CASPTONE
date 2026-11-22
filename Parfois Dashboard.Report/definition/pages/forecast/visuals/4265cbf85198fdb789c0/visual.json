@@ -6,7 +6,7 @@
     "y": 202,
     "z": 13000,
     "width": 164.66,
-    "height": 47,
+    "height": 48,
     "tabOrder": 13000
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Champion Accuracy"
+                  "Property": "Forecast Accuracy 3M"
                 }
               },
-              "queryRef": "Metrics.Champion Accuracy",
-              "nativeQueryRef": "Champion Accuracy"
+              "queryRef": "Metrics.Forecast Accuracy 3M",
+              "nativeQueryRef": "Forecast Accuracy 3M"
             }
           ]
         }
@@ -118,7 +118,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'backtest accuracy (1 − WAPE)'"
+                  "Value": "'accuracy · last 3 months'"
                 }
               }
             },
@@ -292,7 +292,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "targetOrders",
+        "name": "targetSales",
         "field": {
           "Column": {
             "Expression": {
@@ -333,7 +333,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'orders'"
+                          "Value": "'sales'"
                         }
                       }
                     ]

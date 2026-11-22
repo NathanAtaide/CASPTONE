@@ -203,17 +203,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.champion_forecast_chart": {
+			    "metrics.forecast_chart": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Champion Forecast (Chart)"
+			          "ConceptualProperty": "Forecast (Chart)"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Champion": {
+			          "Forecast": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -224,17 +224,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.backtest_baseline_3_forecast": {
+			    "metrics.gross_sales_actual_table": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Backtest Baseline 3 Forecast"
+			          "ConceptualProperty": "Gross Sales Actual (Table)"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Baseline 3": {
+			          "Gross sales actual": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -245,17 +245,17 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.model_wape": {
+			    "metrics.gross_sales_forecast_table": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Model WAPE"
+			          "ConceptualProperty": "Gross Sales Forecast (Table)"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "WAPE": {
+			          "Gross sales forecast": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -266,17 +266,143 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
-			    "metrics.model_vs_baseline_3": {
+			    "metrics.gross_sales_accuracy_table": {
 			      "Definition": {
 			        "Binding": {
 			          "ConceptualEntity": "Metrics",
-			          "ConceptualProperty": "Model vs Baseline 3"
+			          "ConceptualProperty": "Gross Sales Accuracy (Table)"
 			        }
 			      },
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "vs B3": {
+			          "Gross sales accuracy": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.orders_actual_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Orders Actual (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Orders actual": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.orders_forecast_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Orders Forecast (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Orders forecast": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.orders_accuracy_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Orders Accuracy (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Orders accuracy": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.net_units_actual_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Net Units Actual (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Net units actual": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.net_units_forecast_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Net Units Forecast (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Net units forecast": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "metrics.net_units_accuracy_table": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Metrics",
+			          "ConceptualProperty": "Net Units Accuracy (Table)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Net units accuracy": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -686,6 +812,27 @@ cultureInfo en-US
 			        }
 			      ]
 			    },
+			    "date.year_month": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Date",
+			          "ConceptualProperty": "Year Month"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Month": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
 			    "date.date": {
 			      "Definition": {
 			        "Binding": {
@@ -697,48 +844,6 @@ cultureInfo en-US
 			      "Terms": [
 			        {
 			          "Day": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "forecast_model.model": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Forecast Model",
-			          "ConceptualProperty": "Model"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Model": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
-			    "forecast_model.type": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Forecast Model",
-			          "ConceptualProperty": "Type"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Type": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

@@ -86,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Forecast & model selection'"
+                  "Value": "'Sales forecast'"
                 }
               }
             },
