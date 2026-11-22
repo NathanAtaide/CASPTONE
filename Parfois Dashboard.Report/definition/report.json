@@ -65,14 +65,14 @@
       "type": "RegisteredResources",
       "items": [
         {
-          "name": "ParfoisTheme.json",
-          "path": "ParfoisTheme.json",
-          "type": "CustomTheme"
-        },
-        {
           "name": "parfois_logo.png",
           "path": "parfois_logo.png",
           "type": "Image"
+        },
+        {
+          "name": "ParfoisTheme.json",
+          "path": "ParfoisTheme.json",
+          "type": "CustomTheme"
         }
       ]
     }

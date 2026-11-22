@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ff1443aeb071f443247f",
   "position": {
-    "x": 790,
-    "y": 16,
+    "x": 790.344827586207,
+    "y": 15.724137931034484,
     "z": 9000,
-    "height": 58,
-    "width": 150,
+    "height": 64.551724137931032,
+    "width": 149.79310344827587,
     "tabOrder": 9000
   },
   "visual": {
@@ -43,7 +43,7 @@
               },
               "queryRef": "Month Selector.Month",
               "nativeQueryRef": "Month",
-              "active": false
+              "active": true
             }
           ]
         }
@@ -79,6 +79,55 @@
         ]
       }
     },
+    "expansionStates": [
+      {
+        "roles": [
+          "Values"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Month Selector.Year"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Month Selector"
+                    }
+                  },
+                  "Property": "Year"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "Month Selector.Month"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "2025L"
+                  }
+                }
+              ],
+              "isToggled": true
+            }
+          ]
+        }
+      }
+    ],
     "objects": {
       "data": [
         {
@@ -216,6 +265,16 @@
                               },
                               "Property": "Year"
                             }
+                          },
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "m"
+                                }
+                              },
+                              "Property": "Month"
+                            }
                           }
                         ],
                         "Values": [
@@ -223,6 +282,11 @@
                             {
                               "Literal": {
                                 "Value": "2025L"
+                              }
+                            },
+                            {
+                              "Literal": {
+                                "Value": "'Latest month'"
                               }
                             }
                           ]
@@ -241,6 +305,16 @@
                               },
                               "Property": "Year"
                             }
+                          },
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "Month Selector"
+                                }
+                              },
+                              "Property": "Month"
+                            }
                           }
                         ],
                         "decomposedIdentities": {
@@ -251,6 +325,15 @@
                                   {
                                     "Literal": {
                                       "Value": "2025L"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "1": [
+                                  {
+                                    "Literal": {
+                                      "Value": "'Latest month'"
                                     }
                                   }
                                 ]
@@ -269,12 +352,25 @@
                                   "Property": "Year"
                                 }
                               }
+                            },
+                            {
+                              "value": {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Month Selector"
+                                    }
+                                  },
+                                  "Property": "Month"
+                                }
+                              }
                             }
                           ]
                         },
                         "valueMap": [
                           {
-                            "0": "2025"
+                            "0": "2025",
+                            "1": "Latest month"
                           }
                         ]
                       }
