@@ -163,6 +163,7 @@ CAPS/
 ├── dbt/                      # projeto dbt: macros + models/bronze|silver|gold
 ├── notebooks/                # notebooks do Jupyter
 ├── data/exports/             # Parquets exportados para o Power BI (fora do Docker)
+├── img/                      # logo PARFOIS (original e versão recortada usada no dashboard)
 ├── Parfois Dashboard.pbip    # dashboard Power BI (modelo em .SemanticModel/, relatório em .Report/) — seção 8
 ├── Open Parfois Dashboard.cmd  # abre o dashboard apontando para os Parquets desta cópia do repositório
 └── open_dashboard.ps1        # script chamado pelo .cmd: reescreve o parâmetro GoldFolder e abre o .pbip
@@ -260,6 +261,7 @@ Lê os Parquets de `data/exports/powerbi/` e segue o contrato de
 |---|---|
 | Abrir | Dê dois cliques em `Open Parfois Dashboard.cmd`, não no `.pbip`. O Power Query só aceita caminhos absolutos, então o `.pbip` sozinho não acha `data\exports\powerbi` em outra máquina. O script `open_dashboard.ps1` grava no parâmetro `GoldFolder` o caminho dessa pasta na cópia do repositório em que ele está e abre o projeto. Com o Desktop aberto, ele recusa (feche antes). Em uma cópia nova não há `cache.abf`: depois de abrir, clique em *Atualizar*. |
 | Páginas | Overview, Forecast, Sales quality, Marketing calendar e Markets & channels. Navegação pela barra lateral; filtros View, Period, Country e Origin sincronizados entre as páginas. |
+| Barra lateral | Fundo preto (`#000000`), também nos botões das páginas inativas; o botão da página atual fica em `#A58D74`. No topo, o logo PARFOIS em imagem (`img/parfois_logo.png`, registrado em `StaticResources/RegisteredResources/`), em 160 × 23 na posição x 20, y 44. Logo abaixo, o subtítulo "Online sales performance" em uma caixa de texto própria. Ver [`img/README.md`](img/README.md). |
 | Período | Tabela desconectada `Month Selector`, com o filtro Period em hierarquia Ano → Mês. Sem escolha, o painel mostra o último mês completo; o item "Latest month" acompanha esse mês a cada carga. |
 | Visão Month / Year | Botão View (tabela desconectada `Period View`). *Month* mostra o mês escolhido e o compara com o mês anterior e com o mesmo mês do ano anterior; a última linha dos cartões da Overview traz o acumulado do ano. *Year* mostra o acumulado do ano até o mês escolhido (clique no ano, ex. "2024", para o ano inteiro), o compara com os mesmos meses do ano anterior e traz a média mensal (e o budget no cartão Revenue). Os gráficos de 12 meses não mudam. A página Forecast não usa esses filtros. |
 | Budget | Tabela calculada `Budget Assumptions` (crescimento planejado por ano, editável no DATATABLE) e medida `[Revenue Budget]`: receita do ano anterior × (1 + crescimento planejado). Para 2024, cujo ano anterior não está nos dados, a base de 2023 é reconstruída pelo crescimento reportado (receita de 2024 ÷ 1,64). `[Budget Attainment]` = receita acumulada no ano ÷ budget anual; aparece no cartão Revenue da Overview. Premissas: 2024 +25% (realizado +64%), 2025 +40% (realizado +48%), 2026 +35%. |

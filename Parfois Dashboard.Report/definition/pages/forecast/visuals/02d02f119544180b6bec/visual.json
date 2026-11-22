@@ -19,25 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "PARFOIS",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "26pt",
-                      "fontWeight": "bold",
-                      "color": "#FFFFFF"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "Online sales performance",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "10pt",
-                      "color": "#C9B8A3"
-                    }
+                    "value": ""
                   }
                 ]
               }
@@ -75,7 +57,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#151515'"
+                      "Value": "'#000000'"
                     }
                   }
                 }
